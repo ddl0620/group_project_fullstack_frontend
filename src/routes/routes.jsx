@@ -33,6 +33,18 @@ const routes = [
             {
                 element: <UserLayout />,
                 children: [
+                    { path: '', element: <Home /> },
+                ],
+            },
+        ],
+    },
+    {
+        path: '/',
+        // element: <ProtectedRoute allowedRoles={['organizer', 'attendee']} />,
+        children: [
+            {
+                element: <UserLayout />,
+                children: [
                     { path: 'home', element: <Home /> },
                 ],
             },
