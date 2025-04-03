@@ -4,9 +4,9 @@ import Dashboard from '../pages/Dashboard/dashboard';
 import Home from '../pages/Home/home';
 import SignIn from '../pages/SignIn/signIn';
 import SignUp from '../pages/SignUp/signUp';
-import UserLayout from "../components/Layout/UserLayout/UserLayout.jsx";
-import AdminLayout from "../components/Layout/AdminLayout/AdminLayout.jsx";
-import DefaultLayout from "../components/Layout/DefaultLayout/defaultLayout.jsx";
+import UserLayout from '../components/Layout/UserLayout/UserLayout.jsx';
+import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
+import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx';
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 // eslint-disable-next-line react-refresh/only-export-components
@@ -32,9 +32,7 @@ const routes = [
         children: [
             {
                 element: <UserLayout />,
-                children: [
-                    { path: '', element: <Home /> },
-                ],
+                children: [{ path: '', element: <Home /> }],
             },
         ],
     },
@@ -44,9 +42,7 @@ const routes = [
         children: [
             {
                 element: <UserLayout />,
-                children: [
-                    { path: 'home', element: <Home /> },
-                ],
+                children: [{ path: 'home', element: <Home /> }],
             },
         ],
     },
@@ -56,25 +52,19 @@ const routes = [
         children: [
             {
                 element: <AdminLayout />,
-                children: [
-                    { path: '', element: <Dashboard /> },
-                ],
+                children: [{ path: '', element: <Dashboard /> }],
             },
         ],
     },
     {
         path: '/sign-in',
         element: <DefaultLayout />,
-        children: [
-            { path: '', element: <SignIn /> },
-        ],
+        children: [{ path: '', element: <SignIn /> }],
     },
     {
         path: '/sign-up',
         element: <DefaultLayout />,
-        children: [
-            { path: '', element: <SignUp /> },
-        ],
+        children: [{ path: '', element: <SignUp /> }],
     },
     {
         path: '*',

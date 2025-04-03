@@ -1,33 +1,31 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {SignUpUser} from "../../services/AuthService.js";
-
+import { SignUpUser } from '../../services/AuthService.js';
+import {useAuth} from "@/hooks/useAuth.js";
 
 function Register() {
-    const [userData, setUserData] = useState({ name: '', email: '', password: '', role: 'attendee' });
+    const [userData, setUserData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        role: 'attendee',
+    });
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
-
+    const {handleSignUp} = useAuth();
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUserData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleRegister = async () => {
-        try {
-            await SignUpUser(userData);
-            navigate('/sign-in'); // Chuyển hướng đến trang đăng nhập sau khi đăng ký thành công
-        } catch (err) {
-            setError('Registration failed. Please try again.');
-            console.error('Registration error:', err);
-        }
+        await handleSignUp(userData, setError);
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="bg-white p-6 rounded shadow-md w-full max-w-sm">
-                <h2 className="text-2xl font-bold mb-4">Register</h2>
-                {error && <p className="text-red-500 mb-4">{error}</p>}
+        <div className="flex min-h-screen items-center justify-center bg-gray-100">
+            <div className="w-full max-w-sm rounded bg-white p-6 shadow-md">
+                <h2 className="mb-4 text-2xl font-bold">Register</h2>
+                {error && <p className="mb-4 text-red-500">{error}</p>}
                 <div className="mb-4">
                     <label className="block text-gray-700">Name</label>
                     <input
@@ -35,7 +33,7 @@ function Register() {
                         name="name"
                         value={userData.name}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
+                        className="w-full rounded border p-2"
                         placeholder="Enter your name"
                     />
                 </div>
@@ -46,7 +44,7 @@ function Register() {
                         name="email"
                         value={userData.email}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
+                        className="w-full rounded border p-2"
                         placeholder="Enter your email"
                     />
                 </div>
@@ -57,7 +55,7 @@ function Register() {
                         name="password"
                         value={userData.password}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
+                        className="w-full rounded border p-2"
                         placeholder="Enter your password"
                     />
                 </div>
@@ -67,7 +65,7 @@ function Register() {
                         name="role"
                         value={userData.role}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
+                        className="w-full rounded border p-2"
                     >
                         <option value="organizer">Organizer</option>
                         <option value="attendee">Attendee</option>
@@ -75,13 +73,16 @@ function Register() {
                 </div>
                 <button
                     onClick={handleRegister}
-                    className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                    className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600"
                 >
                     Register
                 </button>
                 <p className="mt-4 text-center">
                     Already have an account?{' '}
-                    <a href="/sign-in" className="text-blue-500 hover:underline">
+                    <a
+                        href="/sign-in"
+                        className="text-blue-500 hover:underline"
+                    >
                         Login
                     </a>
                 </p>

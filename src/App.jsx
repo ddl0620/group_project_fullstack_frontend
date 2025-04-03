@@ -3,8 +3,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from './store/slices/userSlice';
 
-import api from './services/AuthService.js';
 import routes from "./routes/routes.jsx";
+import API_INSTANCE from "./services/AuthService.js";
+import {ToastContainer} from "react-toastify";
+import {Toaster} from "sonner";
 
 // Hàm để render các tuyến đường phân cấp
 const renderRoutes = (routeList) =>
@@ -22,8 +24,8 @@ function App() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token && !isAuthenticated) {
-            api
-                .get('/auth/me')
+            API_INSTANCE
+                .get('/api/v1/user/me')
                 .then((response) => {
                     const { user, role } = response.data;
                     dispatch(login({ user, role }));
@@ -32,11 +34,28 @@ function App() {
                     localStorage.removeItem('token'); // Xóa token nếu không hợp lệ
                 });
         }
-    }, [dispatch, isAuthenticated]);
+    }, []); // ✅ Thêm dependency array để chỉ chạy một lần
+
 
     return (
         <BrowserRouter>
             <Routes>{renderRoutes(routes)}</Routes>
+            {/*<ToastContainer*/}
+            {/*    position="top-right"*/}
+            {/*    autoClose={2000}*/}
+            {/*    hideProgressBar={false}*/}
+            {/*    newestOnTop*/}
+            {/*    closeOnClick*/}
+            {/*    theme="colored" // hoặc "light", "dark"*/}
+            {/*/>*/}
+            <Toaster
+                position="top-right"
+                theme="light"
+                richColors={true}
+                closeButton={false}
+                duration={3000}
+            />
+
         </BrowserRouter>
     );
 }
