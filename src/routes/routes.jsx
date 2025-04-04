@@ -8,6 +8,8 @@ import UserLayout from '../components/Layout/UserLayout/UserLayout.jsx';
 import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
 import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx';
 import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
+import LandingPage from '../pages/LandingPage/LandingPage.jsx';
+
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 // eslint-disable-next-line react-refresh/only-export-components
@@ -33,13 +35,13 @@ const routes = [
         children: [
             {
                 element: <UserLayout />,
-                children: [{ path: '', element: <Home /> }],
+                children: [{ path: '', element: <LandingPage /> }],
             },
         ],
     },
     {
         path: '/',
-        // element: <ProtectedRoute allowedRoles={['organizer', 'attendee']} />,
+        element: <ProtectedRoute allowedRoles={['user']} />,
         children: [
             {
                 element: <UserLayout />,

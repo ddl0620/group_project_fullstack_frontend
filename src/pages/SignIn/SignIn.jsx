@@ -1,10 +1,14 @@
 import { useState } from 'react';
-import {useAuth} from "../../hooks/useAuth.js";
+import { useAuth } from "../../hooks/useAuth.js";
+import AuthLink from "../../components/sub_components/AuthLink.jsx"
+import SubmitButton from "../../components/sub_components/SubmitButton.jsx"
+import TextInputField from "../../components/sub_components/TextInputField.jsx"
 
 function Login() {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [error, setError] = useState(null);
-    const {handleSignIn} = useAuth();
+    const { handleSignIn } = useAuth();
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setCredentials((prev) => ({ ...prev, [name]: value }));
@@ -15,47 +19,42 @@ function Login() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-red-100">
-            <div className="w-full max-w-sm rounded bg-white p-6 shadow-md">
-                <h2 className="mb-4 text-2xl font-bold">Login</h2>
-                {error && <p className="mb-4 text-red-500">{error}</p>}
-                <div className="mb-4">
-                    <label className="block text-gray-700">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={credentials.email}
-                        onChange={handleChange}
-                        className="w-full rounded border p-2"
-                        placeholder="Enter your email"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={credentials.password}
-                        onChange={handleChange}
-                        className="w-full rounded border p-2"
-                        placeholder="Enter your password"
-                    />
-                </div>
-                <button
+        <div className="flex min-h-screen items-center justify-center bg-neutral-100">
+            <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-neutral-200">
+                <h2 className="mb-6 text-3xl font-semibold text-neutral-800 tracking-tight text-center">
+                    Sign In
+                </h2>
+
+                {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+
+                <TextInputField
+                    label="Email"
+                    type="email"
+                    name="email"
+                    value={credentials.email}
+                    onChange={handleChange}
+                    placeholder="example@email.com"/>
+
+                <TextInputField
+                    label="Password"
+                    type="password"
+                    name="password"
+                    value={credentials.password}
+                    onChange={handleChange}
+                    placeholder="Password"/>
+
+                <SubmitButton
                     onClick={handleLogin}
-                    className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600"
+                    className="bg-neutral-900 text-white hover:bg-neutral-800"
                 >
-                    Login
-                </button>
-                <p className="mt-4 text-center">
-                    Don't have an account?{' '}
-                    <a
-                        href="/sign-up"
-                        className="text-blue-500 hover:underline"
-                    >
-                        Register
-                    </a>
-                </p>
+                    Continue
+                </SubmitButton>
+
+                <AuthLink
+                    message={"Don't have an account?"}
+                    linkText={"Create one"}
+                    linkHref={"/sign-up"}
+                />
             </div>
         </div>
     );
