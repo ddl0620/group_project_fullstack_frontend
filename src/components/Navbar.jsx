@@ -94,7 +94,7 @@ function NavBar() {
             {/* Overlay (visible when sidebar is open) */}
             {menuOpen && (
                     <div
-                        className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-md md:hidden z-40"
+                        className="fixed inset-0 bg-transparent bg-opacity-30 backdrop-brightness-50 md:hidden z-40"
                         onClick={() => setMenuOpen(false)} // Close sidebar on overlay click
                     />
                 )
