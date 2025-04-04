@@ -7,7 +7,9 @@ import SignUp from '../pages/SignUp/signUp';
 import UserLayout from '../components/Layout/UserLayout/UserLayout.jsx';
 import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
 import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx';
+import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
+
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 // eslint-disable-next-line react-refresh/only-export-components
@@ -68,8 +70,13 @@ const routes = [
         children: [{ path: '', element: <SignUp /> }],
     },
     {
+        path: '/error',
+        element: <DefaultLayout />,
+        children: [{ path: '', element: <ErrorPage /> }],
+    },
+    {
         path: '*',
-        element: <Navigate to="/home" replace={true} />,
+        element: <Navigate to="/error" replace={false} />,
     },
 ];
 
