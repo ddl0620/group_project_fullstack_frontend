@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { SignUpUser } from '../../services/AuthService.js';
-import {useAuth} from "@/hooks/useAuth.js";
+import { useAuth } from "../../hooks/useAuth.js";
+import AuthLink from "../../components/sub_components/AuthLink.jsx"
+import SubmitButton from "../../components/sub_components/SubmitButton.jsx"
+import TextInputField from "../../components/sub_components/TextInputField.jsx"
 
 function Register() {
     const [userData, setUserData] = useState({
@@ -11,7 +12,8 @@ function Register() {
         role: 'attendee',
     });
     const [error, setError] = useState(null);
-    const {handleSignUp} = useAuth();
+    const { handleSignUp } = useAuth();
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUserData((prev) => ({ ...prev, [name]: value }));
@@ -22,70 +24,65 @@ function Register() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
-            <div className="w-full max-w-sm rounded bg-white p-6 shadow-md">
-                <h2 className="mb-4 text-2xl font-bold">Register</h2>
-                {error && <p className="mb-4 text-red-500">{error}</p>}
-                <div className="mb-4">
-                    <label className="block text-gray-700">Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={userData.name}
-                        onChange={handleChange}
-                        className="w-full rounded border p-2"
-                        placeholder="Enter your name"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={userData.email}
-                        onChange={handleChange}
-                        className="w-full rounded border p-2"
-                        placeholder="Enter your email"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={userData.password}
-                        onChange={handleChange}
-                        className="w-full rounded border p-2"
-                        placeholder="Enter your password"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">Role</label>
+        <div className="flex min-h-screen items-center justify-center bg-neutral-100">
+            <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-neutral-200">
+                <h2 className="mb-6 text-3xl font-semibold text-neutral-800 tracking-tight text-center">
+                    Register
+                </h2>
+
+                {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+
+                <TextInputField
+                    label="Name"
+                    type="text"
+                    name="name"
+                    value={userData.name}
+                    onChange={handleChange}
+                    placeholder="Enter your name"
+                />
+
+                <TextInputField
+                    label="Email"
+                    type="email"
+                    name="email"
+                    value={userData.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email"         
+                />
+
+                <TextInputField
+                    label="Password"
+                    type="password"
+                    name="password"
+                    value={userData.password}
+                    onChange={handleChange}
+                    placeholder="Enter your password"/>
+
+                <div className="mb-5">
+                    <label className="block text-sm text-neutral-600 mb-1">Role</label>
                     <select
                         name="role"
                         value={userData.role}
                         onChange={handleChange}
-                        className="w-full rounded border p-2"
+                        className="w-full rounded-xl border border-neutral-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                     >
                         <option value="organizer">Organizer</option>
                         <option value="attendee">Attendee</option>
                     </select>
                 </div>
-                <button
+
+                <SubmitButton
                     onClick={handleRegister}
-                    className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600"
+                    className="bg-blue-500 text-white hover:bg-blue-600"
                 >
                     Register
-                </button>
-                <p className="mt-4 text-center">
-                    Already have an account?{' '}
-                    <a
-                        href="/sign-in"
-                        className="text-blue-500 hover:underline"
-                    >
-                        Login
-                    </a>
-                </p>
+                </SubmitButton>
+
+                <AuthLink
+                    message={"Already have an account?"}
+                    linkText={"Login"}
+                    linkHref={"/sign-in"}
+                />
             </div>
         </div>
     );
