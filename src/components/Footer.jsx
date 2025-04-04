@@ -13,7 +13,7 @@ function Footer() {
                     {/* Contact Information */}
                     <div className="text-left">
                         <h3 className="text-xl font-semibold mb-4 text-white">Contact</h3>
-                        <p className="text-sm mb-2"><span className="font-medium">Representative:</span> John Smith</p>
+                        <p className="text-sm mb-2"><span className="font-medium">Representative:</span> Dr. Tri Dang</p>
                         <p className="text-sm mb-2"><span className="font-medium">Phone:</span> (084) 123 456 789</p>
                         <p className="text-sm mb-2"><span className="font-medium">Hotline:</span> 1900 1234</p>
                         <p className="text-sm"><span className="font-medium">Email:</span> contact@5knights.com</p>
