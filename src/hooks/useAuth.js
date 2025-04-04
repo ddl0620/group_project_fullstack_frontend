@@ -1,8 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { signInUser } from '../services/AuthService.js';
+import {signInUser, SignUpUser} from '../services/AuthService.js';
 import { login, logout } from '../store/slices/userSlice.js';
-import signUp from '../pages/SignUp/SignUp.jsx';
 import { Toast } from '../helpers/toastService.js';
 import { toast } from 'sonner';
 
@@ -19,7 +18,13 @@ export const useAuth = () => {
     const handleSignIn = async (credentials, setError) => {
         try {
             const response = await signInUser(credentials);
-            const { user, data, role } = response;
+            const {data} = response;
+
+            const user = data.user;
+            const role = user.role;
+
+            console.log(user);
+            console.log(role);
 
             if (!data?.token) {
                 Toast.error('Đăng nhập thất bại!');
@@ -42,7 +47,7 @@ export const useAuth = () => {
 
     const handleSignUp = async (userData, setError) => {
         try {
-            const response = await signUp(userData);
+            const response = await SignUpUser(userData);
             if (response?.status === 400) {
                 Toast.error('Thông tin đăng ký không hợp lệ!');
                 setError('Thông tin đăng ký không hợp lệ!');

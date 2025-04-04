@@ -42,7 +42,7 @@ function NavBar() {
                 {/* Left: Brand + Nav */}
                 <div className="flex items-center gap-10">
                     <Link
-                        to="/home"
+                        to="/"
                         className="text-lg font-semibold tracking-tight hover:text-white transition-colors"
                     >
                         EventApp
