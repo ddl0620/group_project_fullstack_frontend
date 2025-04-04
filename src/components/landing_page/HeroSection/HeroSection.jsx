@@ -1,0 +1,27 @@
+import React from 'react';
+import HeroText from './HeroText';
+import HeroImage from './HeroImage';
+
+const HeroSection = () => {
+    return (
+        <section className="bg-gradient-to-br from-gray-100 to-white text-neutral-900">
+            <div className="max-w-screen-xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-10">
+                {/* Text Content */}
+                <HeroText
+                    title="Welcome to"
+                    subtitle="Discover, organize, and manage events effortlessly with a sleek and intuitive interface."
+                    primaryLink={{ to: "/sign-up", text: "Get Started" }}
+                    secondaryLink={{ to: "/events", text: "Explore Events" }}
+                />
+
+                {/* Image Content */}
+                <HeroImage
+                    imageSrc="../../../public/images/—Pngtree—business office calendar event plan_5304257.png"
+                    altText="EventApp Hero"
+                />
+            </div>
+        </section>
+    );
+};
+
+export default HeroSection;

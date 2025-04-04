@@ -14,14 +14,7 @@ function UserLayout() {
                     <Outlet />
                 </main>
                 {/* Cột bên phải */}
-                <aside className="w-full md:w-1/3 p-6 bg-white border-l">
-                    <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
-                    <div className="space-y-4">
-                        <div className="p-4 bg-gray-50 rounded">Block 1: Event Details</div>
-                        <div className="p-4 bg-gray-50 rounded">Block 2: Suggestions</div>
-                        <div className="p-4 bg-gray-50 rounded">Block 3: Notifications</div>
-                    </div>
-                </aside>
+               
             </div>
             {/* Chân trang */}
             <Footer />
