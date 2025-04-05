@@ -59,7 +59,7 @@ function Register() {
                     placeholder="Enter your password"/>
 
                 <div className="mb-5">
-                    <label className="block text-sm text-neutral-600 mb-1">Role</label>
+                    <label className="block text-sm text-neutral-600 mb-1 font-bold">Role</label>
                     <select
                         name="role"
                         value={userData.role}

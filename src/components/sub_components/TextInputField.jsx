@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'; // Import new icons
 
 function TextInputField({ label, type, name, value, onChange, placeholder }) {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -11,7 +12,7 @@ function TextInputField({ label, type, name, value, onChange, placeholder }) {
 
     return (
         <div className="mb-5 relative">
-            <label className="block text-sm text-neutral-600 mb-1">{label}</label>
+            <label className="block text-sm text-neutral-600 mb-1"><strong>{label}</strong></label>
             <input
                 type={isPasswordField && isPasswordVisible ? "text" : type}
                 name={name}
@@ -28,43 +29,9 @@ function TextInputField({ label, type, name, value, onChange, placeholder }) {
                     aria-label={isPasswordVisible ? "Hide password" : "Show password"}
                 >
                     {isPasswordVisible ? (
-                        // Modern eye icon for visible password
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 4.5c-4.477 0-8.268 2.943-9.542 7a9.953 9.953 0 001.207 2.318l1.414-1.414A7.953 7.953 0 014.5 12c0-4.418 3.582-8 8-8s8 3.582 8 8c0 1.657-.507 3.193-1.414 4.5l1.414 1.414A9.953 9.953 0 0021.542 12c-1.274-4.057-5.065-7-9.542-7z"
-                            />
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 15a3 3 0 100-6 3 3 0 000 6z"
-                            />
-                        </svg>
+                        <EyeSlashIcon className="h-5 w-5 mt-5" /> // New "Eye Slash" icon
                     ) : (
-                        // Modern eye-off icon for hidden password
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M3 3l18 18M9.88 9.88a3 3 0 014.24 4.24M15.535 15.535A9.953 9.953 0 0112 17c-4.477 0-8.268-2.943-9.542-7a9.953 9.953 0 013.007-4.318M12 5c4.418 0 8 3.582 8 8 0 1.657-.507 3.193-1.414 4.5"
-                            />
-                        </svg>
+                        <EyeIcon className="h-5 w-5 mt-5" /> // New "Eye" icon
                     )}
                 </button>
             )}
