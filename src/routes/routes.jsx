@@ -10,6 +10,8 @@ import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx'
 import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
 import Minicard from '../components/sub_components/Minicard';
+import EventCard from '../components/sub_components/EventCard.jsx';
+
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 const ProtectedRoute = ({ allowedRoles }) => {
@@ -139,6 +141,37 @@ const routes = [
             </div>
         ),
     },
+    {
+        path: "/test-eventcard",
+        element: (
+            <div
+            style={{
+              padding: "20px",
+              fontFamily: "Arial, sans-serif",
+              display: "flex",
+              flexDirection: "column",
+              gap: "50px",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "white", // Dark grey background
+              minHeight: "100vh", // Ensure the container takes up the full viewport height
+            }}
+          >
+            <EventCard
+              image="https://techvccloud.mediacdn.vn/2018/12/22/1supq92uyknelefyyf7ughw-15454498606631836572894-crop-1545449864895548482406.png"
+              location="TechVC Headquarters"
+              venue="Hackathon 2023"
+              date="Sat. 15"
+              time="10h - 17h"
+              price={50}
+              tags={["Tech", "Innovation"]}
+              distance="5 km"
+              rating={4.8}
+              link="/event/1"
+            />
+          </div>
+        ),
+      }    
 ];
 
 export default routes;
