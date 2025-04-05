@@ -31,13 +31,15 @@ function Login() {
                 
                 {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
-                <TextInputField
-                    label="Email"
-                    type="email"
-                    name="email"
-                    value={credentials.email}
-                    onChange={handleChange}
-                    placeholder="example@email.com"/>
+                <div className='mb-4'>
+                    <TextInputField
+                        label="Email"
+                        type="email"
+                        name="email"
+                        value={credentials.email}
+                        onChange={handleChange}
+                        placeholder="example@email.com"/>
+                </div>
 
                 <TextInputField
                     label="Password"
@@ -49,7 +51,7 @@ function Login() {
 
                 <SubmitButton
                     onClick={handleLogin}
-                    className="bg-neutral-900 text-white hover:bg-neutral-800 mt-3"
+                    className="bg-neutral-900 text-white hover:bg-neutral-800 mt-4.5"
                 >
                     Login
                 </SubmitButton>
