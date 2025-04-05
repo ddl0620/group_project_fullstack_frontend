@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'; // Import Framer Motion
 import { useAuth } from "../../hooks/useAuth.js";
 import AuthLink from "../../components/sub_components/AuthLink.jsx";
@@ -20,8 +20,7 @@ function Register() {
         setUserData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleRegister = async (e) => {
-        e.preventDefault(); // Prevent default form behavior
+    const handleRegister = async () => {
         await handleSignUp(userData, setError);
     };
 
@@ -31,6 +30,24 @@ function Register() {
         visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }, // Fade in and move to original position
     };
 
+    // Add a global keydown listener for the Enter key
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent default form submission behavior
+                handleRegister(); // Call handleRegister when Enter is pressed
+            }
+        };
+
+        // Attach the event listener to the document
+        document.addEventListener('keydown', handleKeyDown);
+
+        // Cleanup the event listener on component unmount
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [userData]); // Dependency array ensures the latest userData is used
+
     return (
         <motion.div
             initial="hidden"
@@ -39,7 +56,6 @@ function Register() {
             className="flex min-h-screen items-center justify-center bg-neutral-100"
         >
             <form
-                onSubmit={handleRegister} // Wrap in a form and use onSubmit
                 className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-neutral-200"
             >
                 <h2 className="mb-6 text-3xl font-semibold text-neutral-800 tracking-tight text-center">
@@ -95,7 +111,8 @@ function Register() {
                 </div>
 
                 <SubmitButton
-                    type="submit" // Change to type="submit" instead of onClick
+                    type="button"
+                    onClick={handleRegister}
                     className="bg-blue-500 text-white hover:bg-blue-600 mt-2.5"
                 >
                     Register

@@ -25,14 +25,24 @@ function Login() {
         visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }, // Fade in and move to original position
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent default form submission behavior
+            handleLogin(); // Call handleLogin when Enter is pressed
+        }
+    };
+
     return (
         <motion.div
             initial="hidden"
             animate="visible"
             variants={fadeIn}
             className="flex min-h-screen items-center justify-center bg-neutral-100"
+            onKeyDown={handleKeyDown} // Add onKeyDown to the outermost container
         >
-            <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-neutral-200">
+            <form
+                className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-neutral-200"
+            >
                 <h2 className="mb-6 text-3xl font-bold text-neutral-800 tracking-tight text-center">
                     Welcome back
                     <br />
@@ -75,7 +85,7 @@ function Login() {
                     linkText={"Create one"}
                     linkHref={"/sign-up"}
                 />
-            </div>
+            </form>
         </motion.div>
     );
 }
