@@ -9,6 +9,7 @@ import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
 import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx';
 import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
+import EditProfilePage from '../pages/ProfilePage/EditProfilePage.jsx'
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 const ProtectedRoute = ({ allowedRoles }) => {
@@ -76,6 +77,16 @@ const routes = [
     {
         path: '*',
         element: <Navigate to="/error" replace={false} />,
+    },
+    {
+        path: '/profile/edit',  // New route for the Edit Profile page
+        element: <ProtectedRoute allowedRoles={['user', 'admin']} />, // Allow both user and admin roles
+        children: [
+            {
+                element: <UserLayout />,
+                children: [{ path: '', element: <EditProfilePage /> }],
+            },
+        ],
     },
 ];
 
