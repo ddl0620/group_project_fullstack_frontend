@@ -21,7 +21,7 @@ function TextInputField({
   
   return (
     <div className="mb-1 relative">
-      <label className="block text-sm text-neutral-600 mb-1">
+      <label className="block text-sm text-neutral-600 mb-1 font-bold">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
