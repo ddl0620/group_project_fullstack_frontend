@@ -9,6 +9,7 @@ import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
 import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx';
 import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
+import Minicard from '../components/sub_components/Minicard';
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 const ProtectedRoute = ({ allowedRoles }) => {
@@ -76,6 +77,32 @@ const routes = [
     {
         path: '*',
         element: <Navigate to="/error" replace={false} />,
+    },
+    {
+        path: '/test-minicard',
+        element: (
+            <div
+                style={{
+                    padding: '20px',
+                    fontFamily: 'Arial, sans-serif',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+                    backgroundColor: '#1a1a1a',
+                }}
+            >
+                <Minicard
+                    type="profile"
+                    avatar="https://techvccloud.mediacdn.vn/2018/12/22/1supq92uyknelefyyf7ughw-15454498606631836572894-crop-1545449864895548482406.png"
+                    title="Hackathon 2023"
+                    subtitle="Organized by TechVC"
+                    content="Join us for an exciting hackathon experience!"
+                    timestamp="12:18 pm"
+                    status="online"
+                />
+            </div>
+        ),
     },
 ];
 
