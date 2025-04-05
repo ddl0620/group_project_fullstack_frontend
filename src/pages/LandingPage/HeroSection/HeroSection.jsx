@@ -4,7 +4,7 @@ import HeroImage from './HeroImage';
 
 const HeroSection = () => {
     return (
-        <section className="bg-gradient-to-br from-neutral-100 to-neutral-200 text-neutral-900 ">
+        <section className="bg-gray-50">
             <div className="max-w-screen-xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-10">
                 {/* Text Content */}
                 <HeroText
