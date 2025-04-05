@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion'; // Import Framer Motion
 import { useAuth } from "../../hooks/useAuth.js";
-import AuthLink from "../../components/sub_components/AuthLink.jsx"
-import SubmitButton from "../../components/sub_components/SubmitButton.jsx"
-import TextInputField from "../../components/sub_components/TextInputField.jsx"
+import AuthLink from "../../components/sub_components/AuthLink.jsx";
+import SubmitButton from "../../components/sub_components/SubmitButton.jsx";
+import TextInputField from "../../components/sub_components/TextInputField.jsx";
 
 function Login() {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -18,27 +19,39 @@ function Login() {
         await handleSignIn(credentials, setError);
     };
 
+    // Animation variants for fade-in effect
+    const fadeIn = {
+        hidden: { opacity: 0, y: 50 }, // Start with opacity 0 and move down
+        visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }, // Fade in and move to original position
+    };
+
     return (
-        <div className="flex min-h-screen items-center justify-center bg-neutral-100">
+        <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeIn}
+            className="flex min-h-screen items-center justify-center bg-neutral-100"
+        >
             <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-neutral-200">
                 <h2 className="mb-6 text-3xl font-bold text-neutral-800 tracking-tight text-center">
                     Welcome back
-                    <br/>
+                    <br />
                     <h5 className="mb-6 text-lg font-light text-neutral-800 tracking-tight text-center">
                         Login to your EventApp account
                     </h5>
                 </h2>
-                
+
                 {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
-                <div className='mb-4'>
+                <div className="mb-4">
                     <TextInputField
                         label="Email"
                         type="email"
                         name="email"
                         value={credentials.email}
                         onChange={handleChange}
-                        placeholder="example@email.com"/>
+                        placeholder="example@email.com"
+                    />
                 </div>
 
                 <TextInputField
@@ -47,7 +60,8 @@ function Login() {
                     name="password"
                     value={credentials.password}
                     onChange={handleChange}
-                    placeholder="Password"/>
+                    placeholder="Password"
+                />
 
                 <SubmitButton
                     onClick={handleLogin}
@@ -62,7 +76,7 @@ function Login() {
                     linkHref={"/sign-up"}
                 />
             </div>
-        </div>
+        </motion.div>
     );
 }
 
