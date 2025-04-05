@@ -86,21 +86,56 @@ const routes = [
                     padding: '20px',
                     fontFamily: 'Arial, sans-serif',
                     display: 'flex',
+                    flexDirection: 'column',
+                    gap: '50px', // Increased gap between sections
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '100vh',
                     backgroundColor: '#1a1a1a',
                 }}
             >
-                <Minicard
-                    type="profile"
-                    avatar="https://techvccloud.mediacdn.vn/2018/12/22/1supq92uyknelefyyf7ughw-15454498606631836572894-crop-1545449864895548482406.png"
-                    title="Hackathon 2023"
-                    subtitle="Organized by TechVC"
-                    content="Join us for an exciting hackathon experience!"
-                    timestamp="12:18 pm"
-                    status="online"
-                />
+                {/* Event Card Test */}
+                <div style={{ textAlign: 'center', color: 'white' }}>
+                    <h2>Event Card Test</h2>
+                    <Minicard
+                        type="event"
+                        avatar="https://techvccloud.mediacdn.vn/2018/12/22/1supq92uyknelefyyf7ughw-15454498606631836572894-crop-1545449864895548482406.png"
+                        title="Hackathon 2023"
+                        subtitle="Organized by TechVC"
+                        eventTime={"April 15, 2023, 10:00 AM - 5:00 PM"}
+                        timestamp="12:18 pm"
+                        status="online"
+                    />
+                </div>
+    
+                {/* Profile Card Test */}
+                <div style={{ textAlign: 'center', color: 'white' }}>
+                    <h2>Profile Card Test</h2>
+                    <Minicard type="profile" title="Profile Card" subtitle="No avatar provided" />
+                </div>
+    
+                {/* Message Card Test */}
+                <div style={{ textAlign: 'center', color: 'white' }}>
+                    <h2>Message Card Test</h2>
+                    <Minicard type="message" title="Message Card" subtitle="No avatar provided" />
+                </div>
+    
+                {/* Notification Card Test */}
+                <div style={{ textAlign: 'center', color: 'white' }}>
+                    <h2>Notification Card Test</h2>
+                    <Minicard type="notification" title="Notification Card" subtitle="No avatar provided" />
+                </div>
+    
+                {/* Event Card Without Avatar Test */}
+                <div style={{ textAlign: 'center', color: 'white' }}>
+                    <h2>Event Card Without Avatar Test</h2>
+                    <Minicard type="event" title="Event Card" subtitle="No avatar provided" />
+                </div>
+    
+                {/* Info Card Test */}
+                <div style={{ textAlign: 'center', color: 'white' }}>
+                    <h2>Info Card Test</h2>
+                    <Minicard type="info" title="Info Card" subtitle="No avatar provided" />
+                </div>
             </div>
         ),
     },
