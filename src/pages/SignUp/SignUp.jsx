@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from "../../hooks/useAuth.js";
-import AuthLink from "../../components/sub_components/AuthLink.jsx"
-import SubmitButton from "../../components/sub_components/SubmitButton.jsx"
-import TextInputField from "../../components/sub_components/TextInputField.jsx"
+import AuthLink from "../../components/sub_components/AuthLink.jsx";
+import SubmitButton from "../../components/sub_components/SubmitButton.jsx";
+import TextInputField from "../../components/sub_components/TextInputField.jsx";
 
 function Register() {
     const [userData, setUserData] = useState({
@@ -19,12 +19,16 @@ function Register() {
         setUserData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleRegister = async () => {
+    const handleRegister = async (e) => {
+        e.preventDefault(); // Prevent default form behavior
         await handleSignUp(userData, setError);
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-neutral-100">
+        <form
+            onSubmit={handleRegister} // Wrap in a form and use onSubmit
+            className="flex min-h-screen items-center justify-center bg-neutral-100"
+        >
             <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-neutral-200">
                 <h2 className="mb-6 text-3xl font-semibold text-neutral-800 tracking-tight text-center">
                     Register
@@ -47,7 +51,7 @@ function Register() {
                     name="email"
                     value={userData.email}
                     onChange={handleChange}
-                    placeholder="Enter your email"         
+                    placeholder="Enter your email"
                 />
 
                 <TextInputField
@@ -56,7 +60,8 @@ function Register() {
                     name="password"
                     value={userData.password}
                     onChange={handleChange}
-                    placeholder="Enter your password"/>
+                    placeholder="Enter your password"
+                />
 
                 <div className="mb-5">
                     <label className="block text-sm text-neutral-600 mb-1 font-bold">Role</label>
@@ -72,7 +77,7 @@ function Register() {
                 </div>
 
                 <SubmitButton
-                    onClick={handleRegister}
+                    type="submit" // Change to type="submit" instead of onClick
                     className="bg-blue-500 text-white hover:bg-blue-600"
                 >
                     Register
@@ -84,7 +89,7 @@ function Register() {
                     linkHref={"/sign-in"}
                 />
             </div>
-        </div>
+        </form>
     );
 }
 

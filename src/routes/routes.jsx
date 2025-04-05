@@ -9,19 +9,19 @@ import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
 import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx';
 import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
-
+import EditProfilePage from '../pages/ProfilePage/EditProfilePage.jsx'
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
-// eslint-disable-next-line react-refresh/only-export-components
 const ProtectedRoute = ({ allowedRoles }) => {
     const { isAuthenticated, role } = useSelector((state) => state.user);
 
+    console.log(isAuthenticated + " " + role);
     if (!isAuthenticated) {
         return <Navigate to="/sign-in" replace={true} />;
     }
 
     if (allowedRoles && !allowedRoles.includes(role)) {
-        return <Navigate to="/home" replace={true} />;
+        return <Navigate to="/" replace={true} />;
     }
 
     return <Outlet />;
@@ -40,12 +40,12 @@ const routes = [
         ],
     },
     {
-        path: '/',
+        path: '/home',
         element: <ProtectedRoute allowedRoles={['user']} />,
         children: [
             {
                 element: <UserLayout />,
-                children: [{ path: 'home', element: <Home /> }],
+                children: [{ path: '', element: <Home /> }],
             },
         ],
     },
@@ -77,6 +77,16 @@ const routes = [
     {
         path: '*',
         element: <Navigate to="/error" replace={false} />,
+    },
+    {
+        path: '/profile/edit',  // New route for the Edit Profile page
+        element: <ProtectedRoute allowedRoles={['user', 'admin']} />, // Allow both user and admin roles
+        children: [
+            {
+                element: <UserLayout />,
+                children: [{ path: '', element: <EditProfilePage /> }],
+            },
+        ],
     },
 ];
 
