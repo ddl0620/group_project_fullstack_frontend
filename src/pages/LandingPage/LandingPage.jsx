@@ -2,11 +2,11 @@ import React from 'react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import HeroSection from '../../components/landing_page/HeroSection/HeroSection';
-import FeaturesSection from '../../components/landing_page/FeaturesSection/FeaturesSection';
-import TestimonialSection from '../../components/landing_page/TestimonialSection/TestimonialSection';
-import FAQSection from '../../components/landing_page/FAQSection/FAQSection';
-import CallToActionSection from '../../components/landing_page/CallToActionSection/CallToActionSection';
+import HeroSection from './HeroSection/HeroSection';
+import FeaturesSection from './FeaturesSection/FeaturesSection';
+import TestimonialSection from './TestimonialSection/TestimonialSection';
+import FAQSection from './FAQSection/FAQSection';
+import CallToActionSection from './CallToActionSection/CallToActionSection';
 
 function LandingPage() {
     return (
