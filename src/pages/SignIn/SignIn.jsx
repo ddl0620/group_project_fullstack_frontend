@@ -30,7 +30,7 @@ function Login() {
                 </h2>
                 
                 {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
-
+                
                 <div className='mb-4'>
                     <TextInputField
                         label="Email"

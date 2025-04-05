@@ -36,32 +36,39 @@ function Register() {
 
                 {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
-                <TextInputField
-                    label="Name"
-                    type="text"
-                    name="name"
-                    value={userData.name}
-                    onChange={handleChange}
-                    placeholder="Enter your name"
-                />
+                <div className='mb-3.5'>
+                    <TextInputField
+                        label="Name"
+                        type="text"
+                        name="name"
+                        value={userData.name}
+                        onChange={handleChange}
+                        placeholder="Enter your name"
+                    />
+                </div>
 
-                <TextInputField
-                    label="Email"
-                    type="email"
-                    name="email"
-                    value={userData.email}
-                    onChange={handleChange}
-                    placeholder="Enter your email"
-                />
 
-                <TextInputField
-                    label="Password"
-                    type="password"
-                    name="password"
-                    value={userData.password}
-                    onChange={handleChange}
-                    placeholder="Enter your password"
-                />
+                <div className='mb-3.5'>
+                    <TextInputField
+                        label="Email"
+                        type="email"
+                        name="email"
+                        value={userData.email}
+                        onChange={handleChange}
+                        placeholder="Enter your email"
+                    />
+                </div>
+
+                <div className='mb-3.5'>
+                    <TextInputField
+                        label="Password"
+                        type="password"
+                        name="password"
+                        value={userData.password}
+                        onChange={handleChange}
+                        placeholder="Enter your password"
+                    />
+                </div>
 
                 <div className="mb-5">
                     <label className="block text-sm text-neutral-600 mb-1 font-bold">Role</label>
@@ -78,7 +85,7 @@ function Register() {
 
                 <SubmitButton
                     type="submit" // Change to type="submit" instead of onClick
-                    className="bg-blue-500 text-white hover:bg-blue-600"
+                    className="bg-blue-500 text-white hover:bg-blue-600 mt-2.5"
                 >
                     Register
                 </SubmitButton>
