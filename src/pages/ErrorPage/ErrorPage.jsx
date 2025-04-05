@@ -7,7 +7,7 @@ const ErrorPage = () => {
     };
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-blue-50 p-4">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">
             <div className="max-w-md text-center">
                 <img
                     src="https://southerncrossremovals.com.au/img/noclue.png"
