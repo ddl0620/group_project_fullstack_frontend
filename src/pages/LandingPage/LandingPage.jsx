@@ -10,7 +10,7 @@ import CallToActionSection from './CallToActionSection/CallToActionSection';
 
 function LandingPage() {
     return (
-        <div className="bg-neutral-100">
+        <div className="bg-neutral-100 min-h-screen max-w-screen-xl mx-auto px-6 py-4 items-center justify-center">
             <HeroSection/>
             <FeaturesSection/>
             <TestimonialSection/>
@@ -21,6 +21,7 @@ function LandingPage() {
                 buttonText="Sign Up Now"
                 buttonLink="/sign-up"
             />
+
         </div>
     )
 }

@@ -4,7 +4,7 @@ function AuthLink({ message, linkText, linkHref }) {
             {message}{' '}
             <a
                 href={linkHref}
-                className="text-blue-500 hover:underline"
+                className="text-black underline"
             >
                 {linkText}
             </a>

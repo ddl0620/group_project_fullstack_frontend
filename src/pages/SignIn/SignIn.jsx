@@ -21,10 +21,14 @@ function Login() {
     return (
         <div className="flex min-h-screen items-center justify-center bg-neutral-100">
             <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-neutral-200">
-                <h2 className="mb-6 text-3xl font-semibold text-neutral-800 tracking-tight text-center">
-                    Sign In
+                <h2 className="mb-6 text-3xl font-bold text-neutral-800 tracking-tight text-center">
+                    Welcome back
+                    <br/>
+                    <h5 className="mb-6 text-lg font-light text-neutral-800 tracking-tight text-center">
+                        Login to your EventApp account
+                    </h5>
                 </h2>
-
+                
                 {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
                 <TextInputField
@@ -45,9 +49,9 @@ function Login() {
 
                 <SubmitButton
                     onClick={handleLogin}
-                    className="bg-neutral-900 text-white hover:bg-neutral-800"
+                    className="bg-neutral-900 text-white hover:bg-neutral-800 mt-3"
                 >
-                    Continue
+                    Login
                 </SubmitButton>
 
                 <AuthLink

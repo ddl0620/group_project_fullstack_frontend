@@ -22,10 +22,10 @@ const FeaturesSection = () => {
     ];
 
     return (
-        <section className="py-16 bg-neutral-50">
+        <section className="py-16 bg-neutral-100">
             <div className="max-w-screen-xl mx-auto px-6">
-                <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-12">
-                    Why Choose <span className="text-blue-500">EventApp?</span>
+                <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-12 text-neutral-800">
+                    Why Choose <span className="text-neutral-900">EventApp?</span>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     {features.map((feature, index) => (
