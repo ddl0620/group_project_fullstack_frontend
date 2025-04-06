@@ -53,9 +53,9 @@ function Register() {
             initial="hidden"
             animate="visible"
             variants={fadeIn}
-            className="flex min-h-screen items-center justify-center bg-neutral-100 px-6"
+            className="flex items-center justify-center bg-neutral-100 px-6 py-0 min-h-screen" // Giảm py và giữ min-h-screen
         >
-            <div className="grid grid-cols-1 md:grid-cols-2 w-full max-w-3xl bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden">
                 {/* Form Section */}
                 <form
                     className="p-6 md:p-10 flex flex-col justify-center w-full max-w-sm mx-auto"
