@@ -1,6 +1,7 @@
 import React from 'react';
 import HeroText from './HeroText';
 import HeroImage from './HeroImage';
+import { motion } from 'framer-motion'; // Import Framer Motion
 
 const HeroSection = () => {
     return (
@@ -16,7 +17,7 @@ const HeroSection = () => {
 
                 {/* Image Content */}
                 <HeroImage
-                    imageSrc="../../../public/images/—Pngtree—business office calendar event plan_5304257.png"
+                    imageSrc="../../../../public/images/apple-product.jpg"
                     altText="EventApp Hero"
                 />
             </div>
