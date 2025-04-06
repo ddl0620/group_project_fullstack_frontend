@@ -22,9 +22,9 @@ function Footer() {
                     {/* Address */}
                     <div className="text-left">
                         <h3 className="text-xl font-semibold mb-4 text-white">Address</h3>
-                        <p className="text-sm mb-2">15th Floor, Innovation Building</p>
+                        <p className="text-sm mb-2">521 Kim Ma, Handiresco Building</p>
                         <p className="text-sm mb-2">123 Nguyen Hue Street</p>
-                        <p className="text-sm mb-2">District 1, Ho Chi Minh City</p>
+                        <p className="text-sm mb-2">Ba Dinh, Ha Noi</p>
                         <p className="text-sm">Vietnam</p>
                     </div>
                 </div>
