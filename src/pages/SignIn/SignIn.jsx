@@ -47,11 +47,11 @@ function Login() {
                 >
                     <h2 className="mb-6 text-3xl font-bold text-neutral-800 tracking-tight text-center">
                         Welcome back
-                        <h5 className="mb-6 text-lg font-light text-neutral-600 tracking-tight text-center">
+                        <h5 className="mb-2 text-lg font-light text-neutral-600 tracking-tight text-center">
                             Login to your EventApp account
                         </h5>
                     </h2>
- 
+
 
                     {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
