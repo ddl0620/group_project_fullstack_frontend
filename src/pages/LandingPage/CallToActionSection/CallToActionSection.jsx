@@ -11,7 +11,7 @@ const CallToActionSection = ({ title, description, buttonText, buttonLink }) => 
                     <p className="text-lg md:text-xl mb-8 text-neutral-600">{description}</p>
                     <Link
                         to={buttonLink}
-                        className="bg-blue-500 text-white px-8 py-4 rounded-full font-medium hover:bg-blue-600 transition-transform shadow-md animate-bounce-slow"
+                        className="bg-blue-500 text-white px-8 py-4 rounded-full font-medium shadow-md transition-transform duration-300 ease-in-out hover:bg-blue-600 hover:scale-105 hover:shadow-lg"
                     >
                         {buttonText}
                     </Link>
@@ -19,7 +19,7 @@ const CallToActionSection = ({ title, description, buttonText, buttonLink }) => 
 
                 {/* Icon on the Right */}
                 <div className="md:w-1/2 relative flex justify-center items-center">
-                    <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center shadow-lg">
+                    <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center shadow-lg group">
                         {/* Calendar Icon */}
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +27,7 @@ const CallToActionSection = ({ title, description, buttonText, buttonLink }) => 
                             viewBox="0 0 24 24"
                             strokeWidth="2"
                             stroke="currentColor"
-                            className="w-16 h-16 text-blue-500"
+                            className="w-16 h-16 text-blue-500 transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-6"
                         >
                             <path
                                 strokeLinecap="round"
@@ -41,6 +41,5 @@ const CallToActionSection = ({ title, description, buttonText, buttonLink }) => 
         </section>
     );
 };
-
 
 export default CallToActionSection;
