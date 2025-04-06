@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Dashboard from '../pages/Dashboard/dashboard';
 import Home from '../pages/Home/home';
-import SignIn from '../pages/SignIn/SignIn';
+import Login from '../pages/SignIn/SignIn';
 import SignUp from '../pages/SignUp/SignUp';
 import UserLayout from '../components/Layout/UserLayout/UserLayout.jsx';
 import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
@@ -65,7 +65,7 @@ const routes = [
     {
         path: '/sign-in',
         element: <DefaultLayout />,
-        children: [{ path: '', element: <SignIn /> }],
+        children: [{ path: '', element: <Login /> }],
     },
     {
         path: '/sign-up',
