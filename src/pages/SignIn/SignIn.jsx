@@ -45,9 +45,9 @@ function Login() {
                 <form
                     className="p-6 md:p-10 flex flex-col justify-center w-full max-w-sm mx-auto"
                 >
-                    <h2 className="mb-6 text-3xl font-bold text-neutral-800 tracking-tight text-center">
+                    <h2 className="mb-4 text-3xl font-bold text-neutral-800 tracking-tight text-center">
                         Welcome back
-                        <h5 className="mb-6 text-lg font-light text-neutral-600 tracking-tight text-center">
+                        <h5 className="text-lg font-light text-neutral-600 tracking-tight text-center">
                             Login to your EventApp account
                         </h5>
                     </h2>
@@ -77,7 +77,7 @@ function Login() {
 
                     <SubmitButton
                         onClick={handleLogin}
-                        className="bg-blue-500 text-white hover:bg-blue-600 mt-4.5 w-full py-2 rounded-lg font-medium shadow-md transition-transform duration-300 hover:scale-105"
+                        className="bg-black text-white hover:bg-blue-600 mt-4.5 w-full py-2 rounded-lg font-medium shadow-md transition-transform duration-300 hover:scale-105"
                     >
                         Login
                     </SubmitButton>
