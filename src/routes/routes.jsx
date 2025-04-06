@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Dashboard from '../pages/Dashboard/dashboard';
 import Home from '../pages/Home/home';
-import SignIn from '../pages/SignIn/signIn';
+import SignIn from '../pages/SignIn/SignIn';
 import SignUp from '../pages/SignUp/signUp';
 import UserLayout from '../components/Layout/UserLayout/UserLayout.jsx';
 import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
