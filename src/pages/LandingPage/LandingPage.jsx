@@ -12,8 +12,8 @@ import CallToActionSection from './CallToActionSection/CallToActionSection';
 function LandingPage() {
     // Animation variants for fade-in effect
     const fadeIn = {
-        hidden: { opacity: 0, y: 50 }, // Start with opacity 0 and move down
-        visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }, // Fade in and move to original position
+        hidden: { opacity: 0, y: 50 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
     };
 
     return (
@@ -22,7 +22,7 @@ function LandingPage() {
             <motion.div
                 initial="hidden"
                 whileInView="visible"
-                viewport={{ once: false, amount: 0.2 }} // Trigger animation on every scroll
+                viewport={{ once: false, amount: 0.2 }}
                 variants={fadeIn}
             >
                 <HeroSection />
