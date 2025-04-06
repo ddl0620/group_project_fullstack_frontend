@@ -37,55 +37,67 @@ function Login() {
             initial="hidden"
             animate="visible"
             variants={fadeIn}
-            className="flex min-h-screen items-center justify-center bg-neutral-100"
-            onKeyDown={handleKeyDown} // Add onKeyDown to the outermost container
+            className="flex min-h-screen items-center justify-center bg-neutral-100 px-6"
+            onKeyDown={handleKeyDown}
         >
-            <form
-                className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-neutral-200"
-            >
-                <h2 className="mb-6 text-3xl font-bold text-neutral-800 tracking-tight text-center">
-                    Welcome back
-                    <br />
-                    <h5 className="mb-6 text-lg font-light text-neutral-800 tracking-tight text-center">
-                        Login to your EventApp account
-                    </h5>
-                </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 w-full max-w-3xl bg-white rounded-2xl shadow-lg overflow-hidden">
+                {/* Form Section */}
+                <form
+                    className="p-6 md:p-10 flex flex-col justify-center w-full max-w-sm mx-auto"
+                >
+                    <h2 className="mb-6 text-3xl font-bold text-neutral-800 tracking-tight text-center">
+                        Welcome back
+                        <h5 className="mb-6 text-lg font-light text-neutral-600 tracking-tight text-center">
+                            Login to your EventApp account
+                        </h5>
+                    </h2>
+ 
 
-                {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+                    {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
-                <div className="mb-4">
+                    <div className="mb-4">
+                        <TextInputField
+                            label="Email"
+                            type="email"
+                            name="email"
+                            value={credentials.email}
+                            onChange={handleChange}
+                            placeholder="example@email.com"
+                        />
+                    </div>
+
                     <TextInputField
-                        label="Email"
-                        type="email"
-                        name="email"
-                        value={credentials.email}
+                        label="Password"
+                        type="password"
+                        name="password"
+                        value={credentials.password}
                         onChange={handleChange}
-                        placeholder="example@email.com"
+                        placeholder="Password"
+                    />
+
+                    <SubmitButton
+                        onClick={handleLogin}
+                        className="bg-blue-500 text-white hover:bg-blue-600 mt-4.5 w-full py-2 rounded-lg font-medium shadow-md transition-transform duration-300 hover:scale-105"
+                    >
+                        Login
+                    </SubmitButton>
+
+                    <AuthLink
+                        message={"Don't have an account?"}
+                        linkText={"Create one"}
+                        linkHref={"/sign-up"}
+                    />
+                </form>
+
+                {/* Image Section */}
+                <div className="relative hidden md:block">
+                    <img
+                        src="../../../public/images/apple-product.jpg" // Replace with your image path
+                        alt="Login Illustration"
+                        className="absolute inset-0 h-full w-full object-cover"
                     />
                 </div>
-
-                <TextInputField
-                    label="Password"
-                    type="password"
-                    name="password"
-                    value={credentials.password}
-                    onChange={handleChange}
-                    placeholder="Password"
-                />
-
-                <SubmitButton
-                    onClick={handleLogin}
-                    className="bg-neutral-900 text-white hover:bg-neutral-800 mt-4.5"
-                >
-                    Login
-                </SubmitButton>
-
-                <AuthLink
-                    message={"Don't have an account?"}
-                    linkText={"Create one"}
-                    linkHref={"/sign-up"}
-                />
-            </form>
+            </div>
         </motion.div>
     );
 }
