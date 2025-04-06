@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import Dashboard from '../pages/Dashboard/dashboard';
 import Home from '../pages/Home/home';
 import SignIn from '../pages/SignIn/SignIn';
-import SignUp from '../pages/SignUp/signUp';
+import SignUp from '../pages/SignUp/SignUp';
 import UserLayout from '../components/Layout/UserLayout/UserLayout.jsx';
 import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
 import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx';
