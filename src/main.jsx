@@ -5,6 +5,7 @@ import App from './App.jsx'
 import {BrowserRouter} from "react-router-dom";
 import {store} from "./store/store.js";
 import {Provider} from "react-redux";
+import App2 from "@/App2.jsx";
 createRoot(document.getElementById('root')).render(
 
     // StrictMode is used to highlight potential problems in an application.
@@ -18,6 +19,7 @@ createRoot(document.getElementById('root')).render(
         {/*Wrap the app inside the BrowserRouter,
         so allow App can access all content in react-router-dom*/}
           <App />
+          {/*<App2/>*/}
       </Provider>
   </StrictMode>,
 )
