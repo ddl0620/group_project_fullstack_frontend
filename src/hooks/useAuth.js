@@ -3,20 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import {signInUser, SignUpUser} from '../services/AuthService.js';
 import { login, logout } from '../store/slices/userSlice.js';
 import { Toast } from '../helpers/toastService.js';
-import { toast } from 'sonner';
 
 export const useAuth = () => {
-    // const token = localStorage.getItem('token');
-    // const isAuthenticated = !!token;
-    // const isAdmin = token && JSON.parse(atob(token.split('.')[1])).role === 'admin';
-    // const role = token ? JSON.parse(atob(token.split('.')[1])).role : null;
-    // const user = token ? JSON.parse(atob(token.split('.')[1])).user : null;
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleSignIn = async (credentials, setError) => {
         try {
+            if(!credentials.email || !credentials.password) {
+                Toast.error('Vui lòng nhập đầy đủ thông tin đăng nhập!');
+                setError('Vui lòng nhập đầy đủ thông tin đăng nhập!');
+                return;
+            }
+
             const response = await signInUser(credentials);
             const {data} = response;
 
