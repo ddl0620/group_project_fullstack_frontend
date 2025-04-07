@@ -46,7 +46,14 @@ export const useAuth = () => {
 
     const handleSignUp = async (userData, setError) => {
         try {
+            if (!userData.name || !userData.email || !userData.password) {
+                Toast.error('Vui lòng nhập đầy đủ thông tin đăng ký!');
+                setError('Vui lòng nhập đầy đủ thông tin đăng ký!');
+                return;
+            }
+
             const response = await SignUpUser(userData);
+            //need more specific error handling
             if (response?.status === 400) {
                 Toast.error('Thông tin đăng ký không hợp lệ!');
                 setError('Thông tin đăng ký không hợp lệ!');
@@ -57,9 +64,11 @@ export const useAuth = () => {
             Toast.success('Bạn đã đăng ký thành công!');
             Toast.info('Đang chuyển hướng đến trang đăng nhập...');
         } catch (e) {
-            Toast.error('Thông tin đăng ký không hợp lệ!2');
+
+            //need more specific error handling
+            Toast.error('Thông tin đăng ký không hợp lệ!');
             console.log('Fail to sign up', e);
-            setError?.('Thông tin đăng ký không hợp lệ!2');
+            setError?.('Thông tin đăng ký không hợp lệ!');
         }
     };
 
