@@ -1,8 +1,8 @@
-import TextInputField from "@/components/sub_components/TextInputField.jsx";
-import SubmitButton from "@/components/sub_components/SubmitButton.jsx";
-import AuthLink from "@/components/sub_components/AuthLink.jsx";
-import {useState} from "react";
-import {useAuth} from "@/hooks/useAuth.js";
+import TextInputField from '@/components/sub_components/TextInputField.jsx';
+import SubmitButton from '@/components/sub_components/SubmitButton.jsx';
+import AuthLink from '@/components/sub_components/AuthLink.jsx';
+import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth.js';
 
 export const SignInForm = () => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -19,9 +19,12 @@ export const SignInForm = () => {
     };
 
     return (
-        <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-neutral-200">
-            <h2 className="mb-6 text-3xl font-semibold text-neutral-800 tracking-tight text-center">
-                Sign In
+        <div className="w-full max-w-sm rounded-2xl border border-neutral-200 bg-white p-8 shadow-lg">
+            <h2 className="mb-4 text-center text-3xl font-bold tracking-tight text-neutral-800">
+                Welcome back
+                <p className="text-center text-lg font-light tracking-tight text-neutral-600">
+                    Login to your EventApp account
+                </p>
             </h2>
 
             {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
@@ -32,7 +35,8 @@ export const SignInForm = () => {
                 name="email"
                 value={credentials.email}
                 onChange={handleChange}
-                placeholder="example@email.com"/>
+                placeholder="Your email"
+            />
 
             <TextInputField
                 label="Password"
@@ -40,20 +44,21 @@ export const SignInForm = () => {
                 name="password"
                 value={credentials.password}
                 onChange={handleChange}
-                placeholder="Password"/>
+                placeholder="Enter your password"
+            />
 
             <SubmitButton
                 onClick={handleLogin}
-                className="bg-neutral-900 text-white hover:bg-neutral-800"
+                className="mt-7 bg-neutral-900 text-white hover:bg-neutral-800"
             >
                 Continue
             </SubmitButton>
 
             <AuthLink
                 message={"Don't have an account?"}
-                linkText={"Create one"}
-                linkHref={"/sign-up"}
+                linkText={'Create one'}
+                linkHref={'/sign-up'}
             />
         </div>
     );
-}
+};
