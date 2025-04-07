@@ -5,17 +5,17 @@ import { login, logout } from '../store/slices/userSlice.js';
 import { Toast } from '../helpers/toastService.js';
 
 export const useAuth = () => {
-    // const token = localStorage.getItem('token');
-    // const isAuthenticated = !!token;
-    // const isAdmin = token && JSON.parse(atob(token.split('.')[1])).role === 'admin';
-    // const role = token ? JSON.parse(atob(token.split('.')[1])).role : null;
-    // const user = token ? JSON.parse(atob(token.split('.')[1])).user : null;
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleSignIn = async (credentials, setError) => {
         try {
+            if(!credentials.email || !credentials.password) {
+                Toast.error('Vui lòng nhập đầy đủ thông tin đăng nhập!');
+                setError('Vui lòng nhập đầy đủ thông tin đăng nhập!');
+                return;
+            }
+
             const response = await signInUser(credentials);
             const {data} = response;
 
@@ -46,7 +46,14 @@ export const useAuth = () => {
 
     const handleSignUp = async (userData, setError) => {
         try {
+            if (!userData.name || !userData.email || !userData.password) {
+                Toast.error('Vui lòng nhập đầy đủ thông tin đăng ký!');
+                setError('Vui lòng nhập đầy đủ thông tin đăng ký!');
+                return;
+            }
+
             const response = await SignUpUser(userData);
+            //need more specific error handling
             if (response?.status === 400) {
                 Toast.error('Thông tin đăng ký không hợp lệ!');
                 setError('Thông tin đăng ký không hợp lệ!');
@@ -57,9 +64,11 @@ export const useAuth = () => {
             Toast.success('Bạn đã đăng ký thành công!');
             Toast.info('Đang chuyển hướng đến trang đăng nhập...');
         } catch (e) {
-            Toast.error('Thông tin đăng ký không hợp lệ!2');
+
+            //need more specific error handling
+            Toast.error('Thông tin đăng ký không hợp lệ!');
             console.log('Fail to sign up', e);
-            setError?.('Thông tin đăng ký không hợp lệ!2');
+            setError?.('Thông tin đăng ký không hợp lệ!');
         }
     };
 
