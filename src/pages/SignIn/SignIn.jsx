@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion'; // Import Framer Motion
-import { useAuth } from "../../hooks/useAuth.js";
-import AuthLink from "../../components/sub_components/AuthLink.jsx";
-import SubmitButton from "../../components/sub_components/SubmitButton.jsx";
-import TextInputField from "../../components/sub_components/TextInputField.jsx";
+import { useAuth } from '@/hooks/useAuth.js';
+import AuthLink from '../../components/sub_components/AuthLink.jsx';
+import SubmitButton from '../../components/sub_components/SubmitButton.jsx';
+import TextInputField from '../../components/sub_components/TextInputField.jsx';
 
 function Login() {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -40,20 +40,19 @@ function Login() {
             className="flex min-h-screen items-center justify-center bg-neutral-100 px-6"
             onKeyDown={handleKeyDown}
         >
-            <div className="grid grid-cols-1 md:grid-cols-2 w-full max-w-3xl bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="grid w-full max-w-3xl grid-cols-1 overflow-hidden rounded-2xl bg-white shadow-lg md:grid-cols-2">
                 {/* Form Section */}
-                <form
-                    className="p-6 md:p-10 flex flex-col justify-center w-full max-w-sm mx-auto"
-                >
-                    <h2 className="mb-4 text-3xl font-bold text-neutral-800 tracking-tight text-center">
+                <form className="mx-auto flex w-full max-w-sm flex-col justify-center p-6 md:p-10">
+                    <h2 className="mb-4 text-center text-3xl font-bold tracking-tight text-neutral-800">
                         Welcome back
-                        <h5 className="text-lg font-light text-neutral-600 tracking-tight text-center">
+                        <h5 className="pt-3 pb-8 text-center text-lg font-light tracking-tight text-neutral-600">
                             Login to your EventApp account
                         </h5>
                     </h2>
- 
 
-                    {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+                    {error && (
+                        <p className="mb-4 text-sm text-red-500">{error}</p>
+                    )}
 
                     <div className="mb-4">
                         <TextInputField
@@ -62,7 +61,7 @@ function Login() {
                             name="email"
                             value={credentials.email}
                             onChange={handleChange}
-                            placeholder="example@email.com"
+                            placeholder="Your email address"
                         />
                     </div>
 
@@ -77,15 +76,15 @@ function Login() {
 
                     <SubmitButton
                         onClick={handleLogin}
-                        className="bg-black text-white hover:bg-blue-600 mt-4.5 w-full py-2 rounded-lg font-medium shadow-md transition-transform duration-300 hover:scale-105"
+                        className="mt-4.5 w-full rounded-lg bg-black py-2 font-medium text-white shadow-md transition-transform duration-300 hover:scale-105 hover:cursor-pointer"
                     >
                         Login
                     </SubmitButton>
 
                     <AuthLink
                         message={"Don't have an account?"}
-                        linkText={"Create one"}
-                        linkHref={"/sign-up"}
+                        linkText={'Create one'}
+                        linkHref={'/sign-up'}
                     />
                 </form>
 

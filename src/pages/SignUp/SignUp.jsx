@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'; // Import Framer Motion
-import { useAuth } from "../../hooks/useAuth.js";
-import AuthLink from "../../components/sub_components/AuthLink.jsx";
-import SubmitButton from "../../components/sub_components/SubmitButton.jsx";
-import TextInputField from "../../components/sub_components/TextInputField.jsx";
+import { useAuth } from '../../hooks/useAuth.js';
+import AuthLink from '../../components/sub_components/AuthLink.jsx';
+import SubmitButton from '../../components/sub_components/SubmitButton.jsx';
+import TextInputField from '../../components/sub_components/TextInputField.jsx';
 
 function Register() {
     const [userData, setUserData] = useState({
@@ -53,22 +53,22 @@ function Register() {
             initial="hidden"
             animate="visible"
             variants={fadeIn}
-            className="flex items-center justify-center bg-neutral-100 px-6 py-0 min-h-screen" // Giảm py và giữ min-h-screen
+            className="flex min-h-screen items-center justify-center bg-neutral-100 px-6 py-0" // Giảm py và giữ min-h-screen
         >
-            <div className="grid grid-cols-1 md:grid-cols-2 w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="grid w-full max-w-5xl grid-cols-1 overflow-hidden rounded-2xl bg-white shadow-lg md:grid-cols-2">
                 {/* Form Section */}
-                <form
-                    className="p-6 md:p-10 flex flex-col justify-center w-full max-w-sm mx-auto"
-                >
-                    <h2 className="mb-6 text-3xl font-semibold text-neutral-800 tracking-tight text-center">
-                        Register
+                <form className="mx-auto flex w-full max-w-sm flex-col justify-center p-7 md:p-10">
+                    <h2 className="mb-6 text-left text-3xl font-semibold tracking-tight text-neutral-800">
+                        Create an account. <br/>Join us!
                     </h2>
 
-                    {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+                    {error && (
+                        <p className="mb-4 text-sm text-red-500">{error}</p>
+                    )}
 
                     <div className="mb-3.5">
                         <TextInputField
-                            label="Name"
+                            label="Full name"
                             type="text"
                             name="name"
                             value={userData.name}
@@ -99,31 +99,44 @@ function Register() {
                         />
                     </div>
 
-                    <div className="mb-5">
-                        <label className="block text-sm text-neutral-600 mb-1 font-bold">Role</label>
-                        <select
-                            name="role"
-                            value={userData.role}
+                    <div className="mb-3.5">
+                        <TextInputField
+                            label="Confirm Password"
+                            type="password"
+                            name="password"
+                            value={userData.password}
                             onChange={handleChange}
-                            className="w-full rounded-xl border border-neutral-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        >
-                            <option value="organizer">Organizer</option>
-                            <option value="attendee">Attendee</option>
-                        </select>
+                            placeholder="Confirm your password"
+                        />
                     </div>
+
+                    {/*<div className="mb-5">*/}
+                    {/*    <label className="mb-1 block text-sm font-bold text-neutral-600">*/}
+                    {/*        Role*/}
+                    {/*    </label>*/}
+                    {/*    <select*/}
+                    {/*        name="role"*/}
+                    {/*        value={userData.role}*/}
+                    {/*        onChange={handleChange}*/}
+                    {/*        className="w-full rounded-xl border border-neutral-300 px-4 py-2 text-sm transition focus:ring-2 focus:ring-blue-500 focus:outline-none"*/}
+                    {/*    >*/}
+                    {/*        <option value="user">User</option>*/}
+                    {/*        <option value="admin">Admin</option>*/}
+                    {/*    </select>*/}
+                    {/*</div>*/}
 
                     <SubmitButton
                         type="button"
                         onClick={handleRegister}
-                        className="bg-blue-500 text-white hover:bg-blue-600 mt-2.5"
+                        className="mt-4.5 w-full rounded-lg bg-black py-2 font-medium text-white shadow-md transition-transform duration-300 hover:scale-105 hover:cursor-pointer"
                     >
                         Register
                     </SubmitButton>
 
                     <AuthLink
-                        message={"Already have an account?"}
-                        linkText={"Login"}
-                        linkHref={"/sign-in"}
+                        message={'Already have an account?'}
+                        linkText={'Login'}
+                        linkHref={'/sign-in'}
                     />
                 </form>
 
