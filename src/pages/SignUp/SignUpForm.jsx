@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../../hooks/useAuth.js';
+import { useAuth } from '@/hooks/useAuth.js';
 import AuthLink from '../../components/sub_components/AuthLink.jsx';
 import SubmitButton from '../../components/sub_components/SubmitButton.jsx';
 import TextInputField from '../../components/sub_components/TextInputField.jsx';
