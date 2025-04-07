@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'; // Import Framer Motion
-
-import { useAuth } from '../../hooks/useAuth.js';
-import AuthLink from '../../components/sub_components/AuthLink.jsx';
-import SubmitButton from '../../components/sub_components/SubmitButton.jsx';
-import TextInputField from '../../components/sub_components/TextInputField.jsx';
-
 import { useAuth } from "@/hooks/useAuth.js";
 import SignUpForm from "@/pages/SignUp/SignUpForm.jsx";
 
@@ -55,8 +49,6 @@ function Register() {
             variants={fadeIn}
             className="flex min-h-screen items-center justify-center bg-neutral-100 px-6 py-0" // Giảm py và giữ min-h-screen
         >
-
-          
 
             <div className="grid grid-cols-1 md:grid-cols-2 w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden">
                  {/*Form Section*/}
