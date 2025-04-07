@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {signInUser, SignUpUser} from '../services/AuthService.js';
 import { login, logout } from '../store/slices/userSlice.js';
 import { Toast } from '../helpers/toastService.js';
-import { toast } from 'sonner';
 
 export const useAuth = () => {
     // const token = localStorage.getItem('token');
