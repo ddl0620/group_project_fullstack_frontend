@@ -4,7 +4,9 @@ import { navbarItems } from './NavbarItem.js';
 import { useAuth } from "../hooks/useAuth.js";
 import { Link, useLocation } from 'react-router-dom'; // Thêm useLocation
 import { Menu, X } from 'lucide-react'; // Icons for burger menu
-import { motion } from "framer-motion"; // Import Framer Motion
+import { motion } from "framer-motion";
+import {CustomAvatar} from "@/components/shared/CustomAvatar.jsx";
+import {CustomDropdown} from "@/components/shared/CustomeDropdown.jsx"; // Import Framer Motion
 
 function NavBar() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -51,7 +53,9 @@ function NavBar() {
             <ul className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-center justify-center`}>
                 {isAuthenticated ? (
                     // Nếu đã đăng nhập, hiển thị userInfo
-                    <li className="py-2 px-5">{userInfo}</li>
+                    <li className="py-2 px-5">
+                        {/*<CustomAvatar/>*/}
+                    </li>
                 ) : (
                     // Nếu chưa đăng nhập, hiển thị các mục điều hướng
                     ITEMS.map((item) => (
@@ -103,7 +107,7 @@ function NavBar() {
                 <div className="flex items-center gap-10">
                     <Link
                         to="/"
-                        className="text-lg font-semibold tracking-tight hover:text-white transition-colors"
+                        className="text-xl font-semibold tracking-tight hover:text-white transition-colors"
                     >
                         EventApp
                     </Link>
@@ -118,10 +122,10 @@ function NavBar() {
                 <div className="flex items-center gap-4">
                     {isAuthenticated && (
                         <button
-                            onClick={handleSignOut}
-                            className="text-sm px-4 py-2 rounded-xl border border-neutral-700 hover:bg-neutral-800 transition"
+                            onClick={() => {}}
+                            className="text-sm px-4 py-2 rounded-2xl border border-neutral-700 hover:bg-neutral-800 transition"
                         >
-                            Logout
+                            <CustomDropdown children={<CustomAvatar/>}/>
                         </button>
                     )}
 
