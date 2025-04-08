@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login, logout } from './store/slices/userSlice';
 
 import routes from "./routes/routes.jsx";
-import API_INSTANCE from "./services/AuthService.js";
 import { Toaster } from "sonner";
+import API_INSTANCE from "@/services/api_instance.js";
 
 // Hàm để render các tuyến đường phân cấp
 const renderRoutes = (routeList) =>

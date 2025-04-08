@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import {useState, useRef, useEffect} from 'react';
 import Button from '../../components/sub_components/SubmitButton.jsx';
 import SectionTitle from './SectionTitle.jsx';
 import AvatarUpload from './AvatarUpload.jsx';
@@ -10,6 +10,10 @@ import {
     validationPatterns,
 } from '../../components/sub_components/validationUtils.jsx';
 import TextInputField from "@/components/sub_components/TextInputField.jsx";
+import {Toast} from "@/helpers/toastService.js";
+import {useSelector} from "react-redux";
+import {useUser} from "@/hooks/useUser.js";
+
 
 function EditProfilePage() {
     // Create refs object for all fields that need validation
@@ -19,22 +23,18 @@ function EditProfilePage() {
         phone: useRef(null),
     };
 
+    const {user} = useSelector((state) => state.user);
+
     const [formData, setFormData] = useState({
-        name: 'Ngoc Dai Ca',
-        email: 'cocailoz@gmail.com',
-        phone: '+84 0968578540',
-        bio: 'Event Organizer with Osama Bin Laden',
-        location: 'Hanoi Underground',
-        website: 'pornhub.com',
-        twitter: 'nudieX',
-        instagram: 'nudeForLife',
+        name: user.name,
+        email: user.email
     });
 
     // Add state for success message
-    const [showSuccess, setShowSuccess] = useState(false);
+    const [error, setError] = useState(false);
 
     // Add state for validation errors
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState("");
 
     // Define validation rules
     const validationRules = {
@@ -75,34 +75,48 @@ function EditProfilePage() {
             }));
         }
     };
-
-    const handleSubmit = (e) => {
+    const {handleUpdateUser} = useUser();
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Validate form using our utility
         const newErrors = validateForm(formData, validationRules);
         setErrors(newErrors);
 
-        // If there are errors, scroll to the first one
-        if (Object.keys(newErrors).length > 0) {
-            scrollToFirstError(newErrors, refs);
+        if(!isChanged()){
+            Toast.warning("No changes made to your profile!");
             return;
         }
-
-        // If form is valid, proceed with submission
-        console.log('Form submitted:', formData);
-
-        // Show success message
-        setShowSuccess(true);
-
-        // Hide success message after 3 seconds
-        setTimeout(() => {
-            setShowSuccess(false);
-        }, 3000);
+        await handleUpdateUser(formData, user._id, setError);
     };
 
+    const handleCancel = (e) => {
+        e.preventDefault();
+        setFormData(
+            {
+                name: user.name,
+                email: user.email
+            }
+        )
+        Toast.info("All changes have been reverted!");
+    }
+
+    const isChanged = () => {
+        return (
+            formData.name !== user.name ||
+            formData.email !== user.email
+        );
+    }
+
+    useEffect(() => {
+        setFormData({
+            name: user.name || '',
+            email: user.email || '',
+        });
+    }, [user]);
+
     return (
-        <div className="bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+        <div className="bg-gray-100 px-4 py-12 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-3xl">
                 <SectionTitle
                     title="Edit Your Profile"
@@ -110,45 +124,17 @@ function EditProfilePage() {
                 />
 
                 {/* Success Message */}
-                {showSuccess && (
-                    <div className="animate-fade-in fixed top-4 right-4 z-50 rounded border-l-4 border-green-500 bg-green-100 p-4 text-green-700 shadow-md">
-                        <div className="flex items-center">
-                            <div className="py-1">
-                                <svg
-                                    className="mr-4 h-6 w-6 text-green-500"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M5 13l4 4L19 7"
-                                    />
-                                </svg>
-                            </div>
-                            <div>
-                                <p className="font-bold">Success!</p>
-                                <p className="text-sm">
-                                    Your profile has been updated successfully.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 <div className="mt-8 rounded-lg bg-white p-6 shadow-sm sm:p-8">
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} >
                         {/* Avatar Upload Section */}
                         <div className="mb-8 flex flex-col items-center">
-                            <AvatarUpload currentAvatar="/path/to/avatar.jpg" />
+                            <AvatarUpload currentAvatar="" />
                         </div>
 
                         {/* Personal Information */}
                         <div className="mb-8">
-                            <h3 className="mb-4 text-lg font-medium text-gray-900">
+                            <h3 className="mb-4 font-bold text-xl text-gray-900 pb-5">
                                 Personal Information
                             </h3>
                             <div className="space-y-5">
@@ -171,76 +157,21 @@ function EditProfilePage() {
                                         type="email"
                                         name="email"
                                         value={formData.email}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e)}
                                         placeholder="Enter your email address"
                                         error={errors.email}
                                         required
                                     />
                                 </div>
-
-                                <div ref={refs.phone}>
-                                    <TextInputField
-                                        label="Phone Number"
-                                        type="tel"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                        placeholder="Enter your phone number"
-                                        error={errors.phone}
-                                        required
-                                    />
-                                </div>
-
-                                <TextareaField
-                                    label="Bio"
-                                    name="bio"
-                                    value={formData.bio}
-                                    onChange={handleChange}
-                                    placeholder="Tell us about yourself"
-                                />
-
-                                <TextInputField
-                                    label="Location"
-                                    type="text"
-                                    name="location"
-                                    value={formData.location}
-                                    onChange={handleChange}
-                                    placeholder="City, Country"
-                                />
                             </div>
                         </div>
 
-                        {/* Social Links */}
-                        <div className="mb-8">
-                            <h3 className="mb-4 text-lg font-medium text-gray-900">
-                                Social Links
-                            </h3>
-                            <div className="space-y-5">
-                                <SocialLinkInput
-                                    platform="website"
-                                    value={formData.website}
-                                    onChange={handleChange}
-                                    error={errors.website}
-                                />
 
-                                <SocialLinkInput
-                                    platform="twitter"
-                                    value={formData.twitter}
-                                    onChange={handleChange}
-                                />
-
-                                <SocialLinkInput
-                                    platform="instagram"
-                                    value={formData.instagram}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
 
                         {/* Action Buttons */}
                         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                             <Button
-                                onClick={() => window.history.back()}
+                                onClick={handleCancel}
                                 className="bg-gray-200 text-gray-800 hover:bg-gray-300"
                                 type="button"
                             >
@@ -248,7 +179,7 @@ function EditProfilePage() {
                             </Button>
                             <Button
                                 onClick={handleSubmit}
-                                className="bg-gray-800 text-white transition-colors duration-200 hover:bg-black"
+                                className="bg-black text-white transition-colors duration-200 hover:bg-gray-900 "
                                 type="submit"
                             >
                                 Save Changes
