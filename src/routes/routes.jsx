@@ -9,21 +9,28 @@ import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
 import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx';
 import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
-import Minicard from '../components/sub_components/Minicard';
-import EventCard from '../components/sub_components/EventCard.jsx';
-import EditProfilePage from '../pages/ProfilePage/EditProfilePage.jsx'
-
+import EditProfilePage from '../pages/ProfilePage/EditProfilePage.jsx';
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 const ProtectedRoute = ({ allowedRoles }) => {
     const { isAuthenticated, role } = useSelector((state) => state.user);
 
-    console.log(isAuthenticated + " " + role);
+    console.log(isAuthenticated + ' ' + role);
     if (!isAuthenticated) {
         return <Navigate to="/sign-in" replace={true} />;
     }
 
     if (allowedRoles && !allowedRoles.includes(role)) {
+        return <Navigate to="/" replace={true} />;
+    }
+
+    return <Outlet />;
+};
+
+const AuthenticatedRoute = () => {
+    const { isAuthenticated, role } = useSelector((state) => state.user);
+
+    if (isAuthenticated && (role !== 'user ' || role !== 'admin')) {
         return <Navigate to="/" replace={true} />;
     }
 
@@ -64,13 +71,19 @@ const routes = [
     },
     {
         path: '/sign-in',
-        element: <DefaultLayout />,
-        children: [{ path: '', element: <Login /> }],
+        element: <AuthenticatedRoute allowedRoles={['guest']} />,
+        children: [{
+            element: <DefaultLayout />,
+            children: [{ path: '', element: <Login /> }],
+        }]
     },
     {
         path: '/sign-up',
-        element: <DefaultLayout />,
-        children: [{ path: '', element: <SignUp /> }],
+        element: <AuthenticatedRoute allowedRoles={['guest']} />,
+        children: [{
+            element: <DefaultLayout />,
+            children: [{ path: '', element: <SignUp /> }],
+        }]
     },
     {
         path: '/error',
@@ -82,7 +95,7 @@ const routes = [
         element: <Navigate to="/error" replace={false} />,
     },
     {
-        path: '/profile/edit',  // New route for the Edit Profile page
+        path: '/profile/edit', // New route for the Edit Profile page
         element: <ProtectedRoute allowedRoles={['user', 'admin']} />, // Allow both user and admin roles
         children: [
             {

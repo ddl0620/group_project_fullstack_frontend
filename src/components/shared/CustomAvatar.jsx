@@ -8,12 +8,12 @@ const getInitials = (name) => {
 };
 
 export function CustomAvatar({
-    src = 'https://github.com/shadcn.png',
-    alt = '@shadcn',
-    fallbackText = 'CN',
+    src = '',
+    alt = 'User',
+    fallbackText = 'A',
 }) {
     return (
-        <Avatar className="border-border h-10 w-10 cursor-pointer transition-opacity hover:opacity-80">
+        <Avatar className="border-border h-10 w-10 cursor-pointer transition-opacity hover:opacity-80 border">
             <AvatarImage src={src} alt={alt} />
             <AvatarFallback>{getInitials(fallbackText)}</AvatarFallback>
         </Avatar>
