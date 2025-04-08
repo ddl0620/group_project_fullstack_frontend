@@ -60,9 +60,9 @@ export const useAuth = () => {
                 return;
             }
 
-            navigate('/sign-in');
+            // navigate('/sign-in');
             Toast.success('Bạn đã đăng ký thành công!');
-            Toast.info('Đang chuyển hướng đến trang đăng nhập...');
+            Toast.info('Chuyển hướng đến trang đăng nhập!');
         } catch (e) {
 
             //need more specific error handling

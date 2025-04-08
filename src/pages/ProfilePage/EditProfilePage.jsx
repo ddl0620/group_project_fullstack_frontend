@@ -1,4 +1,4 @@
-import {useState, useRef, useEffect} from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Button from '../../components/sub_components/SubmitButton.jsx';
 import SectionTitle from './SectionTitle.jsx';
 import AvatarUpload from './AvatarUpload.jsx';
@@ -6,37 +6,50 @@ import SocialLinkInput from './SocialLinkInput.jsx';
 import TextareaField from '../../components/sub_components/TextareaField.jsx';
 import {
     validateForm,
-    scrollToFirstError,
     validationPatterns,
 } from '../../components/sub_components/validationUtils.jsx';
-import TextInputField from "@/components/sub_components/TextInputField.jsx";
-import {Toast} from "@/helpers/toastService.js";
-import {useSelector} from "react-redux";
-import {useUser} from "@/hooks/useUser.js";
-
+import TextInputField from '@/components/sub_components/TextInputField.jsx';
+import { Toast } from '@/helpers/toastService.js';
+import { useSelector } from 'react-redux';
+import { useUser } from '@/hooks/useUser.js';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover.js';
+import { cn } from '@/lib/utils.js';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar.js';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select.js';
+import { ConfirmationAlert } from '@/components/shared/CustomConfirmDialog.jsx';
 
 function EditProfilePage() {
-    // Create refs object for all fields that need validation
     const refs = {
         name: useRef(null),
         email: useRef(null),
         phone: useRef(null),
     };
 
-    const {user} = useSelector((state) => state.user);
+    const { user } = useSelector((state) => state.user);
+    const [date, setDate] = useState(user.dob ? new Date(user.dob) : null);
 
     const [formData, setFormData] = useState({
         name: user.name,
-        email: user.email
+        email: user.email,
+        dob: user.dob,
+        gender: user.gender,
     });
 
-    // Add state for success message
     const [error, setError] = useState(false);
+    const [errors, setErrors] = useState('');
 
-    // Add state for validation errors
-    const [errors, setErrors] = useState("");
-
-    // Define validation rules
     const validationRules = {
         name: {
             required: true,
@@ -67,7 +80,6 @@ function EditProfilePage() {
             [name]: value,
         }));
 
-        // Clear error when field is being edited
         if (errors[name]) {
             setErrors((prev) => ({
                 ...prev,
@@ -75,16 +87,16 @@ function EditProfilePage() {
             }));
         }
     };
-    const {handleUpdateUser} = useUser();
+
+    const { handleUpdateUser } = useUser();
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate form using our utility
         const newErrors = validateForm(formData, validationRules);
         setErrors(newErrors);
 
-        if(!isChanged()){
-            Toast.warning("No changes made to your profile!");
+        if (!isChanged()) {
+            Toast.warning('No changes made to your profile!');
             return;
         }
         await handleUpdateUser(formData, user._id, setError);
@@ -92,27 +104,33 @@ function EditProfilePage() {
 
     const handleCancel = (e) => {
         e.preventDefault();
-        setFormData(
-            {
-                name: user.name,
-                email: user.email
-            }
-        )
-        Toast.info("All changes have been reverted!");
-    }
+        setFormData({
+            name: user.name,
+            email: user.email,
+            dob: user.dob,
+            gender: user.gender,
+        });
+        setDate(user.dob ? new Date(user.dob) : null);
+        Toast.info('All changes have been reverted!');
+    };
 
     const isChanged = () => {
         return (
             formData.name !== user.name ||
-            formData.email !== user.email
+            formData.email !== user.email ||
+            formData.dob !== user.dob ||
+            formData.gender !== user.gender
         );
-    }
+    };
 
     useEffect(() => {
         setFormData({
             name: user.name || '',
             email: user.email || '',
+            gender: user.gender || '',
+            dob: user.dob || '',
         });
+        setDate(user.dob ? new Date(user.dob) : null);
     }, [user]);
 
     return (
@@ -123,18 +141,14 @@ function EditProfilePage() {
                     subtitle="Update your information and manage your EventApp presence"
                 />
 
-                {/* Success Message */}
-
                 <div className="mt-8 rounded-lg bg-white p-6 shadow-sm sm:p-8">
-                    <form onSubmit={handleSubmit} >
-                        {/* Avatar Upload Section */}
+                    <form onSubmit={handleSubmit}>
                         <div className="mb-8 flex flex-col items-center">
                             <AvatarUpload currentAvatar="" />
                         </div>
 
-                        {/* Personal Information */}
                         <div className="mb-8">
-                            <h3 className="mb-4 font-bold text-xl text-gray-900 pb-5">
+                            <h3 className="mb-4 pb-5 text-xl font-bold text-gray-900">
                                 Personal Information
                             </h3>
                             <div className="space-y-5">
@@ -163,12 +177,97 @@ function EditProfilePage() {
                                         required
                                     />
                                 </div>
+
+                                {/* Date of Birth Field */}
+                                <div>
+                                    <label className="mb-1 block text-sm font-bold text-neutral-600">
+                                        Date of Birth
+                                    </label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <button
+                                                className={cn(
+                                                    'text-muted-foreground bg-background ring-offset-background flex h-10 w-full items-center justify-start rounded-xl border border-gray-200 px-3 py-2 text-left text-sm font-normal',
+                                                    !date &&
+                                                        'text-muted-foreground rounded-xl border-gray-200'
+                                                )}
+                                            >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {date ? (
+                                                    format(date, 'PPP')
+                                                ) : (
+                                                    <span>Pick a date</span>
+                                                )}
+                                            </button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto bg-white p-0">
+                                            <Calendar
+                                                mode="single"
+                                                selected={date}
+                                                onSelect={(newDate) => {
+                                                    setDate(newDate);
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        dob: newDate
+                                                            ? newDate.toISOString()
+                                                            : '',
+                                                    }));
+                                                }}
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+
+                                {/* Gender Field */}
+                                <div>
+                                    <label className="mb-1 block text-sm font-bold text-neutral-600">
+                                        Gender
+                                    </label>
+                                    <Select
+                                        value={
+                                            formData.gender ? 'male' : 'female'
+                                        }
+                                        onValueChange={(value) => {
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                gender:
+                                                    value === 'male'
+                                                        ? true
+                                                        : false,
+                                            }));
+                                        }}
+                                    >
+                                        <SelectTrigger className="w-full rounded-xl border-gray-200">
+                                            <SelectValue placeholder="Select gender" />
+                                        </SelectTrigger>
+                                        <SelectContent
+                                            className={
+                                                'border-gray-200 bg-white'
+                                            }
+                                        >
+                                            <SelectItem
+                                                className={
+                                                    'hover:cursor-pointer hover:bg-gray-200'
+                                                }
+                                                value="male"
+                                            >
+                                                Male
+                                            </SelectItem>
+                                            <SelectItem
+                                                className={
+                                                    'hover:cursor-pointer hover:bg-gray-200'
+                                                }
+                                                value="female"
+                                            >
+                                                Female
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
                         </div>
 
-
-
-                        {/* Action Buttons */}
                         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                             <Button
                                 onClick={handleCancel}
@@ -177,13 +276,22 @@ function EditProfilePage() {
                             >
                                 Cancel
                             </Button>
-                            <Button
-                                onClick={handleSubmit}
-                                className="bg-black text-white transition-colors duration-200 hover:bg-gray-900 "
-                                type="submit"
-                            >
-                                Save Changes
-                            </Button>
+                            <ConfirmationAlert
+                                button={
+                                    <Button
+                                        // onClick={handleSubmit}
+                                        className="bg-black text-white transition-colors duration-200 hover:bg-gray-900"
+                                        type="submit"
+                                    >
+                                        Save Changes
+                                    </Button>
+                                }
+                                title={"Are you sure?"}
+                                description={
+                                    "Are you sure you want to save these changes? This action cannot be undone."
+                                }
+                            />
+
                         </div>
                     </form>
                 </div>
