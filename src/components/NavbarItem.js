@@ -15,4 +15,5 @@ export const navbarItems = [
         path: '/sign-up',
         title: 'Sign Up',
     },
+
 ];
