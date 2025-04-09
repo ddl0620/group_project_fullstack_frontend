@@ -276,20 +276,34 @@ function EditProfilePage() {
                             >
                                 Cancel
                             </Button>
+
+                            {/*<Button*/}
+                            {/*    type={"button"}*/}
+                            {/*    className="bg-red-600 text-white transition-colors duration-200 hover:bg-red-700"*/}
+                            {/*>*/}
+                            {/*    Save Changes*/}
+                            {/*</Button>*/}
+
                             <ConfirmationAlert
-                                button={
+                                triggerButton={
                                     <Button
-                                        // onClick={handleSubmit}
-                                        className="bg-black text-white transition-colors duration-200 hover:bg-gray-900"
-                                        type="submit"
+                                        className="bg-red-600 text-white transition-colors duration-200 hover:bg-red-700"
+                                        type="button" // Ngăn submit mặc định
                                     >
                                         Save Changes
                                     </Button>
                                 }
-                                title={"Are you sure?"}
-                                description={
-                                    "Are you sure you want to save these changes? This action cannot be undone."
-                                }
+                                title="Are you sure?"
+                                description="Are you sure you want to save these changes? This action cannot be undone."
+                                onConfirm={() => {
+                                    // Submit form thủ công khi xác nhận
+                                    formRef.current.dispatchEvent(
+                                        new Event('submit', { cancelable: true, bubbles: true })
+                                    );
+                                }}
+                                onCancel={() => {
+                                    Toast.info('Save cancelled!');
+                                }}
                             />
 
                         </div>

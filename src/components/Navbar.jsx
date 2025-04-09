@@ -6,7 +6,7 @@ import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {LogOut, Menu, User, X} from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
-import { CustomDropdown } from '@/components/shared/CustomeDropdown.jsx';
+import { CustomDropdown } from '@/components/shared/CustomDropdown.jsx';
 
 function NavBar() {
     const [menuOpen, setMenuOpen] = useState(false);

@@ -8,7 +8,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {CustomDropdown} from "@/components/shared/CustomeDropdown.jsx";
+import {CustomDropdown} from "@/components/shared/CustomDropdown.jsx";
 const dropdownmenu =[
     {
         label: "Edit profile",
