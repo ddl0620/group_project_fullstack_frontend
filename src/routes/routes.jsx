@@ -10,6 +10,9 @@ import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx'
 import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
 import EditProfilePage from '../pages/ProfilePage/EditProfilePage.jsx';
+import EventPage from '../pages/Event/EventPage.jsx';
+import CreateEventPage from '../pages/Event/CreateEventPage.jsx';
+import UpdateEventPage from '../pages/Event/UpdateEventPage.jsx';
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 const ProtectedRoute = ({ allowedRoles }) => {
@@ -60,6 +63,36 @@ const routes = [
         ],
     },
     {
+        path: '/event',
+        element: <ProtectedRoute allowedRoles={['user']} />,
+        children: [
+            {
+                element: <UserLayout />,
+                children: [{ path: '', element: <EventPage /> }],
+            },
+        ],
+    },
+    {
+        path: '/event/create',
+        element: <ProtectedRoute allowedRoles={['user']} />,
+        children: [
+            {
+                element: <UserLayout />,
+                children: [{ path: '', element: <CreateEventPage /> }],
+            },
+        ],
+    },
+    {
+        path: '/event/update/:id',
+        element: <ProtectedRoute allowedRoles={['user']} />,
+        children: [
+            {
+                element: <UserLayout />,
+                children: [{ path: '', element: <UpdateEventPage /> }],
+            },
+        ],
+    },
+    {
         path: '/dashboard',
         element: <ProtectedRoute allowedRoles={['admin']} />,
         children: [
@@ -72,18 +105,22 @@ const routes = [
     {
         path: '/sign-in',
         element: <AuthenticatedRoute allowedRoles={['guest']} />,
-        children: [{
-            element: <DefaultLayout />,
-            children: [{ path: '', element: <Login /> }],
-        }]
+        children: [
+            {
+                element: <DefaultLayout />,
+                children: [{ path: '', element: <Login /> }],
+            },
+        ],
     },
     {
         path: '/sign-up',
         element: <AuthenticatedRoute allowedRoles={['guest']} />,
-        children: [{
-            element: <DefaultLayout />,
-            children: [{ path: '', element: <SignUp /> }],
-        }]
+        children: [
+            {
+                element: <DefaultLayout />,
+                children: [{ path: '', element: <SignUp /> }],
+            },
+        ],
     },
     {
         path: '/error',
