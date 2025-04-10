@@ -4,7 +4,7 @@ export const navbarItems = [
         title: 'Home',
     },
     {
-        path: '/events',
+        path: '/event',
         title: 'Events',
     },
     {
