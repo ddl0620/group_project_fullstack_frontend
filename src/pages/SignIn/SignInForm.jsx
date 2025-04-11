@@ -1,6 +1,6 @@
-import TextInputField from '@/components/sub_components/TextInputField.jsx';
-import SubmitButton from '@/components/sub_components/SubmitButton.jsx';
-import AuthLink from '@/components/sub_components/AuthLink.jsx';
+import TextInputField from '@/components/shared/TextInputField.jsx';
+import SubmitButton from '@/components/shared/SubmitButton.jsx';
+import AuthLink from '@/components/shared/AuthLink.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth.js';
 

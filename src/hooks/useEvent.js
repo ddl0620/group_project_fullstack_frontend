@@ -1,15 +1,19 @@
-import { getMe, updateUser } from '@/services/UserService.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from '@/helpers/toastService.js';
-import { login, logout } from '@/store/slices/userSlice.js';
-import { fetchAllEvent, fetchEventById, updateEventById } from '@/services/EventService.js';
+import {logout } from '@/store/slices/userSlice.js';
+import {
+    DELETEEventById,
+    fetchAllEvent,
+    fetchEventById,
+    POSTCreateEvent,
+    updateEventById
+} from '@/services/EventService.js';
 
 export const useEvent = () => {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.user);
 
     const getAllEvents = async ({ page, limit, isAcs }) => {
-        const toastId = Toast.success('Loading events...');
         try {
             const token = localStorage.getItem('token');
 
@@ -25,15 +29,10 @@ export const useEvent = () => {
                 isAcs: isAcs,
             });
 
-            Toast.success('Events loaded successfully');
-
             return data;
-            // console.log('response get All event', response);
         } catch (error) {
             console.error('Error fetching user data:', error);
             throw error;
-        } finally {
-            Toast.promise(toastId);
         }
     };
 
@@ -50,5 +49,38 @@ export const useEvent = () => {
         return response.data;
     };
 
-    return { getAllEvents, getEventById, updateEvent };
+    const deleteEvent = async (id) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                Toast.info('No token found. Please login again');
+                dispatch(logout());
+                return;
+            }
+            const response = await DELETEEventById(id);
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting event:', error);
+            throw error;
+        }
+    }
+
+    const createEvent = async (eventData) => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                Toast.info('No token found. Please login again');
+                dispatch(logout());
+                return;
+            }
+
+            return await POSTCreateEvent(eventData);
+        } catch (error) {
+            console.error('Error creating event:', error);
+            throw error;
+        }
+    };
+
+    return { getAllEvents, getEventById, updateEvent, deleteEvent, createEvent };
 };

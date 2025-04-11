@@ -2,11 +2,9 @@ import API_INSTANCE from '@/services/api_instance.js';
 
 export const fetchAllEvent = async ({ page, limit, isAcs }) => {
     const sort = isAcs ? 'asc' : 'desc';
-    // http://localhost:5001/api/v1/event/all-event?page=1&limit=10&sortBy=desc
     const response = await API_INSTANCE.get(
         `/api/v1/event/all-event?page=${page}&limit=${limit}&sortBy=${sort}`
     );
-    // console.log('response get All event', response.data.data.events);
     return response.data.data.events;
 };
 
@@ -21,3 +19,12 @@ export const updateEventById = async (id, eventData) => {
     const response = await API_INSTANCE.put(`/api/v1/event/${id}`, eventData);
     return response.data.data.event; // Adjust this based on your API response structure
 };
+
+export const DELETEEventById = async (id) => {
+    return await API_INSTANCE.delete(`/api/v1/event/${id}`);
+}
+
+export const POSTCreateEvent = async (eventData) => {
+    const response = await API_INSTANCE.post(`/api/v1/event/add-event`, eventData);
+    return response.data; // Adjust this based on your API response structure
+}

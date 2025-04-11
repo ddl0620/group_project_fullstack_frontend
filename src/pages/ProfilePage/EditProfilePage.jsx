@@ -1,15 +1,15 @@
 import {useState, useRef, useEffect} from 'react';
-import Button from '../../components/sub_components/SubmitButton.jsx';
+import Button from '../../components/shared/SubmitButton.jsx';
 import SectionTitle from './SectionTitle.jsx';
 import AvatarUpload from './AvatarUpload.jsx';
 import SocialLinkInput from './SocialLinkInput.jsx';
-import TextareaField from '../../components/sub_components/TextareaField.jsx';
+import TextareaField from '../../components/shared/TextareaField.jsx';
 import {
     validateForm,
     scrollToFirstError,
     validationPatterns,
-} from '../../components/sub_components/validationUtils.jsx';
-import TextInputField from "@/components/sub_components/TextInputField.jsx";
+} from '../../components/shared/validationUtils.jsx';
+import TextInputField from "@/components/shared/TextInputField.jsx";
 import {Toast} from "@/helpers/toastService.js";
 import {useSelector} from "react-redux";
 import {useUser} from "@/hooks/useUser.js";

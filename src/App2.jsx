@@ -1,4 +1,4 @@
-import CustomNotification from '@/components/sub_components/CustomNotification.jsx';
+import CustomNotification from '@/components/shared/CustomNotification.jsx';
 import {CustomAvatar} from "@/components/shared/CustomAvatar.jsx";
 import {
     DropdownMenu,
