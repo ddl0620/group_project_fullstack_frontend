@@ -1,13 +1,15 @@
 import TextInputField from '@/components/sub_components/TextInputField.jsx';
 import SubmitButton from '@/components/sub_components/SubmitButton.jsx';
 import AuthLink from '@/components/sub_components/AuthLink.jsx';
-import { useEffect, useRef, useState } from 'react';
+import {useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth.js';
+import {useEvent} from "@/hooks/useEvent.js";
 
 export const SignInForm = () => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [error, setError] = useState(null);
     const { handleSignIn } = useAuth();
+    const {getAllEvents} = useEvent();
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
 
@@ -18,6 +20,7 @@ export const SignInForm = () => {
 
     const handleClick = async () => {
         await handleSignIn(credentials, setError);
+        await getAllEvents({page: 1, limit: 10, isAcs: true});
     };
 
     return (
