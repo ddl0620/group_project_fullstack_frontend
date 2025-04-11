@@ -116,7 +116,7 @@ function EditProfilePage() {
     }, [user]);
 
     return (
-        <div className="bg-gray-100 px-4 py-12 sm:px-6 lg:px-8">
+        <div className="bg-white px-4 py-12 sm:px-6 lg:px-8 h-screen max-w-screen justify-between items-center">
             <div className="mx-auto max-w-3xl">
                 <SectionTitle
                     title="Edit Your Profile"

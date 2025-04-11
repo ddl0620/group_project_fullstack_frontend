@@ -22,7 +22,7 @@ const FeaturesSection = () => {
     ];
 
     return (
-        <section className="py-16 bg-neutral-100">
+        <section className="py-16 bg-white">
             <div className="max-w-screen-xl mx-auto px-6">
                 <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-12 text-neutral-800">
                     Why Choose <span className="text-neutral-900">EventApp?</span>

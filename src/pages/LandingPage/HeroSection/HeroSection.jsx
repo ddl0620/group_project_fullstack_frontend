@@ -4,8 +4,8 @@ import HeroImage from './HeroImage';
 
 const HeroSection = () => {
     return (
-        <section className="bg-gray-50">
-            <div className="max-w-screen-xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-10">
+        <section className="bg-white">
+            <div className="max-w-screen-xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-10 h-screen">
                 {/* Text Content */}
                 <HeroText
                     title="Welcome to"

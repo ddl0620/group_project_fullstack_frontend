@@ -134,7 +134,7 @@ const EventCard = ({
             {/* Hình ảnh sự kiện */}
             <CardHeader className="p-0">
                 <img
-                    src={images[0] || "https://via.placeholder.com/400x200?text=Event+Image"}
+                    src={images[0] || "https://skhcn.hatinh.gov.vn/img/no-image.png"}
                     alt={title}
                     className="h-48 w-full rounded-t-2xl object-cover"
                 />

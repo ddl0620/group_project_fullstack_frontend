@@ -4,26 +4,29 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from "sonner";
 import EventForm from "@/components/EventForm.jsx";
 import SectionTitle from "@/pages/ProfilePage/SectionTitle.jsx";
+import {useEvent} from "@/hooks/useEvent.js";
 
 function UpdateEventPage() {
     const navigate = useNavigate();
     const { eventId } = useParams(); // Lấy ID sự kiện từ URL
     const [initialData, setInitialData] = useState(null);
     const [loading, setLoading] = useState(true);
-
+    const {getEventById, updateEvent} = useEvent();
     useEffect(() => {
         const fetchEvent = async () => {
             try {
+                // console.log("Current id: ", eventId);
                 const response = await getEventById(eventId); // API lấy chi tiết sự kiện
-                if (response.status === 200) {
-                    setInitialData(response.data); // Giả định response.data chứa dữ liệu sự kiện
+                console.log("Get Event IDxx:", response);
+                if (response.success) {
+                    setInitialData(response.data.event); // Giả định response.data chứa dữ liệu sự kiện
                 } else {
                     toast.error('Failed to load event data.');
-                    navigate('/event');
+                    // navigate('/event');
                 }
             } catch (error) {
                 toast.error('Error loading event: ' + error.message);
-                navigate('/event');
+                // navigate('/event');
             } finally {
                 setLoading(false);
             }
@@ -34,7 +37,8 @@ function UpdateEventPage() {
 
     const handleSubmit = async (eventData) => {
         const response = await updateEvent(eventId, eventData); // API cập nhật sự kiện
-        if (response.status === 200) {
+        console.log(response)
+        if (response.success) {
             toast.success('Event updated successfully!');
             navigate('/event');
         } else {

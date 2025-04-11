@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 
 const CallToActionSection = ({ title, description, buttonText, buttonLink }) => {
     return (
-        <section className="bg-gradient-to-br from-gray-50 to-gray-100 text-neutral-900 py-20 relative">
+        <section className="bg-gradient-to-br bg-white text-neutral-900 py-20 relative">
             <div className="max-w-screen-xl mx-auto px-6 flex flex-col md:flex-row items-center gap-10 relative z-10">
                 {/* Text Content */}
                 <div className="md:w-1/2 text-center md:text-left">
-                    <h2 className="text-5xl md:text-6xl font-extrabold mb-6">{title}</h2>
+                    <h2 className="text-5xl md:text-6xl font-bold mb-6">{title}</h2>
                     <p className="text-lg md:text-xl mb-8 text-neutral-600">{description}</p>
                     <Link
                         to={buttonLink}
