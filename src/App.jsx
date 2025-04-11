@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, logout } from './store/slices/userSlice';
+import {HeroUIProvider} from '@heroui/react'
 
 import routes from "./routes/routes.jsx";
 import { Toaster } from "sonner";
@@ -58,16 +59,20 @@ function App() {
     }
 
     return (
-        <BrowserRouter>
-            <Routes>{renderRoutes(routes)}</Routes>
-            <Toaster
-                position="bottom-right"
-                theme="light"
-                richColors={true}
-                closeButton={false}
-                duration={3000}
-            />
-        </BrowserRouter>
+
+        <HeroUIProvider>
+            <BrowserRouter>
+                <Routes>{renderRoutes(routes)}</Routes>
+                <Toaster
+                    position="bottom-right"
+                    theme="light"
+                    richColors={true}
+                    closeButton={false}
+                    duration={3000}
+                />
+            </BrowserRouter>
+        </HeroUIProvider>
+
     );
 }
 

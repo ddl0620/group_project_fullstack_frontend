@@ -97,7 +97,7 @@ function NavBar() {
     ]
 
     return (
-        <nav className="border-b border-neutral-800 bg-neutral-950 text-neutral-100 shadow-sm">
+        <nav className="border-b border-neutral-800 bg-neutral-950 text-neutral-100 shadow-sm font-semibold fixed w-full z-50">
             <div className="mx-auto flex max-w-screen-xl items-center justify-between px-6 py-4">
                 {/* Left: Brand + Nav */}
                 <div className="flex items-center gap-10">
