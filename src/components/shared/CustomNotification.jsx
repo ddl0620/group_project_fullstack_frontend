@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils.js';
 
 const CustomNotification = ({ name, description, icon, time }) => {
     return (

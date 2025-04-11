@@ -2,7 +2,7 @@ function Button({ onClick, children, className }) {
     return (
         <button
             onClick={onClick}
-            className={`w-full rounded-2xl py-2 text-sm font-medium transition hover:cursor-pointer ${className}`}
+            className={`hover:scale-105 flex items-center px-3 gap-1 justify-center w-full rounded-3xl py-2 text-sm font-medium transition hover:cursor-pointer ${className}`}
         >
             {children}
         </button>
