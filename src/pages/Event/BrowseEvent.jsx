@@ -15,18 +15,18 @@ import {
 } from '@heroicons/react/24/outline';
 import { useEvent } from '../../hooks/useEvent.js';
 import { toast } from 'sonner';
-import { EditIcon } from 'lucide-react';
+import {EditIcon, ShowerHeadIcon} from 'lucide-react';
 import {Pagination} from "@heroui/pagination";
 import {AlertDialogUtils} from "@/helpers/AlertDialog.jsx";
 
 const itemPerPage = 9;
-function MyEvent() {
+function BrowseEvent() {
     const [totalItem, setTotalItem] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { getMyEvent, deleteEvent } = useEvent();
+    const { getAllEvents, deleteEvent } = useEvent();
     const location = useLocation();
     const navigate = useNavigate();
     // Fetch events from backend
@@ -35,7 +35,7 @@ function MyEvent() {
         const fetchEvents = async () => {
             try {
                 setLoading(true);
-                const data = await getMyEvent({
+                const data = await getAllEvents({
                     page: currentPage,
                     limit: itemPerPage,
                     isAcs: true,
@@ -50,42 +50,16 @@ function MyEvent() {
         };
         fetchEvents();
     }, [currentPage]);
-
-    const handleEditButton = (eventId) => {
-        // Navigate to the update event page with the event ID
-        navigate(`/event/update/${eventId}`);
-    };
+    
 
     const handleChangeCurrentPage = (page) => {
         setCurrentPage(page);
     }
 
 
-    const handleRemoveEvent = async (id) => {
+    const handleShowEvent = async () => {
         // e.preventDefault();
-        const confirmed = await AlertDialogUtils.warning({
-            title: "Delete Event?",
-            description: "Are you sure you want to delete this event? This action cannot be undone.",
-            confirmText: "Delete",
-            cancelText: "Cancel",
-        });
-
-        if (!confirmed) return; // Nếu người dùng chọn Cancel, không làm gì
-
-        try {
-            const response = await deleteEvent(id);
-            if (response.success) {
-                setEvents((prevEvents) =>
-                    prevEvents.filter((event) => event._id !== id)
-                );
-                toast.success('Event deleted successfully');
-            } else {
-                toast.error('Failed to delete event');
-            }
-        } catch (error) {
-            console.error('Error deleting event:', error);
-            toast.error('Failed to delete event' || response.message);
-        }
+        alert("Show")
     };
 
 
@@ -101,7 +75,7 @@ function MyEvent() {
                 <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:mb-8 sm:flex-row sm:items-center">
                     <div className="my-5">
                         <SectionTitle
-                            title={'Organized Events'}
+                            title={'Browse Events'}
                             subtitle={'List of event you have created'}
                         />
                     </div>
@@ -139,30 +113,16 @@ function MyEvent() {
                                         button: (
                                             <Button
                                                 onClick={() =>
-                                                    handleRemoveEvent(event._id)
+                                                    handleShowEvent(event._id)
                                                 }
-                                                className="flex items-center gap-2 bg-red-500 px-3 text-white"
+                                                className="flex items-center bg-blue-500 text-white"
                                             >
-                                                <TrashIcon className="h-5 w-5" />
-                                                Delete
+                                                <EyeIcon className="h-5 w-5" />
+                                                View
                                             </Button>
                                         ),
                                         onClick: () => {},
-                                    },
-                                    {
-                                        button: (
-                                            <Button
-                                                onClick={() =>
-                                                    handleEditButton(event._id)
-                                                }
-                                                className="gap-2 bg-blue-500 px-3 text-white"
-                                            >
-                                                <EditIcon className="h-5 w-5" />
-                                                Edit
-                                            </Button>
-                                        ),
-                                        onClick: () => {},
-                                    },
+                                    }
                                 ]}
                             />
                         );
@@ -192,4 +152,4 @@ function MyEvent() {
     );
 }
 
-export default React.memo(MyEvent);
+export default React.memo(BrowseEvent);

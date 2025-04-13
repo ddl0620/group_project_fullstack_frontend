@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, logout } from './store/slices/userSlice';
 import {HeroUIProvider} from '@heroui/react'
+import './App.css'
 
 import routes from "./routes/routes.jsx";
 import { Toaster } from "sonner";

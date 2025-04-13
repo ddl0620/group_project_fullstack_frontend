@@ -7,7 +7,6 @@ import {store} from "./store/store.js";
 import {Provider} from "react-redux";
 import App2 from "@/App2.jsx";
 createRoot(document.getElementById('root')).render(
-
     // StrictMode is used to highlight potential problems in an application.
     // It activates additional checks and warnings for its descendants.
   <StrictMode>
