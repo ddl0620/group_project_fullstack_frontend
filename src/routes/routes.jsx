@@ -10,9 +10,11 @@ import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx'
 import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
 import EditProfilePage from '../pages/ProfilePage/EditProfilePage.jsx';
-import EventPage from '../pages/Event/MyEvent.jsx';
+import MyEvents from '../pages/Event/MyEvent.jsx';
 import CreateEventPage from '../pages/Event/CreateEventPage.jsx';
 import UpdateEventPage from '../pages/Event/UpdateEventPage.jsx';
+import BrowseEvent from "@/pages/Event/BrowseEvent.jsx";
+import EventDetailPage from "@/pages/Event/EventDetails.jsx";
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 const ProtectedRoute = ({ allowedRoles }) => {
@@ -68,7 +70,27 @@ const routes = [
         children: [
             {
                 element: <UserLayout />,
-                children: [{ path: '', element: <EventPage /> }],
+                children: [{ path: '', element: <MyEvents /> }],
+            },
+        ],
+    },
+    {
+        path: '/event/browse',
+        element: <ProtectedRoute allowedRoles={['user']} />,
+        children: [
+            {
+                element: <UserLayout />,
+                children: [{ path: '', element: <BrowseEvent /> }],
+            },
+        ],
+    },
+    {
+        path: '/event/:eventId',
+        element: <ProtectedRoute allowedRoles={['user']} />,
+        children: [
+            {
+                element: <UserLayout />,
+                children: [{ path: '', element: <EventDetailPage /> }],
             },
         ],
     },

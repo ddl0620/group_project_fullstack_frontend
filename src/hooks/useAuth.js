@@ -17,21 +17,21 @@ export const useAuth = () => {
             }
 
             const response = await signInUser(credentials);
-            const {data} = response;
+            const {content} = response;
 
-            const user = data.user;
+            const user = content.user;
             const role = user.role;
 
             console.log(user);
             console.log(role);
 
-            if (!data?.token) {
+            if (!content?.token) {
                 Toast.error('Đăng nhập thất bại!');
                 setError('Sai tài khoản hoặc mật khẩu.');
                 return;
             }
 
-            localStorage.setItem('token', data.token);
+            localStorage.setItem('token', content.token);
             dispatch(login({ user, role }));
             Toast.success('Đăng nhập thành công');
 
