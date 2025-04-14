@@ -1,68 +1,48 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/MyEvent.jsx
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import EventCard from '../../components/shared/EventCard.jsx';
 import SectionTitle from '../ProfilePage/SectionTitle.jsx';
 import Button from '../../components/shared/SubmitButton.jsx';
 import {
-    PencilIcon,
-    TrashIcon,
     PlusCircleIcon,
-    CalendarIcon,
-    MapPinIcon,
-    UserGroupIcon,
-    StarIcon,
+    TrashIcon,
     EyeIcon,
 } from '@heroicons/react/24/outline';
-import { useEvent } from '../../hooks/useEvent.js';
-import { toast } from 'sonner';
 import { EditIcon } from 'lucide-react';
-import {Pagination} from "@heroui/pagination";
-import {AlertDialogUtils} from "@/helpers/AlertDialog.jsx";
+import { Pagination } from '@heroui/pagination';
+import {useEvent} from "@/hooks/useEvent.js";
+import {AlertDialogUtils} from "@/helpers/AlertDialogUtils.jsx";
+const itemsPerPage = 9;
 
-const itemPerPage = 9;
 function MyEvent() {
-    const [totalItem, setTotalItem] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const { getMyEvent, deleteEvent } = useEvent();
-    const location = useLocation();
     const navigate = useNavigate();
-    // Fetch events from backend
+    const location = useLocation();
+    const { getMyEvents, deleteEvent, loading, error } = useEvent();
+    const myEvents = useSelector((state) => state.event.myEvents);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+
+    // Tính tổng số trang
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     useEffect(() => {
         const fetchEvents = async () => {
-            try {
-                setLoading(true);
-                const data = await getMyEvent({
-                    page: currentPage,
-                    limit: itemPerPage,
-                    isAcs: true,
-                });
-                setEvents(data);
-            } catch (err) {
-                toast.error('Error fetching events:', err);
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
+            await getMyEvents({
+                page: currentPage,
+                limit: itemsPerPage,
+                isAcs: true,
+            });
         };
         fetchEvents();
-    }, [currentPage]);
+    }, [currentPage]); // Chỉ phụ thuộc vào currentPage
 
     const handleEditButton = (eventId) => {
-        // Navigate to the update event page with the event ID
         navigate(`/event/update/${eventId}`);
     };
 
-    const handleChangeCurrentPage = (page) => {
-        setCurrentPage(page);
-    }
-
-
     const handleRemoveEvent = async (id) => {
-        // e.preventDefault();
         const confirmed = await AlertDialogUtils.warning({
             title: "Delete Event?",
             description: "Are you sure you want to delete this event? This action cannot be undone.",
@@ -70,29 +50,18 @@ function MyEvent() {
             cancelText: "Cancel",
         });
 
-        if (!confirmed) return; // Nếu người dùng chọn Cancel, không làm gì
-
-        try {
-            const response = await deleteEvent(id);
-            if (response.success) {
-                setEvents((prevEvents) =>
-                    prevEvents.filter((event) => event._id !== id)
-                );
-                toast.success('Event deleted successfully');
-            } else {
-                toast.error('Failed to delete event');
-            }
-        } catch (error) {
-            console.error('Error deleting event:', error);
-            toast.error('Failed to delete event' || response.message);
-        }
+        if (!confirmed) return;
+        await deleteEvent(id);
     };
-
 
     const handleLinkClick = (e) => {
         if (location.pathname === '/events') {
-            e.preventDefault(); // Ngăn chặn điều hướng nếu đã ở cùng route
+            e.preventDefault();
         }
+    };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
     };
 
     return (
@@ -102,7 +71,7 @@ function MyEvent() {
                     <div className="my-5">
                         <SectionTitle
                             title={'Organized Events'}
-                            subtitle={'List of event you have created'}
+                            subtitle={'List of events you have created'}
                         />
                     </div>
                     <Link to="/event/create" onClick={handleLinkClick}>
@@ -112,6 +81,21 @@ function MyEvent() {
                         </Button>
                     </Link>
                 </div>
+
+                {/* Phân trang */}
+                {totalItems > 0 && (
+                    <div className="mb-6 flex justify-center">
+                        <Pagination
+                            total={totalPages}
+                            page={currentPage}
+                            onChange={handlePageChange}
+                            showControls={true}
+                            loop={true}
+                            color="success"
+                            className="rounded-full"
+                        />
+                    </div>
+                )}
 
                 {loading && (
                     <div className="flex justify-center py-10">
@@ -125,51 +109,52 @@ function MyEvent() {
                         <span className="block sm:inline"> {error}</span>
                     </div>
                 )}
-                <div className={"flex items-center justify-center"}>
-                    <Pagination loop showControls color="success" initialPage={1} total={5} />;
-                </div>
+
                 <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    {events.map((event) => {
-                        return (
-                            <EventCard
-                                key={event._id}
-                                event={event}
-                                actions={[
-                                    {
-                                        button: (
-                                            <Button
-                                                onClick={() =>
-                                                    handleRemoveEvent(event._id)
-                                                }
-                                                className="flex items-center gap-2 bg-red-500 px-3 text-white"
-                                            >
-                                                <TrashIcon className="h-5 w-5" />
-                                                Delete
-                                            </Button>
-                                        ),
-                                        onClick: () => {},
-                                    },
-                                    {
-                                        button: (
-                                            <Button
-                                                onClick={() =>
-                                                    handleEditButton(event._id)
-                                                }
-                                                className="gap-2 bg-blue-500 px-3 text-white"
-                                            >
-                                                <EditIcon className="h-5 w-5" />
-                                                Edit
-                                            </Button>
-                                        ),
-                                        onClick: () => {},
-                                    },
-                                ]}
-                            />
-                        );
-                    })}
+                    {myEvents.map((event) => (
+                        <EventCard
+                            key={event._id}
+                            event={event}
+                            actions={[
+                                {
+                                    button: (
+                                        <Button
+                                            className="flex items-center gap-2 bg-red-500 px-3 text-white hover:bg-red-600"
+                                        >
+                                            <TrashIcon className="h-5 w-5" />
+                                            Delete
+                                        </Button>
+                                    ),
+                                    onClick: () => handleRemoveEvent(event._id),
+                                },
+                                {
+                                    button: (
+                                        <Button
+                                            className="flex items-center gap-2 bg-blue-500 px-3 text-white hover:bg-blue-600"
+                                        >
+                                            <EditIcon className="h-5 w-5" />
+                                            Edit
+                                        </Button>
+                                    ),
+                                    onClick: () => handleEditButton(event._id),
+                                },
+                                {
+                                    button: (
+                                        <Button
+                                            className="flex items-center gap-2 bg-blue-500 px-3 text-white hover:bg-blue-600"
+                                        >
+                                            <EyeIcon className="h-5 w-5" />
+                                            View All
+                                        </Button>
+                                    ),
+                                    onClick: () => handleEditButton(event._id),
+                                },
+                            ]}
+                        />
+                    ))}
                 </div>
 
-                {!loading && events.length === 0 && (
+                {!loading && myEvents.length === 0 && (
                     <div className="mt-8 rounded-lg bg-white py-16 text-center shadow-sm">
                         <PlusCircleIcon className="mx-auto h-12 w-12 text-gray-400" />
                         <p className="mt-4 text-lg text-gray-500">
@@ -180,10 +165,10 @@ function MyEvent() {
                             onClick={handleLinkClick}
                             className="mt-4 inline-block"
                         >
-                            <button className="flex items-center gap-2 rounded-md bg-gray-900 px-5 py-2.5 text-white hover:bg-gray-700">
+                            <Button className="flex items-center gap-2 bg-gray-900 text-white hover:bg-gray-700">
                                 <PlusCircleIcon className="h-5 w-5" />
                                 <span>Create New Event</span>
-                            </button>
+                            </Button>
                         </Link>
                     </div>
                 )}

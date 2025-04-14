@@ -14,10 +14,7 @@ function CreateEventPage() {
         const response = await createEvent(eventData);
         if (response.success) {
             toast.success('Event created successfully!');
-            // Redirect to events page on success
             navigate('/event');
-        } else {
-            toast.error('Failed to create event. Please try again.');
         }
     };
 
