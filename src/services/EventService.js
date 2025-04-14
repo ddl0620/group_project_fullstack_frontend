@@ -1,6 +1,7 @@
+// src/services/EventService.js
 import API_INSTANCE from '@/services/api_instance.js';
 
-export const fetchAllEvent = async ({ page, limit, isAcs }) => {
+export const getAllEvents = async ({ page, limit, isAcs }) => {
     const sort = isAcs ? 'asc' : 'desc';
     const response = await API_INSTANCE.get(
         `/api/v1/event/all-event?page=${page}&limit=${limit}&sortBy=${sort}`
@@ -8,7 +9,7 @@ export const fetchAllEvent = async ({ page, limit, isAcs }) => {
     return response.data.data.events;
 };
 
-export const fetchMyEvent = async ({ page, limit, isAcs }) => {
+export const getMyEvents = async ({ page, limit, isAcs }) => {
     const sort = isAcs ? 'asc' : 'desc';
     const response = await API_INSTANCE.get(
         `/api/v1/event/my?page=${page}&limit=${limit}&sortBy=${sort}`
@@ -16,23 +17,22 @@ export const fetchMyEvent = async ({ page, limit, isAcs }) => {
     return response.data.data.events;
 };
 
-// Fetch a single event by ID
-export const fetchEventById = async (id) => {
+export const getEventById = async (id) => {
     const response = await API_INSTANCE.get(`/api/v1/event/${id}`);
-    return response.data; // Adjust this based on your API response structure
+    return response.data;
 };
 
-// Update an event by ID
-export const updateEventById = async (id, eventData) => {
+export const updateEvent = async (id, eventData) => {
     const response = await API_INSTANCE.put(`/api/v1/event/${id}`, eventData);
-    return response.data; // Adjust this based on your API response structure
+    return response.data;
 };
 
-export const DELETEEventById = async (id) => {
-    return await API_INSTANCE.delete(`/api/v1/event/${id}`);
-}
+export const deleteEvent = async (id) => {
+    const response = await API_INSTANCE.delete(`/api/v1/event/${id}`);
+    return response.data;
+};
 
-export const POSTCreateEvent = async (eventData) => {
+export const createEvent = async (eventData) => {
     const response = await API_INSTANCE.post(`/api/v1/event/add-event`, eventData);
-    return response.data; // Adjust this based on your API response structure
-}
+    return response.data;
+};

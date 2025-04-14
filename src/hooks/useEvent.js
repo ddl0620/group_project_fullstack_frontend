@@ -1,145 +1,175 @@
+// src/hooks/useEvent.js
 import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from '@/helpers/toastService.js';
 import { logout } from '@/store/slices/userSlice.js';
 import {
-    DELETEEventById,
-    fetchAllEvent,
-    fetchEventById,
-    fetchMyEvent,
-    POSTCreateEvent,
-    updateEventById,
+    setMyEvents,
+    setCurrentEvent,
+    addEvent,
+    updateEvent,
+    removeEvent,
+    setLoading,
+    setError,
+} from '@/store/slices/eventSlice.js';
+import {
+    getAllEvents as getAllEventsAPI,
+    getMyEvents as getMyEventsAPI,
+    getEventById as getEventByIdAPI,
+    updateEvent as updateEventAPI,
+    deleteEvent as deleteEventAPI,
+    createEvent as createEventAPI,
 } from '@/services/EventService.js';
 
 export const useEvent = () => {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.user);
+    const loading = useSelector((state) => state.event.loading);
+    const error = useSelector((state) => state.event.error);
+
+    const checkToken = () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            Toast.info('No token found. Please login again');
+            dispatch(logout());
+            throw new Error('No token found');
+        }
+        return token;
+    };
 
     const getAllEvents = async ({ page, limit, isAcs }) => {
         try {
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                Toast.info('No token found. Please login again');
-                dispatch(logout());
-                return;
-            }
-
-            const data = await fetchAllEvent({
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const data = await getAllEventsAPI({
                 page: page,
                 limit: limit,
                 isAcs: isAcs,
             });
-
+            // Dispatch để lưu vào Redux store
+            // dispatch(setEvents(data));
             return data;
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            dispatch(setError(error.message));
+            Toast.error('Failed to fetch events: ' + error.message);
             throw error;
+        } finally {
+            dispatch(setLoading(false));
         }
     };
 
-    const getMyEvent = async ({ page, limit, isAcs }) => {
+    const getMyEvents = async ({ page, limit, isAcs }) => {
         try {
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                Toast.info('No token found. Please login again');
-                dispatch(logout());
-                return;
-            }
-
-            const data = await fetchMyEvent({
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const data = await getMyEventsAPI({
                 page: page,
                 limit: limit,
                 isAcs: isAcs,
             });
-
+            dispatch(setMyEvents(data)); // Lưu vào Redux store
             return data;
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            dispatch(setError(error.message));
+            Toast.error('Failed to fetch your events: ' + error.message);
             throw error;
+        } finally {
+            dispatch(setLoading(false));
         }
     };
 
     const getEventById = async (id) => {
-        if(!id){
+        if (!id) {
             Toast.info('No ID found. Please check the event ID');
-            return;
+            throw new Error('No ID found');
         }
-        const token = localStorage.getItem('token');
-        if (!token) {
-            Toast.info('No token found. Please login again');
-            dispatch(logout());
-            return;
+        try {
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const response = await getEventByIdAPI(id);
+            dispatch(setCurrentEvent(response));
+            return response;
+        } catch (error) {
+            dispatch(setError(error.message));
+            Toast.error('Failed to fetch event: ' + error.message);
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
         }
-        const response = await fetchEventById(id);
-        console.log('Get Event ID:', response);
-        return response;
     };
 
-    const updateEvent = async (eventId, updatedEventData) => {
-        if(!eventId){
+    const updateEvent = async (id, eventData) => {
+        if (!id) {
             Toast.info('No ID found. Please check the event ID');
-            return;
+            throw new Error('No ID found');
         }
-        if(!updatedEventData){
+        if (!eventData) {
             Toast.info('No data found. Please check the event data');
-            return;
+            throw new Error('No data found');
         }
-        const token = localStorage.getItem('token');
-        if (!token) {
-            Toast.info('No token found. Please login again');
-            dispatch(logout());
-            return;
-        }
-        try{
-            const response = await updateEventById(eventId, updatedEventData);
+        try {
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const response = await updateEventAPI(id, eventData);
+            dispatch(updateEvent(response));
+            Toast.success('Event updated successfully');
             return response;
-        }
-        catch(error){
-            console.error('Error updating event data', error);
+        } catch (error) {
+            dispatch(setError(error.message));
+            Toast.error('Failed to update event: ' + error.message);
             throw error;
+        } finally {
+            dispatch(setLoading(false));
         }
     };
 
     const deleteEvent = async (id) => {
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                Toast.info('No token found. Please login again');
-                dispatch(logout());
-                return;
-            }
-            const response = await DELETEEventById(id);
-            return response.data;
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const response = await deleteEventAPI(id);
+            dispatch(removeEvent(id));
+            Toast.success('Event deleted successfully');
+            return response;
         } catch (error) {
-            console.error('Error deleting event:', error);
+            dispatch(setError(error.message));
+            Toast.error('Failed to delete event: ' + error.message);
             throw error;
+        } finally {
+            dispatch(setLoading(false));
         }
     };
 
     const createEvent = async (eventData) => {
         try {
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                Toast.info('No token found. Please login again');
-                dispatch(logout());
-                return;
-            }
-
-            return await POSTCreateEvent(eventData);
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const response = await createEventAPI(eventData);
+            dispatch(addEvent(response));
+            Toast.success('Event created successfully');
+            return response;
         } catch (error) {
-            console.error('Error creating event:', error);
+            dispatch(setError(error.message));
+            Toast.error('Failed to create event: ' + error.message);
             throw error;
+        } finally {
+            dispatch(setLoading(false));
         }
     };
 
     return {
         getAllEvents,
+        getMyEvents,
         getEventById,
         updateEvent,
         deleteEvent,
         createEvent,
-        getMyEvent,
+        loading,
+        error,
     };
 };
