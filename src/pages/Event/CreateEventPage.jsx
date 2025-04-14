@@ -19,7 +19,7 @@ function CreateEventPage() {
     };
 
     return (
-        <div className="bg-gray-50 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+        <div className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
             <div className="mx-auto max-w-2xl">
                 <SectionTitle
                     title="Create New Event"

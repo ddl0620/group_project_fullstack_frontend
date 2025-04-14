@@ -9,14 +9,14 @@ import {
 
 const ImageSlider = ({imageList, classname}) => {
     return (
-        <Carousel className="w-full max-w-lg mx-auto">
+        <Carousel>
             <CarouselContent>
                 {imageList.map((_, index) => (
                     <CarouselItem key={index}>
-                        <div className="p-1">
+                        <div className="max-w-7xl mx-auto">
                             <Card>
                                 <CardContent className={`flex items-center justify-center ${classname}`}>
-                                    <img className="bg-cover p-4 rounded-xl" src={imageList[index]} alt="Error" />
+                                    <img className="bg-cover rounded-xl" src={imageList[index]} alt="Error" />
                                 </CardContent>
                             </Card>
                         </div>

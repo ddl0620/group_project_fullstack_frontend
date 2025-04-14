@@ -35,7 +35,7 @@ function UpdateEventPage() {
         fetchEvent();
     }, [eventId, navigate]);
 
-    const handleSubmit = async (eventData) => {
+    const handleUpdate = async (eventData) => {
         const response = await updateEvent(eventId, eventData); // API cập nhật sự kiện
         console.log(response)
         if (response.success) {
@@ -65,7 +65,7 @@ function UpdateEventPage() {
                 <br />
                 <EventForm
                     initialData={initialData}
-                    onSubmit={handleSubmit}
+                    onSubmit={handleUpdate}
                     onCancel={() => navigate('/event')}
                     submitButtonText="Update Event"
                 />
