@@ -14,7 +14,6 @@ import { EditIcon } from 'lucide-react';
 import { Pagination } from '@heroui/pagination';
 import {useEvent} from "@/hooks/useEvent.js";
 import {AlertDialogUtils} from "@/helpers/AlertDialogUtils.jsx";
-
 const itemsPerPage = 9;
 
 function MyEvent() {
@@ -52,7 +51,6 @@ function MyEvent() {
         });
 
         if (!confirmed) return;
-
         await deleteEvent(id);
     };
 

@@ -89,6 +89,7 @@
 // src/components/EventCard.jsx
 import {Card, CardHeader, CardBody, CardFooter} from "@heroui/card";
 import {Calendar, MapPin, Globe, Clock, Unlock, LockIcon} from "lucide-react";
+import {useNavigate} from "react-router-dom";
 const truncateDescription = (text, maxLength) => {
     if (!text) return "";
     if (text.length <= maxLength) return text;
@@ -115,7 +116,7 @@ const EventCard = ({
                        actions = [], // Mảng các hành động, mỗi hành động có button và onClick
                    }) => {
     const {
-        id,
+        _id,
         title = "Untitled Event",
         description = "",
         type = "ONLINE",
@@ -126,8 +127,15 @@ const EventCard = ({
         isPublic = true,
     } = event || {};
 
+    const navigate = useNavigate();
+
+    const handleCardClick = () => {
+        navigate(`/event/${_id}`);
+    };
+
     return (
-        <Card
+        <Card isPressable={true}
+              onPress={() => handleCardClick()}
             radius={"lg"}
             className="w-full max-w-sm rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
         >
@@ -141,7 +149,7 @@ const EventCard = ({
             </CardHeader>
 
             {/* Nội dung chính */}
-            <CardBody className="p-4">
+            <CardBody  className="p-4">
                 {/* Tiêu đề */}
                 <h3 className="text-xl font-bold text-gray-900 line-clamp-2">
                     {title}
@@ -211,6 +219,7 @@ const EventCard = ({
                     {action.button}
                 </div>
             ))}
+
         </Card>
     );
 };
