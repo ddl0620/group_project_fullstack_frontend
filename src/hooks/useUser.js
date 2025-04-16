@@ -1,4 +1,4 @@
-import API_INSTANCE from '@/services/api_instance.js';
+import APIServices from '@/services/APIServices.js';
 import { getMe, updateUser } from '@/services/UserService.js';
 import {useDispatch, useSelector} from 'react-redux';
 import { Toast } from '@/helpers/toastService.js';
@@ -26,7 +26,7 @@ export const useUser = () => {
                 return;
             }
 
-            const user = response.data.user;
+            const user = response.content.user;
             const role = user.role;
 
             dispatch(login({ user, role }));
@@ -46,7 +46,7 @@ export const useUser = () => {
             const response = await updateUser(userData, userId);
             console.log(response.status);
 
-            if (response.status !== 201) {
+            if (response.success) {
                 Toast.error('Update failed!');
                 setError('Update failed!');
                 return;

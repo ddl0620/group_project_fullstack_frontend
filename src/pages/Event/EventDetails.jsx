@@ -33,7 +33,7 @@ function EventDetailPage() {
                 setLoading(true);
                 const response = await getEventById(eventId);
                 if (response.success) {
-                    setEvent(response.data.event);
+                    setEvent(response.content.event);
                 } else {
                     throw new Error('Failed to load event data');
                 }

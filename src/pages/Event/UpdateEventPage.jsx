@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import EventForm from "@/components/EventForm.jsx";
 import SectionTitle from "@/pages/ProfilePage/SectionTitle.jsx";
 import {useEvent} from "@/hooks/useEvent.js";
+import {AlertDialog} from "@radix-ui/react-alert-dialog";
+import {AlertDialogUtils} from "@/helpers/AlertDialogUtils.jsx";
 
 function UpdateEventPage() {
     const navigate = useNavigate();
@@ -17,9 +19,9 @@ function UpdateEventPage() {
             try {
                 // console.log("Current id: ", eventId);
                 const response = await getEventById(eventId); // API lấy chi tiết sự kiện
-                console.log("Get Event IDxx:", response);
+                console.log("Get Event IDxx:", response.content.event);
                 if (response.success) {
-                    setInitialData(response.data.event); // Giả định response.data chứa dữ liệu sự kiện
+                    setInitialData(response.content.event); // Giả định response.data chứa dữ liệu sự kiện
                 } else {
                     toast.error('Failed to load event data.');
                     // navigate('/event');
@@ -36,6 +38,15 @@ function UpdateEventPage() {
     }, [eventId, navigate]);
 
     const handleUpdate = async (eventData) => {
+        const confirmed = await AlertDialogUtils.info({
+            title: "Update Event?",
+            description: "Are you sure you want to update this event? This action cannot be undone.",
+            confirmText: "Update",
+            cancelText: "Cancel",
+        });
+
+        if (!confirmed) return;
+
         const response = await updateEvent(eventId, eventData); // API cập nhật sự kiện
         console.log(response)
         if (response.success) {
