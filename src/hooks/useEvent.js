@@ -6,7 +6,7 @@ import {
     setMyEvents,
     setCurrentEvent,
     addEvent,
-    updateEvent,
+    updateEvent as updateEventRedux,
     removeEvent,
     setLoading,
     setError,
@@ -114,7 +114,8 @@ export const useEvent = () => {
             dispatch(setError(null));
             checkToken();
             const response = await updateEventAPI(id, eventData);
-            dispatch(updateEvent(response));
+            console.log(response);
+            await dispatch(updateEventRedux(response));
             Toast.success('Event updated successfully');
             return response;
         } catch (error) {

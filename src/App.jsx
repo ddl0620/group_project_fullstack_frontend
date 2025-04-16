@@ -6,7 +6,7 @@ import {HeroUIProvider} from '@heroui/react'
 import "./App.css"
 import routes from "./routes/routes.jsx";
 import { Toaster } from "sonner";
-import API_INSTANCE from "@/services/api_instance.js";
+import APIServices from "@/services/APIServices.js";
 
 // Hàm để render các tuyến đường phân cấp
 const renderRoutes = (routeList) =>
@@ -25,11 +25,11 @@ function App() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token && !isAuthenticated) {
-            API_INSTANCE
+            APIServices
                 .get('/api/v1/user/me')
                 .then((response) => {
                     // Access the user data from the nested structure
-                    const user = response.data.data.user;
+                    const user = response.data.content.user;
                     const role = user.role;
 
                     console.log("Rerender user: ", user);

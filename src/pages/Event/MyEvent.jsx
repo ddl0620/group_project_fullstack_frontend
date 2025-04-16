@@ -119,9 +119,9 @@ function MyEvent() {
                                 {
                                     button: (
                                         <Button
-                                            className="flex items-center gap-2 bg-red-500 px-3 text-white hover:bg-red-600"
+                                            className="flex items-center gap-2 border border-red-300 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white"
                                         >
-                                            <TrashIcon className="h-5 w-5" />
+                                            <TrashIcon className="h-5 w-5 text-red-400" />
                                             Delete
                                         </Button>
                                     ),
@@ -130,9 +130,9 @@ function MyEvent() {
                                 {
                                     button: (
                                         <Button
-                                            className="flex items-center gap-2 bg-blue-500 px-3 text-white hover:bg-blue-600"
+                                            className="flex items-center gap-2 border border-blue-500 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white"
                                         >
-                                            <EditIcon className="h-5 w-5" />
+                                            <EditIcon className="h-5 w-5 text-blue-500" />
                                             Edit
                                         </Button>
                                     ),
@@ -141,10 +141,10 @@ function MyEvent() {
                                 {
                                     button: (
                                         <Button
-                                            className="flex items-center gap-2 bg-blue-500 px-3 text-white hover:bg-blue-600"
+                                            className="flex items-center gap-2 border border-green-500 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white"
                                         >
-                                            <EyeIcon className="h-5 w-5" />
-                                            View All
+                                            <EyeIcon className="h-5 w-5 text-green-700" />
+                                            View Details
                                         </Button>
                                     ),
                                     onClick: () => handleEditButton(event._id),

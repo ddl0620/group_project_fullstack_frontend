@@ -207,18 +207,21 @@ const EventCard = ({
             </CardBody>
 
             {/* Nút hành động */}
-            {actions.map((action, index) => (
-                <div
-                    key={index} // Thêm prop key cho mỗi phần tử trong danh sách
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        action.onClick();
-                    }}
-                    className="flex flex-row justify-center items-center p-4 border-t border-gray-200 bg-gray-50 hover:bg-gray-100 cursor-pointer"
-                >
-                    {action.button}
-                </div>
-            ))}
+            <div className="flex justify-around mb-3">
+                {actions.map((action, index) => (
+                    <div
+                        key={index} // Thêm prop key cho mỗi phần tử trong danh sách
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            action.onClick();
+                        }}
+                        className=""
+                    >
+                        {action.button}
+                    </div>
+                ))}
+            </div>
+
 
         </Card>
     );
