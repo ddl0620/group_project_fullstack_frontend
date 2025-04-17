@@ -15,6 +15,9 @@ import CreateEventPage from '../pages/Event/CreateEventPage.jsx';
 import UpdateEventPage from '../pages/Event/UpdateEventPage.jsx';
 import BrowseEvent from "@/pages/Event/BrowseEvent.jsx";
 import EventDetailPage from "@/pages/Event/EventDetails.jsx";
+import SidebarLayout from "@/components/Layout/SidebarLayout.jsx";
+import eventItems from "@/components/SidebarItems/Event.js";
+import userItems from "@/components/SidebarItems/User.js";
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 const ProtectedRoute = ({ allowedRoles }) => {
@@ -69,7 +72,7 @@ const routes = [
         element: <ProtectedRoute allowedRoles={['user']} />,
         children: [
             {
-                element: <UserLayout />,
+                element: <SidebarLayout items={eventItems} />,
                 children: [{ path: '', element: <MyEvents /> }],
             },
         ],
@@ -79,7 +82,7 @@ const routes = [
         element: <ProtectedRoute allowedRoles={['user']} />,
         children: [
             {
-                element: <UserLayout />,
+                element: <SidebarLayout items={eventItems} />,
                 children: [{ path: '', element: <BrowseEvent /> }],
             },
         ],
@@ -89,7 +92,7 @@ const routes = [
         element: <ProtectedRoute allowedRoles={['user']} />,
         children: [
             {
-                element: <UserLayout />,
+                element: <SidebarLayout items={eventItems} />,
                 children: [{ path: '', element: <EventDetailPage /> }],
             },
         ],
@@ -99,7 +102,7 @@ const routes = [
         element: <ProtectedRoute allowedRoles={['user']} />,
         children: [
             {
-                element: <UserLayout />,
+                element: <SidebarLayout items={eventItems} />,
                 children: [{ path: '', element: <CreateEventPage /> }],
             },
         ],
@@ -109,7 +112,7 @@ const routes = [
         element: <ProtectedRoute allowedRoles={['user']} />,
         children: [
             {
-                element: <UserLayout />,
+                element: <SidebarLayout items={eventItems} />,
                 children: [{ path: '', element: <UpdateEventPage /> }],
             },
         ],
@@ -158,7 +161,7 @@ const routes = [
         element: <ProtectedRoute allowedRoles={['user', 'admin']} />, // Allow both user and admin roles
         children: [
             {
-                element: <UserLayout />,
+                element: <SidebarLayout items={userItems} />,
                 children: [{ path: '', element: <EditProfilePage /> }],
             },
         ],
