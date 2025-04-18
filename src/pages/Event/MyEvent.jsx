@@ -16,7 +16,7 @@ import {useEvent} from "@/hooks/useEvent.js";
 import {AlertDialogUtils} from "@/helpers/AlertDialogUtils.jsx";
 const itemsPerPage = 9;
 
-function MyEvent() {
+function MyOrganizedEvents() {
     const navigate = useNavigate();
     const location = useLocation();
     const { getMyEvents, deleteEvent, loading, error } = useEvent();
@@ -177,4 +177,4 @@ function MyEvent() {
     );
 }
 
-export default React.memo(MyEvent);
+export default React.memo(MyOrganizedEvents);

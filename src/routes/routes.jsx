@@ -18,6 +18,8 @@ import EventDetailPage from "@/pages/Event/EventDetails.jsx";
 import SidebarLayout from "@/components/Layout/SidebarLayout.jsx";
 import eventItems from "@/components/SidebarItems/Event.js";
 import userItems from "@/components/SidebarItems/User.js";
+import DiscussionPage from "@/pages/Discussion/DiscussionPage.jsx";
+import MyJoinedEvent from "@/pages/Event/MyJoinedEvents/MyJoinedEvent.jsx";
 
 // Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 const ProtectedRoute = ({ allowedRoles }) => {
@@ -73,17 +75,27 @@ const routes = [
         children: [
             {
                 element: <SidebarLayout items={eventItems} />,
+                children: [{ path: '', element: <BrowseEvent /> }],
+            },
+        ],
+    },
+    {
+        path: '/event/organized',
+        element: <ProtectedRoute allowedRoles={['user']} />,
+        children: [
+            {
+                element: <SidebarLayout items={eventItems} />,
                 children: [{ path: '', element: <MyEvents /> }],
             },
         ],
     },
     {
-        path: '/event/browse',
+        path: '/event/joined',
         element: <ProtectedRoute allowedRoles={['user']} />,
         children: [
             {
                 element: <SidebarLayout items={eventItems} />,
-                children: [{ path: '', element: <BrowseEvent /> }],
+                children: [{ path: '', element: <MyJoinedEvent /> }],
             },
         ],
     },
@@ -166,6 +178,26 @@ const routes = [
             },
         ],
     },
+    {
+        path: '/discussions', // New route for the Edit Profile page
+        element: <ProtectedRoute allowedRoles={['user', 'admin']} />, // Allow both user and admin roles
+        children: [
+            {
+                element: <SidebarLayout items={userItems} />,
+                children: [{ path: '', element: <DiscussionPage /> }],
+            },
+        ],
+    },
+    {
+        path: '/discussions/:id', // New route for the Edit Profile page
+        element: <ProtectedRoute allowedRoles={['user', 'admin']} />, // Allow both user and admin roles
+        children: [
+            {
+                element: <SidebarLayout items={userItems} />,
+                children: [{ path: '', element: <DiscussionPage /> }],
+            },
+        ],
+    }
 ];
 
 export default routes;

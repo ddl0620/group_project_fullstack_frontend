@@ -18,7 +18,8 @@ APIServices.interceptors.request.use(
         return config;
     },
     (error) => {
-        return Promise.reject(error);
+        console.log("🚨 Error in request:", error);
+        return Promise.reject(error.response.data);
     }
 );
 

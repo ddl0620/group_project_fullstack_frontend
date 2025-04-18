@@ -9,7 +9,15 @@ export const getAllEvents = async ({ page, limit, isAcs }) => {
     return response.data.content.events;
 };
 
-export const getMyEvents = async ({ page, limit, isAcs }) => {
+export const getJoinedEvents = async ({ page, limit, isAcs }) => {
+    const sort = isAcs ? 'asc' : 'desc';
+    const response = await APIServices.get(
+        `/api/v1/event/joined?page=${page}&limit=${limit}&sortBy=${sort}`
+    );
+    return response.data.content.events;
+};
+
+export const getMyOrganizedEvents = async ({ page, limit, isAcs }) => {
     const sort = isAcs ? 'asc' : 'desc';
     const response = await APIServices.get(
         `/api/v1/event/my?page=${page}&limit=${limit}&sortBy=${sort}`
@@ -21,6 +29,8 @@ export const getEventById = async (id) => {
     const response = await APIServices.get(`/api/v1/event/${id}`);
     return response.data;
 };
+
+
 
 export const updateEvent = async (id, eventData) => {
     const response = await APIServices.put(`/api/v1/event/${id}`, eventData);
@@ -34,5 +44,10 @@ export const deleteEvent = async (id) => {
 
 export const createEvent = async (eventData) => {
     const response = await APIServices.post(`/api/v1/event/add-event`, eventData);
+    return response.data;
+};
+
+export const requestJoinEvent = async (eventId, userData) => {
+    const response = await APIServices.post(`/api/v1/event/${eventId}/join`, userData);
     return response.data;
 };
