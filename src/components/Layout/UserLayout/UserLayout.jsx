@@ -5,6 +5,8 @@ import Footer from "../../Footer.jsx";
 
 function UserLayout() {
     return (
+
+
         <div className="flex flex-col min-h-screen">
             {/* Thanh điều hướng trên cùng */}
             <div className={"mb-17"}>
@@ -16,7 +18,7 @@ function UserLayout() {
                     <Outlet />
                 </main>
                 {/* Cột bên phải */}
-               
+
             </div>
             {/* Chân trang */}
             <Footer />
