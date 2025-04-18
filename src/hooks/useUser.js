@@ -1,8 +1,14 @@
 import APIServices from '@/services/APIServices.js';
-import { getMe, updateUser } from '@/services/UserService.js';
-import {useDispatch, useSelector} from 'react-redux';
+import {
+    getMe,
+    updateUser,
+    getUserById as getUserByIdAPI
+} from '@/services/UserService.js';
+import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from '@/helpers/toastService.js';
 import { login, logout } from '@/store/slices/userSlice.js';
+import { setError, setLoading } from '@/store/slices/eventSlice.js';
+import { checkToken } from '@/helpers/checkToken.js';
 
 export const useUser = () => {
     const dispatch = useDispatch();
@@ -63,7 +69,27 @@ export const useUser = () => {
         }
     };
 
+    const getUserById = async (userId) => {
+        try {
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const response = await getUserByIdAPI(userId);
+            if (response.success) Toast.success(response.message);
+            else Toast.error(response.message);
+            return response;
+        } catch (error) {
+            dispatch(setError(error.message));
+            console.log(error);
+            Toast.error(error.response.data.message);
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    };
+
     return {
+        getUserById,
         handleGetMe,
         handleUpdateUser,
     };

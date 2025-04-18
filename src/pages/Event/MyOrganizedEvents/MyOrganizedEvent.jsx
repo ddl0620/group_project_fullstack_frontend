@@ -1,10 +1,10 @@
-// src/pages/MyEvent.jsx
+// src/pages/MyOrganizedEvent.jsx
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import EventCard from '../../components/shared/EventCard.jsx';
-import SectionTitle from '../ProfilePage/SectionTitle.jsx';
-import Button from '../../components/shared/SubmitButton.jsx';
+import EventCard from '../../../components/shared/EventCard.jsx';
+import SectionTitle from '../../ProfilePage/SectionTitle.jsx';
+import Button from '../../../components/shared/SubmitButton.jsx';
 import {
     PlusCircleIcon,
     TrashIcon,
@@ -12,17 +12,28 @@ import {
 } from '@heroicons/react/24/outline';
 import { EditIcon } from 'lucide-react';
 import { Pagination } from '@heroui/pagination';
-import {useEvent} from "@/hooks/useEvent.js";
-import {AlertDialogUtils} from "@/helpers/AlertDialogUtils.jsx";
+import { useEvent } from '@/hooks/useEvent.js';
+import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
+import EventSidebar from '@/pages/Discussion/EventSidebar.jsx';
+import { mockEvents } from '@/pages/Discussion/mockData.js';
+import DiscussionHeader from '@/pages/Discussion/DiscussionHeader.jsx';
+import DiscussionThreadList from '@/pages/Discussion/DiscussionThreadList.jsx';
+import MyEventHeader from '@/pages/Event/MyOrganizedEvents/MyEventHeader.jsx';
+import EventManagement from '@/pages/Event/MyOrganizedEvents/EventManagement.jsx';
 const itemsPerPage = 9;
 
-function MyEvent() {
+function MyOrganizedEvents() {
     const navigate = useNavigate();
     const location = useLocation();
     const { getMyEvents, deleteEvent, loading, error } = useEvent();
     const myEvents = useSelector((state) => state.event.myEvents);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const handleEventSelect = (event) => {
+        setSelectedEvent(event);
+        // navigate(`/discussions/${event.id}`);
+    };
 
     // Tính tổng số trang
     const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -44,10 +55,11 @@ function MyEvent() {
 
     const handleRemoveEvent = async (id) => {
         const confirmed = await AlertDialogUtils.warning({
-            title: "Delete Event?",
-            description: "Are you sure you want to delete this event? This action cannot be undone.",
-            confirmText: "Delete",
-            cancelText: "Cancel",
+            title: 'Delete Event?',
+            description:
+                'Are you sure you want to delete this event? This action cannot be undone.',
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
         });
 
         if (!confirmed) return;
@@ -154,6 +166,28 @@ function MyEvent() {
                     ))}
                 </div>
 
+                {/*<div className="flex h-screen bg-gray-100">*/}
+                {/*        <EventSidebar*/}
+                {/*            events={myEvents}*/}
+                {/*            selectedEventId={selectedEvent?.id}*/}
+                {/*            onEventSelect={handleEventSelect}*/}
+                {/*        />*/}
+                {/*    <div className="flex flex-1 flex-col overflow-hidden">*/}
+                {/*        {selectedEvent ? (*/}
+                {/*            <>*/}
+                {/*                <MyEventHeader event={selectedEvent} />*/}
+                {/*                <EventManagement event={selectedEvent} />*/}
+                {/*            </>*/}
+                {/*        ) : (*/}
+                {/*            <div className="flex flex-1 items-center justify-center">*/}
+                {/*                <p className="text-lg text-gray-500">*/}
+                {/*                    Select an event to view discussions*/}
+                {/*                </p>*/}
+                {/*            </div>*/}
+                {/*        )}*/}
+                {/*    </div>*/}
+                {/*</div>*/}
+
                 {!loading && myEvents.length === 0 && (
                     <div className="mt-8 rounded-lg bg-white py-16 text-center shadow-sm">
                         <PlusCircleIcon className="mx-auto h-12 w-12 text-gray-400" />
@@ -177,4 +211,4 @@ function MyEvent() {
     );
 }
 
-export default React.memo(MyEvent);
+export default React.memo(MyOrganizedEvents);

@@ -13,11 +13,14 @@ import {
 } from '@/store/slices/eventSlice.js';
 import {
     getAllEvents as getAllEventsAPI,
-    getMyEvents as getMyEventsAPI,
+    getMyOrganizedEvents as getMyOrganizedEventsAPI,
     getEventById as getEventByIdAPI,
     updateEvent as updateEventAPI,
     deleteEvent as deleteEventAPI,
     createEvent as createEventAPI,
+    getJoinedEvents as getJoinedEventsAPI,
+    requestJoinEvent as requestJoinEventAPI,
+    respondJoinEvent as respondJoinEventAPI,
 } from '@/services/EventService.js';
 
 export const useEvent = () => {
@@ -58,12 +61,34 @@ export const useEvent = () => {
         }
     };
 
-    const getMyEvents = async ({ page, limit, isAcs }) => {
+    const getAllJoinedEvents = async ({ page, limit, isAcs }) => {
         try {
             dispatch(setLoading(true));
             dispatch(setError(null));
             checkToken();
-            const data = await getMyEventsAPI({
+            const data = await getJoinedEventsAPI({
+                page: page,
+                limit: limit,
+                isAcs: isAcs,
+            });
+            // Dispatch để lưu vào Redux store
+            // dispatch(setEvents(data));
+            return data;
+        } catch (error) {
+            dispatch(setError(error.message));
+            Toast.error('Failed to fetch events: ' + error.message);
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    };
+
+    const getMyOrganizedEvents = async ({ page, limit, isAcs }) => {
+        try {
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const data = await getMyOrganizedEventsAPI({
                 page: page,
                 limit: limit,
                 isAcs: isAcs,
@@ -163,9 +188,50 @@ export const useEvent = () => {
         }
     };
 
+    const requestJoinEvent = async (eventId, userData) => {
+        try {
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const response = await requestJoinEventAPI(eventId, userData);
+            if(response.success) Toast.success(response.message);
+            else Toast.error(response.message);
+            return response;
+        } catch (error) {
+            dispatch(setError(error.message));
+            console.log(error)
+            Toast.error(error.response.data.message);
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
+    const respondJoinEvent = async (eventId, userData) => {
+        try {
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const response = await respondJoinEventAPI(eventId, userData);
+            if(response.success) Toast.success(response.message);
+            else Toast.error(response.message);
+            return response;
+        } catch (error) {
+            dispatch(setError(error.message));
+            console.log(error)
+            Toast.error(error.response.data.message);
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
     return {
+        respondJoinEvent,
+        requestJoinEvent,
+        getAllJoinedEvents,
         getAllEvents,
-        getMyEvents,
+        getMyEvents: getMyOrganizedEvents,
         getEventById,
         updateEvent,
         deleteEvent,
