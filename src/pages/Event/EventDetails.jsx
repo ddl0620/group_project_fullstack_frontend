@@ -18,13 +18,14 @@ import ImageSlider from '@/components/shared/ImageSlider.jsx';
 import SectionTitle from '@/pages/ProfilePage/SectionTitle.jsx';
 import Button from '@/components/shared/SubmitButton.jsx';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
-import {AlertDialog} from "@/components/ui/alert-dialog.js";
-import {AlertDialogUtils} from "@/helpers/AlertDialogUtils.jsx";
-import {useSelector} from "react-redux";
+import { AlertDialog } from '@/components/ui/alert-dialog.js';
+import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
+import { useSelector } from 'react-redux';
+import EventDetailsForOrganizer from '@/pages/Event/MyOrganizedEvents/EventDetailsForOrganizer.jsx';
 
 function EventDetailPage() {
-    const { eventId } = useParams();
-    const {user} = useSelector(state => state.user);
+    let { eventId } = useParams();
+    const { user } = useSelector((state) => state.user);
     const navigate = useNavigate();
     const { getEventById, requestJoinEvent } = useEvent();
     const [event, setEvent] = useState(null);
@@ -42,8 +43,8 @@ function EventDetailPage() {
                     throw new Error('Failed to load event data');
                 }
             } catch (err) {
-                setError(err.message);
-                toast.error('Error loading event: ' + err.message);
+                setError(err.response.data.message);
+                toast.error(err.response.data.message);
             } finally {
                 setLoading(false);
             }
@@ -78,35 +79,106 @@ function EventDetailPage() {
         );
     }
 
+    const handleJoinEvent = async () => {
+        const confirmed = await AlertDialogUtils.info({
+            title: 'Joined Event?',
+            description: 'Are you sure you want to join this event',
+            confirmText: 'Join now',
+            cancelText: 'Cancel',
+        });
+
+        if (!confirmed) return;
+        const userData = {
+            userId: user._id,
+        };
+
+        await requestJoinEvent(eventId, userData);
+    };
+
     if (error || !event) {
         return (
             <div className="py-10 text-center text-red-500">
-                {error || 'Event not found.'}
+                {error}
+                <br />
+                <span>
+                    This is a private event. Please request to join first
+                </span>
+                <div className="mt-4 flex justify-center">
+                    <Button
+                        onClick={handleJoinEvent}
+                        className="w-fit bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                        Request to Join
+                    </Button>
+                </div>
             </div>
         );
     }
 
-    const handleJoinEvent = async () => {
-        const confirmed = await AlertDialogUtils.info({
-            title: "Joined Event?",
-            description: "Are you sure you want to join this event",
-            confirmText: "Join now",
-            cancelText: "Cancel",
-        });
+    const isSentRequest = event.participants?.some(
+        (participant) =>
+            participant.userId === user._id && participant.status === 'PENDING'
+    );
 
-        if(!confirmed) return;
-        const userData = {
-            userId: user._id,
-        }
+    if (event && !event.isPublic && isSentRequest) {
+        return (
+            <div className="py-10 text-center text-blue-500">
+                {error}
+                <br />
+                <span>
+                    Your request to join this event has been sent. Please wait
+                    for the organizer's approval.
+                </span>
+                <div className="mt-4 flex justify-center">
+                    <Button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-2 border border-gray-200 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white"
+                    >
+                        <ArrowLeft className="h-5 w-5" />
+                        Back
+                    </Button>
+                </div>
+            </div>
+        );
+    }
 
-        await requestJoinEvent(event._id, userData);
+    const isDenied = event.participants?.some(
+        (participant) =>
+            participant.userId === user._id && participant.status === 'DENIED'
+    );
+
+    if (event && !event.isPublic && isDenied) {
+        return (
+            <div className="py-10 text-center text-red-500">
+                {error}
+                <br />
+                <span>
+                    You are denied to join this event. Please contact the
+                    organizer for more information.
+                </span>
+                <div className="mt-4 flex justify-center">
+                    <Button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-2 border border-gray-200 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white"
+                    >
+                        <ArrowLeft className="h-5 w-5" />
+                        Back
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
+    if (user && event.organizer === user._id) {
+        console.log(event);
+        return <EventDetailsForOrganizer event={event} />;
     }
 
     return (
         <div className="min-h-screen bg-white">
             <div className="relative top-4 left-4 z-10 sm:top-6 sm:left-6">
                 <Button
-                    onClick={() => navigate('/event')}
+                    onClick={() => navigate(-1)}
                     className="flex items-center gap-2 border border-gray-200 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white"
                 >
                     <ArrowLeft className="h-5 w-5" />
@@ -139,12 +211,66 @@ function EventDetailPage() {
                             />
                         </div>
 
-                        <div className="flex justify-end">
-                            <Button onClick={handleJoinEvent} className="w-fit bg-blue-500 text-white hover:bg-blue-600">
-                                {event.isPublic
-                                    ? 'Join Event'
-                                    : 'Request to Join'}
-                            </Button>
+                        <div className="flex justify-between">
+                            {/* Conditional rendering based on user's relationship to the event */}
+                            {user && event.organizer === user._id ? (
+                                <div className="flex items-center gap-3">
+                                    <span className="rounded-md bg-blue-100 px-3 py-2 text-blue-600">
+                                        You're the organizer of this event
+                                    </span>
+                                    <Button
+                                        onClick={() =>
+                                            navigate(
+                                                `/discussions/${event._id}`
+                                            )
+                                        }
+                                        className="w-fit bg-blue-500 text-white hover:bg-blue-600"
+                                    >
+                                        View Discussion
+                                    </Button>
+                                </div>
+                            ) : user &&
+                              event.participants?.some(
+                                  (participant) =>
+                                      participant.userId === user._id &&
+                                      participant.status === 'PENDING'
+                              ) ? (
+                                <div className="flex items-center gap-2">
+                                    <span className="rounded-md bg-amber-100 px-3 py-2 text-amber-600">
+                                        Request sent. Awaiting approval.
+                                    </span>
+                                </div>
+                            ) : user &&
+                              event.participants?.some(
+                                  (participant) =>
+                                      participant.userId === user._id &&
+                                      participant.status === 'ACCEPTED'
+                              ) ? (
+                                <div className="flex items-center gap-3">
+                                    <span className="rounded-md bg-green-100 px-3 py-2 text-green-700">
+                                        You're attending this event
+                                    </span>
+                                    <Button
+                                        onClick={() =>
+                                            navigate(
+                                                `/discussions/${event._id}`
+                                            )
+                                        }
+                                        className="w-fit bg-blue-500 text-white hover:bg-blue-600"
+                                    >
+                                        Join Discussion
+                                    </Button>
+                                </div>
+                            ) : (
+                                <Button
+                                    onClick={handleJoinEvent}
+                                    className="w-fit bg-blue-500 text-white hover:bg-blue-600"
+                                >
+                                    {event.isPublic
+                                        ? 'Join Event'
+                                        : 'Request to Join'}
+                                </Button>
+                            )}
                         </div>
 
                         <div className="grid grid-cols-1 space-y-4 sm:grid-cols-2 sm:space-y-6 sm:space-x-8">

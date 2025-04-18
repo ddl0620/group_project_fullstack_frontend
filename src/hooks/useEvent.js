@@ -20,6 +20,7 @@ import {
     createEvent as createEventAPI,
     getJoinedEvents as getJoinedEventsAPI,
     requestJoinEvent as requestJoinEventAPI,
+    respondJoinEvent as respondJoinEventAPI,
 } from '@/services/EventService.js';
 
 export const useEvent = () => {
@@ -206,7 +207,27 @@ export const useEvent = () => {
         }
     }
 
+    const respondJoinEvent = async (eventId, userData) => {
+        try {
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            checkToken();
+            const response = await respondJoinEventAPI(eventId, userData);
+            if(response.success) Toast.success(response.message);
+            else Toast.error(response.message);
+            return response;
+        } catch (error) {
+            dispatch(setError(error.message));
+            console.log(error)
+            Toast.error(error.response.data.message);
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
     return {
+        respondJoinEvent,
         requestJoinEvent,
         getAllJoinedEvents,
         getAllEvents,

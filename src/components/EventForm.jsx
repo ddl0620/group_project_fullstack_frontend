@@ -5,10 +5,12 @@ import {
     validateForm,
 } from '@/components/shared/validationUtils.jsx';
 import TextInputField from '@/components/shared/TextInputField.jsx';
-import { Button } from '@mui/material';
+import { Switch } from '@/components/ui/switch';
+import Button from '@/components/shared/SubmitButton.jsx';
 
 const validationRules = {
     title: { required: true, requiredMessage: 'Event title is required' },
+    isPublic: { required: true, requiredMessage: 'Public status is required' },
     description: { required: true, requiredMessage: 'Description is required' },
     location: { required: true, requiredMessage: 'Location is required' },
     startDate: {
@@ -36,7 +38,7 @@ const validationRules = {
         patternMessage: 'End time must be HH:MM',
     },
     image: {
-        required: true,
+        required: false,
         pattern: /^https?:\/\/.+/,
         requiredMessage: 'Image URL is required',
         patternMessage: 'Please enter a valid image URL',
@@ -48,13 +50,14 @@ const validationRules = {
 };
 
 const EventForm = ({
-    initialData = {},
-    onSubmit,
-    submitButtonText = 'Save Event',
-    onCancel,
-}) => {
+                       initialData = {},
+                       onSubmit,
+                       submitButtonText = 'Save Event',
+                       onCancel,
+                   }) => {
     const [formData, setFormData] = useState({
         title: initialData.title || '',
+        isPublic: initialData.isPublic ?? true, // Use ?? to handle undefined
         description: initialData.description || '',
         location: initialData.location || '',
         startDate: initialData.startDate?.split('T')[0] || '',
@@ -78,6 +81,13 @@ const EventForm = ({
         setFormData((prev) => ({ ...prev, [name]: value }));
         if (errors[name]) {
             setErrors((prev) => ({ ...prev, [name]: null }));
+        }
+    };
+
+    const handleSwitchChange = (checked) => {
+        setFormData((prev) => ({ ...prev, isPublic: checked }));
+        if (errors.isPublic) {
+            setErrors((prev) => ({ ...prev, isPublic: null }));
         }
     };
 
@@ -112,7 +122,7 @@ const EventForm = ({
                 endDate: `${formData.endDate}T${formData.endTime}:00.000Z`,
                 location: formData.location,
                 images: formData.image ? [formData.image] : [],
-                isPublic: formData.eventType === 'ONLINE',
+                isPublic: formData.isPublic,
             };
 
             await onSubmit(eventData);
@@ -128,6 +138,7 @@ const EventForm = ({
                 title: validationRules.title,
                 description: validationRules.description,
                 eventType: validationRules.eventType,
+                isPublic: validationRules.isPublic,
             };
         if (step === 2)
             return {
@@ -145,7 +156,13 @@ const EventForm = ({
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex items-center justify-end h-fit">
-                <span className={"border border-gray-200 px-4 bg-gray-50 py-1 w-fit text-sm font-medium text-gray-500 flex  rounded-full"}> Step {step}/3</span>
+        <span
+            className={
+                'border border-gray-200 px-4 bg-gray-50 py-1 w-fit text-sm font-medium text-gray-500 flex rounded-full'
+            }
+        >
+          Step {step}/3
+        </span>
             </div>
 
             {errors.submit && (
@@ -162,19 +179,37 @@ const EventForm = ({
                     </div>
                     <div
                         className={
-                            'rounded-xl border border-gray-200 p-5 shadow-md'
+                            'rounded-xl border border-gray-200 p-5 shadow-md space-y-6'
                         }
                     >
-                        <label className="block py-2 text-lg font-semibold">
-                            Event Title
-                        </label>
-                        <TextInputField
-                            name="title"
-                            value={formData.title}
-                            onChange={handleChange}
-                            error={errors.title}
-                            ref={refs.title}
-                        />
+                        <div>
+                            <label className="block py-2 text-lg font-semibold">
+                                Event Title
+                            </label>
+                            <TextInputField
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                error={errors.title}
+                                ref={refs.title}
+                            />
+                        </div>
+                        <div>
+                            <label className="block py-2 text-lg font-semibold">
+                                Open For Everyone
+                            </label>
+                            <div className="flex items-center space-x-2">
+                                <Switch
+                                    checked={formData.isPublic}
+                                    onCheckedChange={handleSwitchChange}
+                                    id="isPublic"
+                                />
+                            </div>
+                            {errors.isPublic && (
+                                <p className="text-sm text-red-600">{errors.isPublic}</p>
+                            )}
+                        </div>
+
                         <div>
                             <label className="block py-2 text-lg font-semibold">
                                 Event Description
@@ -184,13 +219,13 @@ const EventForm = ({
                                 rows={4}
                                 value={formData.description}
                                 onChange={handleChange}
-                                className={`mt-1 block w-full rounded-md border ${errors.description ? 'border-red-500' : 'border-gray-300'} p-2 shadow-sm`}
+                                className={`mt-1 block w-full rounded-md border ${
+                                    errors.description ? 'border-red-500' : 'border-gray-300'
+                                } p-2 shadow-sm`}
                                 ref={refs.description}
                             />
                             {errors.description && (
-                                <p className="text-sm text-red-600">
-                                    {errors.description}
-                                </p>
+                                <p className="text-sm text-red-600">{errors.description}</p>
                             )}
                         </div>
                         <div>
@@ -201,16 +236,16 @@ const EventForm = ({
                                 name="eventType"
                                 value={formData.eventType}
                                 onChange={handleChange}
-                                className={`mt-1 block w-full rounded-md border ${errors.eventType ? 'border-red-500' : 'border-gray-300'} p-2 shadow-sm`}
+                                className={`mt-1 block w-full rounded-md border ${
+                                    errors.eventType ? 'border-red-500' : 'border-gray-300'
+                                } p-2 shadow-sm`}
                                 ref={refs.eventType}
                             >
                                 <option value="ONLINE">Online</option>
                                 <option value="OFFLINE">Offline</option>
                             </select>
                             {errors.eventType && (
-                                <p className="text-sm text-red-600">
-                                    {errors.eventType}
-                                </p>
+                                <p className="text-sm text-red-600">{errors.eventType}</p>
                             )}
                         </div>
                     </div>
@@ -219,9 +254,7 @@ const EventForm = ({
 
             {step === 2 && (
                 <div className={'space-y-4'}>
-                    <div className={'text-left text-2xl font-semibold'}>
-                        Step 2: Date & Time
-                    </div>
+                    <div className={'text-left text-2xl font-semibold'}>Date & Time</div>
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                         <TextInputField
                             label="Start Date"
@@ -292,17 +325,17 @@ const EventForm = ({
 
             <div className="flex justify-between pt-4">
                 <Button
+                    className={'bg-black text-white'}
                     onClick={step === 1 ? onCancel : handleBack}
-                    variant="outlined"
                 >
                     {step === 1 ? 'Cancel' : 'Back'}
                 </Button>
                 {step < 3 ? (
-                    <Button variant="contained" onClick={handleNext}>
+                    <Button className={'bg-black text-white'} onClick={handleNext}>
                         Next
                     </Button>
                 ) : (
-                    <Button variant="contained" type="submit">
+                    <Button className={'bg-black text-white'} type="submit">
                         {submitButtonText}
                     </Button>
                 )}

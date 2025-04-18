@@ -10,7 +10,7 @@ import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx'
 import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
 import EditProfilePage from '../pages/ProfilePage/EditProfilePage.jsx';
-import MyEvents from '../pages/Event/MyEvent.jsx';
+import MyEvents from '../pages/Event/MyOrganizedEvents/MyOrganizedEvent.jsx';
 import CreateEventPage from '../pages/Event/CreateEventPage.jsx';
 import UpdateEventPage from '../pages/Event/UpdateEventPage.jsx';
 import BrowseEvent from "@/pages/Event/BrowseEvent.jsx";
