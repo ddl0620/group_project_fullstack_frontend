@@ -53,7 +53,7 @@ const EventRequestManagement = ({ event }) => {
         }
     }, []);
 
-    const handleAccept = async (participantId, status) => {
+    const handleAccept = async (participantId) => {
         const confirmed = await AlertDialogUtils.info({
             title: 'Do you want to accept this request?',
             description: 'This action cannot be undone.',

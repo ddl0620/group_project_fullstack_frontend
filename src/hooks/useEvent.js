@@ -1,7 +1,6 @@
 // src/hooks/useEvent.js
 import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from '@/helpers/toastService.js';
-import { logout } from '@/store/slices/userSlice.js';
 import {
     setMyEvents,
     setCurrentEvent,
@@ -22,22 +21,12 @@ import {
     requestJoinEvent as requestJoinEventAPI,
     respondJoinEvent as respondJoinEventAPI,
 } from '@/services/EventService.js';
+import {checkToken} from "@/helpers/checkToken.js";
 
 export const useEvent = () => {
     const dispatch = useDispatch();
-    const user = useSelector((state) => state.user.user);
     const loading = useSelector((state) => state.event.loading);
     const error = useSelector((state) => state.event.error);
-
-    const checkToken = () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            Toast.info('No token found. Please login again');
-            dispatch(logout());
-            throw new Error('No token found');
-        }
-        return token;
-    };
 
     const getAllEvents = async ({ page, limit, isAcs }) => {
         try {

@@ -56,3 +56,4 @@ export const respondJoinEvent = async (eventId, userData) => {
     const response = await APIServices.post(`/api/v1/event/${eventId}/respond-join`, userData);
     return response.data;
 };
+

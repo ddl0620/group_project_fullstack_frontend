@@ -21,6 +21,7 @@ import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 import Button from '@/components/shared/SubmitButton.jsx';
 import EventRequestManagement from "@/pages/Event/MyOrganizedEvents/EventRequestManagement.jsx";
 import EventInvitationManagement from "@/pages/Event/MyOrganizedEvents/EventInvitationManagement.jsx";
+import EventRSVP from "@/pages/Event/MyOrganizedEvents/EventRSVP.jsx";
 
 const EventManagement = ({ event }) => {
     const [activeTab, setActiveTab] = useState('eventDetail');
@@ -177,8 +178,10 @@ const EventManagement = ({ event }) => {
         }
         if (tabName === 'request') {
             return <EventRequestManagement event={event} />;
-        } else {
+        } else if (tabName === 'invitation') {
             return <EventInvitationManagement event={event} />;
+        } if (tabName === 'rsvp') {
+            return <EventRSVP event={event} />;
         }
     };
 
@@ -208,18 +211,28 @@ const EventManagement = ({ event }) => {
                     </button>
                     <button
                         className={`px-1 pb-2 ${
+                            activeTab === 'invitation'
+                                ? 'border-b-2 border-blue-500 font-medium text-blue-600'
+                                : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                        onClick={() => setActiveTab('invitation')}
+                    >
+                        Invitation
+                    </button>
+                    <button
+                        className={`px-1 pb-2 ${
                             activeTab === 'rsvp'
                                 ? 'border-b-2 border-blue-500 font-medium text-blue-600'
                                 : 'text-gray-500 hover:text-gray-700'
                         }`}
                         onClick={() => setActiveTab('rsvp')}
                     >
-                        Invitations
+                        RSVP
                     </button>
+
                 </div>
             </div>
             <div>{currentTab(activeTab)}</div>
-
         </div>
     );
 };

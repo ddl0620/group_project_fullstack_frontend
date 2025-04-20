@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '@/hooks/useUser.js';
 import Button from '@/components/shared/SubmitButton.jsx';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
+import {Toast} from "@/helpers/toastService.js";
+import useInvitation from "@/hooks/useInvitation.js";
+import {AlertDialogUtils} from "@/helpers/AlertDialog.jsx";
 
 const EventInvitationManagement = ({ event }) => {
     const [participants, setParticipants] = useState([]);
     const [invitationMessage, setInvitationMessage] = useState('');
     const [sentParticipants, setSentParticipants] = useState(new Set());
     const { getUserById } = useUser();
+    const { sendInvitationToOneUser } = useInvitation();
 
     useEffect(() => {
         const fetchParticipants = async () => {
@@ -51,12 +55,34 @@ const EventInvitationManagement = ({ event }) => {
         }
     }, []);
 
-    const handleSendInvitation = (participantId) => {
+    const handleSendInvitation = async (participantId) => {
         if (!invitationMessage.trim()) {
-            console.warn('Invitation message is empty');
+            Toast.warning('Invitation message is empty');
             return;
         }
-        console.log(`Sending invitation to ${participantId}: ${invitationMessage}`);
+        const confirmed = await AlertDialogUtils.info({
+            title: 'Joined Event?',
+            description: 'Are you sure you want to join this event',
+            confirmText: 'Join now',
+            cancelText: 'Cancel',
+        });
+
+        if (!confirmed) {
+            Toast.info("Invitation sending cancelled");
+            return;
+        }
+
+        const invitationData = {
+            eventId: event._id,
+            inviteeId: participantId,
+            content: invitationMessage,
+        }
+
+        const response = await sendInvitationToOneUser(invitationData);
+        if(response.success){
+            Toast.success('Invitation sent successfully');
+        }
+
         setSentParticipants((prev) => new Set(prev).add(participantId));
         setTimeout(() => {
             setSentParticipants((prev) => {
