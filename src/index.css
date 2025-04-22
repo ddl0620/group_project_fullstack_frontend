@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@fontsource/inter"; /* nếu dùng cách NPM */
 
 @keyframes marquee {
     from {

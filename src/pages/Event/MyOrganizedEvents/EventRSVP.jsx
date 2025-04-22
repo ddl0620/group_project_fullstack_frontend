@@ -1,79 +1,103 @@
-// src/pages/Event/MyOrganizedEvents/EventRSVP.jsx
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.js";
-
-// Mock data đơn giản cho lời mời, tuân thủ InvitationInterface
-const mockInvitations = [
-    {
-        _id: 'inv1',
-        sentAt: new Date('2025-04-15T10:00:00Z'),
-        content: 'Tham gia sự kiện nhé! Tham gia sự kiện nhé! Tham gia sự kiện nhé!Tham gia sự kiện nhé!',
-        eventId: '67fff267232f5df4eaf6dfcb',
-        inviteeId: 'user1',
-        invitorId: 'user0',
-        isDeleted: false,
-        createdAt: new Date('2025-04-15T10:00:00Z'),
-        updatedAt: new Date('2025-04-15T10:00:00Z'),
-        rsvpStatus: 'ACCEPTED', // Thêm trường rsvpStatus để hiển thị trạng thái
-    },
-    {
-        _id: 'inv2',
-        sentAt: new Date('2025-04-16T12:00:00Z'),
-        content: 'Mời bạn đến sự kiện!',
-        eventId: '67fff267232f5df4eaf6dfcb',
-        inviteeId: 'user2',
-        invitorId: 'user0',
-        isDeleted: false,
-        createdAt: new Date('2025-04-16T12:00:00Z'),
-        updatedAt: new Date('2025-04-16T12:00:00Z'),
-        rsvpStatus: 'PENDING',
-    },
-];
-
-// Mock data đơn giản cho người dùng
-const mockUsers = {
-    user1: { _id: 'user1', name: 'Nguyễn An', avatar: '' },
-    user2: { _id: 'user2', name: 'Trần Bình', avatar: '' },
-};
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+import { useInvitation } from '@/hooks/useInvitation.js';
+import { Loader2 } from 'lucide-react';
 
 const EventRSVP = ({ event }) => {
-    // Lọc lời mời theo event._id và không bị xóa
-    const invitations = mockInvitations
-        .filter((inv) => inv.eventId === event._id && !inv.isDeleted)
-        .map((invitation) => ({
-            ...invitation,
-            invitee: mockUsers[invitation.inviteeId] || {
-                _id: invitation.inviteeId,
-                name: 'Không xác định',
-                avatar: '',
-            },
-        }));
+    const {
+        fetchRSVPByInvitationId,
+        invitations,
+        totalInvitations,
+        loading,
+        error,
+    } = useInvitation();
+
+    const [invitationsWithRSVP, setInvitationsWithRSVP] = useState([]);
+    const [fetchingRSVPs, setFetchingRSVPs] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
+
+    // Fetch RSVP for each invitation when invitations change
+    useEffect(() => {
+        console.log('Invitations state in EventRSVP:', invitations);
+        const loadRSVPs = async () => {
+            if (!invitations || invitations.length === 0) {
+                setInvitationsWithRSVP([]);
+                console.log('No invitations, resetting invitationsWithRSVP');
+                return;
+            }
+
+            setFetchingRSVPs(true);
+            try {
+                const invitationsWithRSVPData = await Promise.all(
+                    invitations.map(async (invitation) => {
+                        const rsvp = await fetchRSVPByInvitationId(invitation._id);
+                        console.log('Processed invitation:', invitation._id, 'with RSVP:', rsvp);
+                        return {
+                            ...invitation,
+                            rsvpStatus: rsvp.response || 'PENDING',
+                            invitee: invitation.inviteeId || {
+                                _id: invitation.inviteeId,
+                                name: 'Không xác định',
+                                avatar: '',
+                            },
+                        };
+                    })
+                );
+
+                console.log('Setting invitationsWithRSVP:', invitationsWithRSVPData);
+                setInvitationsWithRSVP(invitationsWithRSVPData);
+            } catch (err) {
+                console.error('Error fetching RSVPs:', err);
+                setInvitationsWithRSVP([]);
+            } finally {
+                setFetchingRSVPs(false);
+            }
+        };
+
+        loadRSVPs();
+    }, [invitations, fetchRSVPByInvitationId]);
+
+    const handlePageChange = (newPage) => {
+        console.log('Changing to page:', newPage);
+        setCurrentPage(newPage);
+    };
 
     const getStatusBadge = (status) => {
         switch (status) {
             case 'ACCEPTED':
-                return (
-                    <Badge className="bg-green-100 text-green-800">Đã chấp nhận</Badge>
-                );
-            case 'DECLINED':
+                return <Badge className="bg-green-100 text-green-800">Đã chấp nhận</Badge>;
+            case 'DENIED':
                 return <Badge className="bg-red-100 text-red-800">Đã từ chối</Badge>;
             case 'PENDING':
-                return (
-                    <Badge className="bg-yellow-100 text-yellow-800">Đang chờ</Badge>
-                );
+                return <Badge className="bg-yellow-100 text-yellow-800">Đang chờ</Badge>;
             default:
                 return <Badge className="bg-gray-100 text-gray-800">Không xác định</Badge>;
         }
     };
 
     const formatDateTime = (date) => {
-        if (!(date instanceof Date) || isNaN(date)) {
+        if (!date || isNaN(new Date(date))) {
             return 'Không xác định';
         }
-        return date.toLocaleString('vi-VN', {
+        return new Date(date).toLocaleString('vi-VN', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
@@ -82,41 +106,95 @@ const EventRSVP = ({ event }) => {
         });
     };
 
+    const totalPages = Math.ceil(Number(totalInvitations) / Number(itemsPerPage)) || 1;
+
     return (
-        <div className="rounded-lg bg-gray-50 p-6 shadow-sm">
-            {invitations.length > 0 ? (
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Người được mời</TableHead>
-                            <TableHead>Nội dung lời mời</TableHead>
-                            <TableHead>Trạng thái RSVP</TableHead>
-                            <TableHead>Thời gian gửi</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {invitations.map((invitation) => (
-                            <TableRow key={invitation._id}>
-                                <TableCell className="flex items-center gap-3">
-                                    <CustomAvatar
-                                        className="h-8 w-8"
-                                        src={invitation.invitee.avatar}
-                                        alt={invitation.invitee.name}
-                                        fallbackText={invitation.invitee.name || 'N/A'}
-                                    />
-                                    <span>{invitation.invitee.name}</span>
-                                </TableCell>
-                                <TableCell>{invitation.content || 'Không có nội dung'}</TableCell>
-                                <TableCell>{getStatusBadge(invitation.rsvpStatus)}</TableCell>
-                                <TableCell>{formatDateTime(invitation.sentAt)}</TableCell>
+        <div className="max-w-full overflow-x-auto rounded-lg bg-gray-50 p-4 shadow-sm sm:p-6">
+            {(loading || fetchingRSVPs) && (
+                <div className="flex items-center justify-center py-4">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                </div>
+            )}
+            {error && (
+                <p className="py-4 text-center text-red-500">Lỗi: {error}</p>
+            )}
+            {!loading && !fetchingRSVPs && invitationsWithRSVP.length > 0 ? (
+                <>
+                    <Table className="min-w-full">
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[200px]">Người được mời</TableHead>
+                                <TableHead>Nội dung lời mời</TableHead>
+                                <TableHead className="w-[150px]">Trạng thái RSVP</TableHead>
+                                <TableHead className="w-[150px]">Thời gian gửi</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {invitationsWithRSVP.map((invitation) => (
+                                <TableRow key={invitation._id}>
+                                    <TableCell className="flex items-center gap-3">
+                                        <CustomAvatar
+                                            className="h-8 w-8"
+                                            src={invitation.invitee.avatar}
+                                            alt={invitation.invitee.name}
+                                            fallbackText={invitation.invitee.name || 'N/A'}
+                                        />
+                                        <span className="truncate">{invitation.invitee.name}</span>
+                                    </TableCell>
+                                    <TableCell className="max-w-[200px] truncate sm:max-w-[300px]">
+                                        {invitation.content || 'Không có nội dung'}
+                                    </TableCell>
+                                    <TableCell>{getStatusBadge(invitation.rsvpStatus)}</TableCell>
+                                    <TableCell>{formatDateTime(invitation.sentAt)}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    {totalPages > 1 && (
+                        <Pagination className="mt-4">
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        className={
+                                            currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                                        }
+                                    />
+                                </PaginationItem>
+                                {[...Array(totalPages)].map((_, index) => (
+                                    <PaginationItem key={index}>
+                                        <PaginationLink
+                                            onClick={() => handlePageChange(index + 1)}
+                                            isActive={currentPage === index + 1}
+                                            className={
+                                                currentPage === index + 1 ? 'bg-blue-100' : 'cursor-pointer'
+                                            }
+                                        >
+                                            {index + 1}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                        className={
+                                            currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                                        }
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    )}
+                </>
             ) : (
-                <p className="text-center text-gray-500">
-                    Chưa có lời mời nào được gửi.
-                </p>
+                !loading &&
+                !fetchingRSVPs && (
+                    <p className="py-4 text-center text-gray-500">
+                        Chưa có lời mời nào được gửi.
+                    </p>
+                )
             )}
         </div>
     );

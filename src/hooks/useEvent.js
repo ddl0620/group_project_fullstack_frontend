@@ -21,7 +21,7 @@ import {
     requestJoinEvent as requestJoinEventAPI,
     respondJoinEvent as respondJoinEventAPI,
 } from '@/services/EventService.js';
-import {checkToken} from "@/helpers/checkToken.js";
+import { checkToken } from '@/helpers/checkToken.js';
 
 export const useEvent = () => {
     const dispatch = useDispatch();
@@ -183,18 +183,18 @@ export const useEvent = () => {
             dispatch(setError(null));
             checkToken();
             const response = await requestJoinEventAPI(eventId, userData);
-            if(response.success) Toast.success(response.message);
+            if (response.success) Toast.success(response.message);
             else Toast.error(response.message);
             return response;
         } catch (error) {
             dispatch(setError(error.message));
-            console.log(error)
+            console.log(error);
             Toast.error(error.response.data.message);
             throw error;
         } finally {
             dispatch(setLoading(false));
         }
-    }
+    };
 
     const respondJoinEvent = async (eventId, userData) => {
         try {
@@ -202,18 +202,18 @@ export const useEvent = () => {
             dispatch(setError(null));
             checkToken();
             const response = await respondJoinEventAPI(eventId, userData);
-            if(response.success) Toast.success(response.message);
+            if (response.success) Toast.success(response.message);
             else Toast.error(response.message);
             return response;
         } catch (error) {
             dispatch(setError(error.message));
-            console.log(error)
+            console.log(error);
             Toast.error(error.response.data.message);
             throw error;
         } finally {
             dispatch(setLoading(false));
         }
-    }
+    };
 
     return {
         respondJoinEvent,

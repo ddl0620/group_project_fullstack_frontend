@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
     MessageSquare,
     ThumbsUp,
@@ -19,12 +19,25 @@ import EventCard from '@/components/shared/EventCard.jsx';
 import ImageSlider from '@/components/shared/ImageSlider.jsx';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 import Button from '@/components/shared/SubmitButton.jsx';
-import EventRequestManagement from "@/pages/Event/MyOrganizedEvents/EventRequestManagement.jsx";
-import EventInvitationManagement from "@/pages/Event/MyOrganizedEvents/EventInvitationManagement.jsx";
-import EventRSVP from "@/pages/Event/MyOrganizedEvents/EventRSVP.jsx";
+import EventRequestManagement from '@/pages/Event/MyOrganizedEvents/EventRequestManagement.jsx';
+import EventInvitationManagement from '@/pages/Event/MyOrganizedEvents/EventInvitationManagement.jsx';
+import EventRSVP from '@/pages/Event/MyOrganizedEvents/EventRSVP.jsx';
+import { useInvitation } from '@/hooks/useInvitation.js';
 
 const EventManagement = ({ event }) => {
     const [activeTab, setActiveTab] = useState('eventDetail');
+    const { fetchInvitationsByEventId } = useInvitation();
+
+    // Fetch invitations when event._id changes
+    useEffect(() => {
+        if (event?._id) {
+            console.log(
+                'Fetching invitations for event in EventManagement:',
+                event._id
+            );
+            fetchInvitationsByEventId(event._id, 1, 10);
+        }
+    }, [event._id, fetchInvitationsByEventId]);
 
     const formatDay = (dateString) => {
         if (!dateString) return 'N/A';
@@ -45,9 +58,8 @@ const EventManagement = ({ event }) => {
         });
     };
 
-
-    const currentTab = (tabName) => {
-        if (tabName === 'eventDetail') {
+    const currentTab = useMemo(() => {
+        if (activeTab === 'eventDetail') {
             return (
                 <div className="mx-auto max-w-5xl py-10 sm:px-6 lg:px-24">
                     <div className="flex flex-col items-center justify-center gap-6">
@@ -75,7 +87,7 @@ const EventManagement = ({ event }) => {
                             </div>
 
                             <div className="grid grid-cols-1 space-y-4 sm:grid-cols-2 sm:space-y-6 sm:space-x-8">
-                                {/*Participant*/}
+                                {/* Participant */}
                                 <div className={'space-y-2'}>
                                     <p
                                         className={
@@ -93,7 +105,7 @@ const EventManagement = ({ event }) => {
                                     </div>
                                 </div>
 
-                                {/*Date and Time*/}
+                                {/* Date and Time */}
                                 <div className={'space-y-2'}>
                                     <p
                                         className={
@@ -119,7 +131,7 @@ const EventManagement = ({ event }) => {
                                     </div>
                                 </div>
 
-                                {/*Event Type*/}
+                                {/* Event Type */}
                                 <div className={'space-y-2'}>
                                     <p
                                         className={
@@ -143,7 +155,7 @@ const EventManagement = ({ event }) => {
                                     </div>
                                 </div>
 
-                                {/*Venue*/}
+                                {/* Venue */}
                                 <div className={'space-y-2'}>
                                     <p
                                         className={
@@ -176,14 +188,14 @@ const EventManagement = ({ event }) => {
                 </div>
             );
         }
-        if (tabName === 'request') {
+        if (activeTab === 'request') {
             return <EventRequestManagement event={event} />;
-        } else if (tabName === 'invitation') {
+        } else if (activeTab === 'invitation') {
             return <EventInvitationManagement event={event} />;
-        } if (tabName === 'rsvp') {
+        } else if (activeTab === 'rsvp') {
             return <EventRSVP event={event} />;
         }
-    };
+    }, [activeTab, event]);
 
     return (
         <div className="flex-1 overflow-y-auto bg-gray-50 p-6">
@@ -229,10 +241,9 @@ const EventManagement = ({ event }) => {
                     >
                         RSVP
                     </button>
-
                 </div>
             </div>
-            <div>{currentTab(activeTab)}</div>
+            <div>{currentTab}</div>
         </div>
     );
 };
