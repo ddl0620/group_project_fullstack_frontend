@@ -33,14 +33,16 @@ export const useEvent = () => {
             dispatch(setLoading(true));
             dispatch(setError(null));
             checkToken();
-            const data = await getAllEventsAPI({
+            const response = await getAllEventsAPI({
                 page: page,
                 limit: limit,
                 isAcs: isAcs,
             });
             // Dispatch để lưu vào Redux store
             // dispatch(setEvents(data));
-            return data;
+            if(response.success) Toast.success('Events fetched successfully');
+            else Toast.error(response.message);
+            return response;
         } catch (error) {
             dispatch(setError(error.message));
             Toast.error('Failed to fetch events: ' + error.message);
@@ -55,14 +57,18 @@ export const useEvent = () => {
             dispatch(setLoading(true));
             dispatch(setError(null));
             checkToken();
-            const data = await getJoinedEventsAPI({
+            const response = await getJoinedEventsAPI({
                 page: page,
                 limit: limit,
                 isAcs: isAcs,
             });
+
+            if(response.success) Toast.success('Events fetched successfully');
+            else Toast.error(response.message);
+
             // Dispatch để lưu vào Redux store
             // dispatch(setEvents(data));
-            return data;
+            return response;
         } catch (error) {
             dispatch(setError(error.message));
             Toast.error('Failed to fetch events: ' + error.message);

@@ -6,7 +6,7 @@ export const getAllEvents = async ({ page, limit, isAcs }) => {
     const response = await APIServices.get(
         `/api/v1/event/all-event?page=${page}&limit=${limit}&sortBy=${sort}`
     );
-    return response.data.content.events;
+    return response.data;
 };
 
 export const getJoinedEvents = async ({ page, limit, isAcs }) => {
@@ -14,7 +14,7 @@ export const getJoinedEvents = async ({ page, limit, isAcs }) => {
     const response = await APIServices.get(
         `/api/v1/event/joined?page=${page}&limit=${limit}&sortBy=${sort}`
     );
-    return response.data.content.events;
+    return response.data;
 };
 
 export const getMyOrganizedEvents = async ({ page, limit, isAcs }) => {
