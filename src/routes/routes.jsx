@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import Dashboard from '../pages/Dashboard/dashboard';
+import UserDashboard from '../pages/Dashboard/User/UserDashboard.jsx';
 import Home from '../pages/Home/home';
 import Login from '../pages/SignIn/SignIn';
 import SignUp from '../pages/SignUp/SignUp';
@@ -129,16 +129,16 @@ const routes = [
             },
         ],
     },
-    {
-        path: '/dashboard',
-        element: <ProtectedRoute allowedRoles={['admin']} />,
-        children: [
-            {
-                element: <AdminLayout />,
-                children: [{ path: '', element: <Dashboard /> }],
-            },
-        ],
-    },
+    // {
+    //     path: '/admin/dashboard',
+    //     element: <ProtectedRoute allowedRoles={['admin']} />,
+    //     children: [
+    //         {
+    //             element: <AdminLayout />,
+    //             children: [{ path: '', element: <UserDashboard /> }],
+    //         },
+    //     ],
+    // },
     {
         path: '/sign-in',
         element: <AuthenticatedRoute allowedRoles={['guest']} />,
@@ -146,6 +146,16 @@ const routes = [
             {
                 element: <DefaultLayout />,
                 children: [{ path: '', element: <Login /> }],
+            },
+        ],
+    },
+    {
+        path: '/dashboard',
+        element: <ProtectedRoute allowedRoles={['user']} />,
+        children: [
+            {
+                element: <DefaultLayout />,
+                children: [{ path: '', element: <UserDashboard /> }],
             },
         ],
     },
