@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const HeroText = ({ title, subtitle, primaryLink, secondaryLink }) => {
     return (
-        <div className="md:w-1/2 text-center md:text-left">
+        <div className="md:w-1/2 text-center md:text-left font-inter font-semibold">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
                 {title} <span className="text-blue-500">EventApp</span>
             </h1>

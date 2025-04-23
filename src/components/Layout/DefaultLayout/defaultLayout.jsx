@@ -8,7 +8,7 @@ function DefaultLayout() {
             {/* Thanh điều hướng trên cùng */}
             <NavBar />
             {/* Khu vực chính */}
-            <main className="flex-1 p-6 bg-gray-100">
+            <main className="pt-22 flex-1 bg-gray-100">
                 <Outlet />
             </main>
             {/* Chân trang */}

@@ -1,6 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './slices/userSlice.js';
 import eventReducer from './slices/eventSlice.js';
+import invitationReducer from './slices/invitationSlice.js';
+
 
 // Create a Redux store
 export const store = configureStore({
@@ -9,6 +11,7 @@ export const store = configureStore({
         event: eventReducer,
         //Manage user-related states ( authentication, roles, ... )
         user: userReducer,
+        invitation: invitationReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

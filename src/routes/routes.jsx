@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import Dashboard from '../pages/Dashboard/dashboard';
+
+import UserDashboard from '../pages/Dashboard/User/UserDashboard.jsx';
 import Home from '../pages/Home/home';
 import Login from '../pages/SignIn/SignIn';
 import SignUp from '../pages/SignUp/SignUp';
@@ -17,15 +18,14 @@ import BrowseEvent from "@/pages/Event/BrowseEvent.jsx";
 import EventDetailPage from "@/pages/Event/EventDetails.jsx";
 import SidebarLayout from "@/components/Layout/SidebarLayout.jsx";
 import eventItems from "@/components/SidebarItems/Event.js";
-import userItems from "@/components/SidebarItems/User.js";
+import settingItems from "@/components/SidebarItems/Setting.js";
 import DiscussionPage from "@/pages/Discussion/DiscussionPage.jsx";
 import MyJoinedEvent from "@/pages/Event/MyJoinedEvents/MyJoinedEvent.jsx";
+import userItems from "@/components/SidebarItems/User.js";
 
-// Component để bảo vệ các tuyến đường dựa trên trạng thái xác thực và vai trò
 const ProtectedRoute = ({ allowedRoles }) => {
     const { isAuthenticated, role } = useSelector((state) => state.user);
 
-    console.log(isAuthenticated + ' ' + role);
     if (!isAuthenticated) {
         return <Navigate to="/sign-in" replace={true} />;
     }
@@ -40,18 +40,16 @@ const ProtectedRoute = ({ allowedRoles }) => {
 const AuthenticatedRoute = () => {
     const { isAuthenticated, role } = useSelector((state) => state.user);
 
-    if (isAuthenticated && (role !== 'user ' || role !== 'admin')) {
+    if (isAuthenticated && (role !== 'user' && role !== 'admin')) {
         return <Navigate to="/" replace={true} />;
     }
 
     return <Outlet />;
 };
 
-// Định nghĩa các tuyến đường
 const routes = [
     {
         path: '/',
-        // element: <ProtectedRoute allowedRoles={['organizer', 'attendee']} />,
         children: [
             {
                 element: <UserLayout />,
@@ -60,88 +58,8 @@ const routes = [
         ],
     },
     {
-        path: '/home',
-        element: <ProtectedRoute allowedRoles={['user']} />,
-        children: [
-            {
-                element: <UserLayout />,
-                children: [{ path: '', element: <Home /> }],
-            },
-        ],
-    },
-    {
-        path: '/event',
-        element: <ProtectedRoute allowedRoles={['user']} />,
-        children: [
-            {
-                element: <SidebarLayout items={eventItems} />,
-                children: [{ path: '', element: <BrowseEvent /> }],
-            },
-        ],
-    },
-    {
-        path: '/event/organized',
-        element: <ProtectedRoute allowedRoles={['user']} />,
-        children: [
-            {
-                element: <SidebarLayout items={eventItems} />,
-                children: [{ path: '', element: <MyEvents /> }],
-            },
-        ],
-    },
-    {
-        path: '/event/joined',
-        element: <ProtectedRoute allowedRoles={['user']} />,
-        children: [
-            {
-                element: <SidebarLayout items={eventItems} />,
-                children: [{ path: '', element: <MyJoinedEvent /> }],
-            },
-        ],
-    },
-    {
-        path: '/event/:eventId',
-        element: <ProtectedRoute allowedRoles={['user']} />,
-        children: [
-            {
-                element: <SidebarLayout items={eventItems} />,
-                children: [{ path: '', element: <EventDetailPage /> }],
-            },
-        ],
-    },
-    {
-        path: '/event/create',
-        element: <ProtectedRoute allowedRoles={['user']} />,
-        children: [
-            {
-                element: <SidebarLayout items={eventItems} />,
-                children: [{ path: '', element: <CreateEventPage /> }],
-            },
-        ],
-    },
-    {
-        path: '/event/update/:eventId',
-        element: <ProtectedRoute allowedRoles={['user']} />,
-        children: [
-            {
-                element: <SidebarLayout items={eventItems} />,
-                children: [{ path: '', element: <UpdateEventPage /> }],
-            },
-        ],
-    },
-    {
-        path: '/dashboard',
-        element: <ProtectedRoute allowedRoles={['admin']} />,
-        children: [
-            {
-                element: <AdminLayout />,
-                children: [{ path: '', element: <Dashboard /> }],
-            },
-        ],
-    },
-    {
         path: '/sign-in',
-        element: <AuthenticatedRoute allowedRoles={['guest']} />,
+        element: <AuthenticatedRoute />,
         children: [
             {
                 element: <DefaultLayout />,
@@ -151,7 +69,7 @@ const routes = [
     },
     {
         path: '/sign-up',
-        element: <AuthenticatedRoute allowedRoles={['guest']} />,
+        element: <AuthenticatedRoute />,
         children: [
             {
                 element: <DefaultLayout />,
@@ -169,35 +87,48 @@ const routes = [
         element: <Navigate to="/error" replace={false} />,
     },
     {
-        path: '/profile/edit', // New route for the Edit Profile page
-        element: <ProtectedRoute allowedRoles={['user', 'admin']} />, // Allow both user and admin roles
+        path: '/',
+        element: <ProtectedRoute allowedRoles={['user', 'admin']} />,
         children: [
+            // Group using event sidebar
             {
-                element: <SidebarLayout items={userItems} />,
-                children: [{ path: '', element: <EditProfilePage /> }],
+                element: <SidebarLayout title={"Event Management"} items={eventItems} />,
+                children: [
+                    { path: 'event', element: <BrowseEvent /> },
+                    { path: 'event/organized', element: <MyEvents /> },
+                    { path: 'event/joined', element: <MyJoinedEvent /> },
+                    { path: 'event/:eventId', element: <EventDetailPage /> },
+                    { path: 'event/create', element: <CreateEventPage /> },
+                    { path: 'event/update/:eventId', element: <UpdateEventPage /> },
+                ],
+            },
+            // Group using user sidebar
+            {
+                element: <SidebarLayout title={"Profile Setting"} items={settingItems} />,
+                children: [
+                    { path: 'profile/edit', element: <EditProfilePage /> },
+                    { path: 'profile/password', element: <EditProfilePage /> },
+                    { path: 'profile/email', element: <EditProfilePage /> },
+                ],
+            },
+            // Dashboard route (not using sidebar layout)
+            {
+                element: <SidebarLayout title={"Dashboard"} items={userItems} />,
+                children: [
+                    { path: '/dashboard', element: <UserDashboard /> },
+                    {path: '/discussions', element: <DiscussionPage />},
+                    {path: '/notifications', element: <DiscussionPage />},
+
+                ],
+            },
+            // Home page with user layout
+            {
+                path: 'home',
+                element: <UserLayout />,
+                children: [{ path: '', element: <Home /> }],
             },
         ],
     },
-    {
-        path: '/discussions', // New route for the Edit Profile page
-        element: <ProtectedRoute allowedRoles={['user', 'admin']} />, // Allow both user and admin roles
-        children: [
-            {
-                element: <SidebarLayout items={userItems} />,
-                children: [{ path: '', element: <DiscussionPage /> }],
-            },
-        ],
-    },
-    {
-        path: '/discussions/:id', // New route for the Edit Profile page
-        element: <ProtectedRoute allowedRoles={['user', 'admin']} />, // Allow both user and admin roles
-        children: [
-            {
-                element: <SidebarLayout items={userItems} />,
-                children: [{ path: '', element: <DiscussionPage /> }],
-            },
-        ],
-    }
 ];
 
 export default routes;

@@ -2,7 +2,7 @@ import APIServices from '@/services/APIServices.js';
 import {
     getMe,
     updateUser,
-    getUserById as getUserByIdAPI
+    getUserById as getUserByIdAPI,
 } from '@/services/UserService.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from '@/helpers/toastService.js';

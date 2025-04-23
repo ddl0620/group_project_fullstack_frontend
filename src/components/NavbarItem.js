@@ -8,6 +8,10 @@ export const navbarItems = [
         title: 'Events',
     },
     {
+        path: '/dashboard',
+        title: 'Dashboard',
+    },
+    {
         path: '/sign-in',
         title: 'Sign in',
     },

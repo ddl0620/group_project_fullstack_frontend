@@ -17,7 +17,7 @@ function LandingPage() {
     };
 
     return (
-        <div className="bg-white min-h-screen max-w-screen-xl mx-auto py-4 items-center justify-center">
+        <div className="min-h-screen mx-auto py-4 items-center justify-center w-screen">
             {/* Hero Section */}
             <motion.div
                 initial="hidden"

@@ -11,7 +11,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {TrashIcon} from "@heroicons/react/24/outline";
+import {InformationCircleIcon, TrashIcon} from "@heroicons/react/24/outline";
 
 
 // Hàm hiển thị AlertDialog và trả về Promise với lựa chọn của người dùng
@@ -100,7 +100,7 @@ export const AlertDialogUtils = {
             confirmText: "OK",
             cancelText: "Close",
             variant: "default",
-            icon: <Info className="size-6 text-blue-600 dark:text-blue-200" />, // Giả định có icon Info
+            icon: <InformationCircleIcon className="size-6 text-blue-600 dark:text-blue-200" />, // Giả định có icon Info
             ...options,
         }),
 };

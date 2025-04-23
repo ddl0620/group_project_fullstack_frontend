@@ -1,7 +1,6 @@
 // src/hooks/useEvent.js
 import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from '@/helpers/toastService.js';
-import { logout } from '@/store/slices/userSlice.js';
 import {
     setMyEvents,
     setCurrentEvent,
@@ -22,36 +21,28 @@ import {
     requestJoinEvent as requestJoinEventAPI,
     respondJoinEvent as respondJoinEventAPI,
 } from '@/services/EventService.js';
+import { checkToken } from '@/helpers/checkToken.js';
 
 export const useEvent = () => {
     const dispatch = useDispatch();
-    const user = useSelector((state) => state.user.user);
     const loading = useSelector((state) => state.event.loading);
     const error = useSelector((state) => state.event.error);
-
-    const checkToken = () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            Toast.info('No token found. Please login again');
-            dispatch(logout());
-            throw new Error('No token found');
-        }
-        return token;
-    };
 
     const getAllEvents = async ({ page, limit, isAcs }) => {
         try {
             dispatch(setLoading(true));
             dispatch(setError(null));
             checkToken();
-            const data = await getAllEventsAPI({
+            const response = await getAllEventsAPI({
                 page: page,
                 limit: limit,
                 isAcs: isAcs,
             });
             // Dispatch để lưu vào Redux store
             // dispatch(setEvents(data));
-            return data;
+            if(response.success) Toast.success('Events fetched successfully');
+            else Toast.error(response.message);
+            return response;
         } catch (error) {
             dispatch(setError(error.message));
             Toast.error('Failed to fetch events: ' + error.message);
@@ -66,14 +57,18 @@ export const useEvent = () => {
             dispatch(setLoading(true));
             dispatch(setError(null));
             checkToken();
-            const data = await getJoinedEventsAPI({
+            const response = await getJoinedEventsAPI({
                 page: page,
                 limit: limit,
                 isAcs: isAcs,
             });
+
+            if(response.success) Toast.success('Events fetched successfully');
+            else Toast.error(response.message);
+
             // Dispatch để lưu vào Redux store
             // dispatch(setEvents(data));
-            return data;
+            return response;
         } catch (error) {
             dispatch(setError(error.message));
             Toast.error('Failed to fetch events: ' + error.message);
@@ -194,18 +189,18 @@ export const useEvent = () => {
             dispatch(setError(null));
             checkToken();
             const response = await requestJoinEventAPI(eventId, userData);
-            if(response.success) Toast.success(response.message);
+            if (response.success) Toast.success(response.message);
             else Toast.error(response.message);
             return response;
         } catch (error) {
             dispatch(setError(error.message));
-            console.log(error)
+            console.log(error);
             Toast.error(error.response.data.message);
             throw error;
         } finally {
             dispatch(setLoading(false));
         }
-    }
+    };
 
     const respondJoinEvent = async (eventId, userData) => {
         try {
@@ -213,18 +208,18 @@ export const useEvent = () => {
             dispatch(setError(null));
             checkToken();
             const response = await respondJoinEventAPI(eventId, userData);
-            if(response.success) Toast.success(response.message);
+            if (response.success) Toast.success(response.message);
             else Toast.error(response.message);
             return response;
         } catch (error) {
             dispatch(setError(error.message));
-            console.log(error)
+            console.log(error);
             Toast.error(error.response.data.message);
             throw error;
         } finally {
             dispatch(setLoading(false));
         }
-    }
+    };
 
     return {
         respondJoinEvent,
