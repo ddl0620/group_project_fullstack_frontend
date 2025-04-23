@@ -1,35 +1,34 @@
 import { Outlet } from 'react-router-dom';
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar.js";
-import Footer from "@/components/Footer.jsx";
-import { AppSidebar } from "@/components/app-sidebar.jsx";
-import NavBar from "@/components/Navbar.jsx";
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
+import Footer from '@/components/Footer.jsx';
+import { AppSidebar } from '@/components/app-sidebar.jsx';
+import NavBar from '@/components/Navbar.jsx';
+import { Sidebar } from 'lucide-react';
+import Header from '@/pages/Dashboard/User/components/Header.jsx';
 
-function SidebarLayout({ items }) {
+function SidebarLayout({title, items }) {
     return (
-        <SidebarProvider className={"flex flex-col"}>
-            <div className="flex flex-col min-h-screen">
-                {/* Navbar cố định ở trên cùng */}
-                <header className="fixed top-0 left-0 right-0 z-50 bg-white">
-                    <NavBar />
-                </header>
+        <div className="flex min-h-screen flex-col">
+            {/* Navbar cố định ở trên cùng */}
+            <header className="fixed top-0 right-0 left-0 z-50 bg-white">
+                <NavBar />
+            </header>
 
-                {/* Thêm padding-top để đẩy nội dung xuống dưới Navbar */}
-                <div className="pt-22 flex h-screen">
-                    <div className="max-h-screen">
-                        <AppSidebar items={items} />
-                    </div>
-                    {/* Outlet chiếm phần còn lại */}
-                    <main className="flex-1 p-6 bg-white">
-                        <SidebarTrigger />
-                        <Outlet />
-                    </main>
+            {/* Thêm padding-top để đẩy nội dung xuống dưới Navbar */}
+            <div className="flex h-screen pt-22">
+                <div className="max-h-screen">
+                    <AppSidebar title={title} items={items} />
                 </div>
-                {/*<Footer />*/}
-
-
-                {/* Footer ở dưới cùng */}
+                {/* Outlet chiếm phần còn lại */}
+                <main className="flex-1 bg-white p-6">
+                    {/*<SidebarTrigger />*/}
+                    <Outlet />
+                </main>
             </div>
-        </SidebarProvider>
+            {/*<Footer />*/}
+
+            {/* Footer ở dưới cùng */}
+        </div>
     );
 }
 

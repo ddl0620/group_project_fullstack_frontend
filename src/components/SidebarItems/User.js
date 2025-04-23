@@ -1,22 +1,19 @@
 import {Calendar, Plus, UserIcon} from "lucide-react";
 
 const userItems = [
-    // {
-    //     header: "Setting",
-    // },
     {
-        title: "Profile",
-        url: "/event/browse",
+        title: "Dashboard",
+        url: "/dashboard",
         icon: UserIcon,
     },
     {
-        title: "Security",
-        url: "/event",
+        title: "Discussions",
+        url: "/discussions",
         icon: Calendar,
     },
     {
-        title: "Personal Information",
-        url: "/event/create",
+        title: "Notifications",
+        url: "/notifications",
         icon: Plus,
     }
 ]

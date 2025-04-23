@@ -35,7 +35,7 @@ export const useAuth = () => {
             dispatch(login({ user, role }));
             Toast.success('Đăng nhập thành công');
 
-            navigate(role === 'admin' ? '/dashboard' : '/home');
+            navigate(role === 'admin' ? '/dashboard' : '/dashboard');
         } catch (e) {
             console.error(e);
             Toast.error('Sai tài khoản hoặc mật khẩu');

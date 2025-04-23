@@ -10,6 +10,7 @@ import {
 import { ChevronDown, Bell, Menu } from 'lucide-react';
 
 const Header = ({ isMobile, setSidebarOpen, activeSection, user }) => {
+
     return (
         <header className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-4 md:px-6">
             <div className="flex items-center">
