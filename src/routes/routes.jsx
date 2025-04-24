@@ -117,6 +117,8 @@ const routes = [
                 children: [
                     { path: '/dashboard', element: <UserDashboard /> },
                     {path: '/discussions', element: <DiscussionPage />},
+                    {path: '/discussions/eventId', element: <DiscussionPage />},
+
                     {path: '/notifications', element: <DiscussionPage />},
 
                 ],

@@ -33,7 +33,7 @@ const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
                     <ul className="divide-y divide-gray-200">
                         {filteredEvents.map((event) => (
                             <li
-                                key={event.id}
+                                key={event._id}
                                 className={`cursor-pointer transition-colors hover:bg-gray-50 ${
                                     selectedEventId === event.id
                                         ? 'bg-blue-50'
