@@ -75,8 +75,8 @@ export const useUser = () => {
             dispatch(setError(null));
             checkToken();
             const response = await getUserByIdAPI(userId);
-            if (response.success) Toast.success(response.message);
-            else Toast.error(response.message);
+            // if (response.success) Toast.success(response.message);
+            // else Toast.error(response.message);
             return response;
         } catch (error) {
             dispatch(setError(error.message));

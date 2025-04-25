@@ -36,12 +36,12 @@ export const useDiscussionPost = () => {
                 dispatch(setLoading(true));
                 checkToken();
                 const response = await createPostAPI(eventId, postData);
-
+                console.log(response);
                 if (!response.success) {
                     throw new Error('Failed to create post');
                 }
 
-                console.log('Created post:', response.content.post);
+                console.log('Created post:', response);
                 dispatch(addPost(response.content.post));
                 Toast.success('Post created successfully');
                 return response.content.post;

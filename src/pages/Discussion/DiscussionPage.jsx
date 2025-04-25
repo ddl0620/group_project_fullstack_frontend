@@ -1,25 +1,28 @@
 // src/pages/DiscussionPage.jsx
 import { useState, useEffect } from 'react';
-import {useParams, useNavigate, Link} from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import EventSidebar from './EventSidebar';
 import DiscussionThreadList from './DiscussionThreadList';
 import DiscussionHeader from './DiscussionHeader';
 import { mockEvents } from './mockData';
-import {useEvent} from "@/hooks/useEvent.js";
+import { useEvent } from '@/hooks/useEvent.js';
 
 const DiscussionPage = () => {
     const { eventId } = useParams();
     const navigate = useNavigate();
     const [selectedEvent, setSelectedEvent] = useState(null);
-    const {getAllJoinedEvents} = useEvent();
+    const { getAllJoinedEvents } = useEvent();
     const [events, setEvents] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const response = await getAllJoinedEvents(currentPage, 10, true);
+                const response = await getAllJoinedEvents(
+                    currentPage,
+                    10,
+                    true
+                );
                 setEvents(response.content.events);
-
             } catch (error) {
                 console.error('Error fetching events:', error);
             }
@@ -29,9 +32,7 @@ const DiscussionPage = () => {
 
     useEffect(() => {
         if (eventId) {
-            const event = events.find(
-                (e) => e._id === eventId
-            );
+            const event = events.find((e) => e._id === eventId);
             if (event) {
                 setSelectedEvent(event);
             }
@@ -57,7 +58,6 @@ const DiscussionPage = () => {
             <div className="flex flex-1 flex-col overflow-hidden">
                 {selectedEvent ? (
                     <>
-                        <DiscussionHeader event={selectedEvent} />
                         <DiscussionThreadList eventId={selectedEvent._id} />
                     </>
                 ) : (
