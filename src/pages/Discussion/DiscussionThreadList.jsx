@@ -13,7 +13,7 @@ import PostModal from './PostModal';
 import { useDiscussionPost } from '@/hooks/useDiscussionPost.js';
 import { DiscussionPost } from '@/components/DiscussionPost.jsx';
 import EventDetails from '@/pages/Event/EventDetails.jsx';
-import { CreateNewDiscussionPost } from '@/pages/Discussion/CreateNewDiscusisonPost.jsx';
+import {CreateEditDiscussionPost} from "@/pages/Discussion/CreateEditDiscusisonPost.jsx";
 
 const DiscussionThreadList = ({ eventId }) => {
     const [activeTab, setActiveTab] = useState('all');
@@ -55,6 +55,34 @@ const DiscussionThreadList = ({ eventId }) => {
         }
     };
 
+    const handleCreatePost = async () => {
+        // Here you would typically send the data to your API
+        try{
+
+            const images = [];
+            for(let image of allImages) {
+                images.push(image.url);
+            }
+
+            const postData = {
+                content: postContent,
+                images: images
+            }
+
+
+            await createPost(eventId, postData)
+
+            setPostContent('');
+            setImageUrls([]);
+            setUploadedImages([]);
+            setCurrentImageUrl('');
+            setIsModalOpen(false);
+        }
+        catch(err){
+            console.error('Error creating post:', err);
+        }
+    };
+
     const handleDeletePost = async (postId) => {
         try {
             await deletePost(eventId, postId);
@@ -79,41 +107,6 @@ const DiscussionThreadList = ({ eventId }) => {
 
     return (
         <div className="flex-1 overflow-y-auto bg-gray-50 p-6">
-            {/*<div className="mb-6">*/}
-            {/*    <div className="flex space-x-4 border-b border-gray-200">*/}
-            {/*        <button*/}
-            {/*            className={`px-1 pb-2 ${*/}
-            {/*                activeTab === 'all'*/}
-            {/*                    ? 'border-b-2 border-blue-500 font-medium text-blue-600'*/}
-            {/*                    : 'text-gray-500 hover:text-gray-700'*/}
-            {/*            }`}*/}
-            {/*            onClick={() => setActiveTab('all')}*/}
-            {/*        >*/}
-            {/*            All Discussion*/}
-            {/*        </button>*/}
-            {/*        <button*/}
-            {/*            className={`px-1 pb-2 ${*/}
-            {/*                activeTab === 'popular'*/}
-            {/*                    ? 'border-b-2 border-blue-500 font-medium text-blue-600'*/}
-            {/*                    : 'text-gray-500 hover:text-gray-700'*/}
-            {/*            }`}*/}
-            {/*            onClick={() => setActiveTab('popular')}*/}
-            {/*        >*/}
-            {/*            Popular*/}
-            {/*        </button>*/}
-            {/*        <button*/}
-            {/*            className={`px-1 pb-2 ${*/}
-            {/*                activeTab === 'recent'*/}
-            {/*                    ? 'border-b-2 border-blue-500 font-medium text-blue-600'*/}
-            {/*                    : 'text-gray-500 hover:text-gray-700'*/}
-            {/*            }`}*/}
-            {/*            onClick={() => setActiveTab('recent')}*/}
-            {/*        >*/}
-            {/*            Recents*/}
-            {/*        </button>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-
             {loading ? (
                 <div className="py-12 text-center">Đang tải...</div>
             ) : filteredDiscussions.length > 0 ? (
@@ -126,7 +119,7 @@ const DiscussionThreadList = ({ eventId }) => {
                         bài viết
                     </div>
                     <div className="fixed right-4 bottom-10 z-50">
-                        <CreateNewDiscussionPost eventId={eventId} />
+                        <CreateEditDiscussionPost onSuccess={handleCreatePost}  eventId={eventId} />
                     </div>
                     {filteredDiscussions.map((discussion) => {
                         return <DiscussionPost postData={discussion} />;

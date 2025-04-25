@@ -28,7 +28,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 import { useUser } from '@/hooks/useUser.js';
-import {useSelector} from "react-redux";
+import { useSelector } from 'react-redux';
+import { CreateEditDiscussionPost } from '@/pages/Discussion/CreateEditDiscusisonPost.jsx';
+import {AlertDialog, AlertDialogDescription, AlertDialogTitle} from "@radix-ui/react-alert-dialog";
+import {AlertDialogUtils} from "@/helpers/AlertDialog.jsx";
+import {Toast} from "@/helpers/toastService.js";
+import {
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogFooter,
+    AlertDialogHeader
+} from "@/components/ui/alert-dialog.js";
+import useDiscussionPost from "@/hooks/useDiscussionPost.js";
 
 // Mock data for the post
 // const postData = {
@@ -97,7 +109,6 @@ const Comment = ({ comment, onReply, path = [] }) => {
     const [likeCount, setLikeCount] = useState(comment.likes || 0);
     const [showReplyInput, setShowReplyInput] = useState(false);
     const [replyContent, setReplyContent] = useState('');
-
     const handleLike = () => {
         if (liked) {
             setLikeCount(likeCount - 1);
@@ -219,11 +230,13 @@ export function DiscussionPost({ postData }) {
     const [comments, setComments] = useState(mockComments);
     const [newComment, setNewComment] = useState('');
     const [showAllComments, setShowAllComments] = useState(false);
-    const [creator, setCreator] = useState({name: "User"});
+    const [creator, setCreator] = useState({ name: 'User' });
     // Display only 2 comments when collapsed
     const visibleComments = showAllComments ? comments : comments.slice(0, 2);
     const { getUserById } = useUser();
+    const {} = useDiscussionPost();
     const me = useSelector((state) => state.user.user);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
     useEffect(() => {
         const fetchUserData = async (userId) => {
@@ -266,6 +279,32 @@ export function DiscussionPost({ postData }) {
         setNewComment('');
     };
 
+    const handleUpdateDiscussion = async () => {
+        try {
+            // Here you would typically send the updated post data to your API
+            console.log('Post updated:', postData);
+        } catch (error) {
+            console.error('Error updating post:', error);
+        }
+    };
+
+    const handleDeleteDiscussion = async () => {
+        try {
+            // const confirmed = await AlertDialogUtils.warning({
+            //     title: 'Delete Post',
+            //     description: 'Are you sure you want to delete this post?',
+            //     confirmText: 'Delete',
+            //     cancelText: 'Cancel',
+            // })
+            //
+            // if(!confirmed) return;
+
+            Toast.success("Post deleted successfully!");
+        } catch (error) {
+            console.error('Error deleting post:', error);
+        }
+    }
+
     // Recursive function to add a reply at any nesting level
     const handleReply = (path, content) => {
         const newReply = {
@@ -305,159 +344,193 @@ export function DiscussionPost({ postData }) {
     };
 
     return (
-        <Card className="mx-auto max-w-2xl rounded-lg bg-white shadow-md sm:w-sm md:w-md lg:w-lg xl:w-xl">
-            <CardHeader className="flex flex-row items-center gap-4 space-y-0 p-4">
-                <CustomAvatar
-                    src={''}
-                    fallbackText={creator.name}
-                    alt={'User'}
-                />
-                <div className="flex-1">
-                    <div className="flex items-center gap-1">
-                        <span className="font-semibold">{creator.name}</span>
-                    </div>
-                    <span className="text-muted-foreground text-xs">
+        <div>
+            <Card className="mx-auto max-w-2xl rounded-lg bg-white shadow-md sm:w-sm md:w-md lg:w-lg xl:w-xl">
+                <CardHeader className="flex flex-row items-center gap-4 space-y-0 p-4">
+                    <CustomAvatar
+                        src={''}
+                        fallbackText={creator.name}
+                        alt={'User'}
+                    />
+                    <div className="flex-1">
+                        <div className="flex items-center gap-1">
+                            <span className="font-semibold">{creator.name}</span>
+                        </div>
+                        <span className="text-muted-foreground text-xs">
                         {formatDistanceToNow(new Date(postData.created_at), {
                             addSuffix: true,
                         })}
                     </span>
-                </div>
-                {isMewPost ? (<DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-5 w-5" />
-                            <span className="sr-only">More options</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>) : <></>}
-            </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center p-4 pt-0">
-                <p className="w-full">{postData.content}</p>
-                {postData.images.length > 0 && (
-                    <Carousel className="mt-4 w-full">
-                        <CarouselContent>
-                            {postData.images.map((image, index) => (
-                                <CarouselItem key={index}>
-                                    <div className="overflow-hidden rounded-lg">
-                                        <img
-                                            src={image || '/placeholder.svg'}
-                                            alt={`Post image ${index + 1}`}
-                                            className="aspect-video w-full object-cover"
-                                        />
-                                    </div>
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <CarouselPrevious className="left-2" />
-                        <CarouselNext className="right-2" />
-                    </Carousel>
-                )}
-            </CardContent>
-            <CardFooter className="flex flex-col p-0">
-                <div className="flex w-full items-center justify-start gap-x-4 p-4">
-                    <div className="flex items-center">
+                    </div>
+                    {isMewPost ? (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <MoreHorizontal className="h-5 w-5" />
+                                    <span className="sr-only">More options</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem asChild>
+                                    <CreateEditDiscussionPost
+                                        isEdit={true}
+                                        postData={postData}
+                                        onSuccess={handleUpdateDiscussion}
+                                        triggerButton={
+                                            <div className="text-sm p-2 rounded-sm hover:bg-gray-100">
+                                                Edit
+                                            </div>
+                                        }
+                                    />
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <></>
+                    )}
+                </CardHeader>
+                <CardContent className="flex flex-col items-center justify-center p-4 pt-0">
+                    <p className="w-full">{postData.content}</p>
+                    {postData.images.length > 0 && (
+                        <Carousel className="mt-4 w-full">
+                            <CarouselContent>
+                                {postData.images.map((image, index) => (
+                                    <CarouselItem key={index}>
+                                        <div className="overflow-hidden rounded-lg">
+                                            <img
+                                                src={image || '/placeholder.svg'}
+                                                alt={`Post image ${index + 1}`}
+                                                className="aspect-video w-full object-cover"
+                                            />
+                                        </div>
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                            <CarouselPrevious className="left-2" />
+                            <CarouselNext className="right-2" />
+                        </Carousel>
+                    )}
+                </CardContent>
+                <CardFooter className="flex flex-col p-0">
+                    <div className="flex w-full items-center justify-start gap-x-4 p-4">
+                        <div className="flex items-center">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={handleLike}
+                                className={liked ? 'text-red-500' : ''}
+                            >
+                                <Heart
+                                    className={`h-5 w-5 ${liked ? 'fill-current' : ''}`}
+                                />
+                                <span className="sr-only">Like</span>
+                            </Button>
+                            <span className="text-sm">{likeCount}</span>
+                        </div>
                         <Button
                             variant="ghost"
-                            size="icon"
-                            onClick={handleLike}
-                            className={liked ? 'text-red-500' : ''}
+                            size="sm"
+                            className="flex items-center gap-1"
+                            onClick={() => setShowComments(!showComments)}
                         >
-                            <Heart
-                                className={`h-5 w-5 ${liked ? 'fill-current' : ''}`}
-                            />
-                            <span className="sr-only">Like</span>
+                            <MessageCircle className="h-5 w-5" />
+                            <span>{comments.length} comments</span>
                         </Button>
-                        <span className="text-sm">{likeCount}</span>
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="flex items-center gap-1"
-                        onClick={() => setShowComments(!showComments)}
-                    >
-                        <MessageCircle className="h-5 w-5" />
-                        <span>{comments.length} comments</span>
-                    </Button>
-                </div>
-                {showComments && (
-                    <div className="w-full border-t p-4">
-                        <div className="flex gap-2">
-                            <Avatar className="h-8 w-8">
-                                <AvatarImage
-                                    src="/diverse-group-city.png"
-                                    alt="Current user"
-                                />
-                                <AvatarFallback>ME</AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                                <div className="flex gap-2">
-                                    <Input
-                                        placeholder="Write a comment..."
-                                        value={newComment}
-                                        onChange={(e) =>
-                                            setNewComment(e.target.value)
-                                        }
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                handleAddComment();
-                                            }
-                                        }}
+                    {showComments && (
+                        <div className="w-full border-t p-4">
+                            <div className="flex gap-2">
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage
+                                        src="/diverse-group-city.png"
+                                        alt="Current user"
                                     />
-                                    <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        onClick={handleAddComment}
-                                        disabled={newComment.trim() === ''}
-                                    >
-                                        <Send className="h-4 w-4" />
-                                    </Button>
+                                    <AvatarFallback>ME</AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1">
+                                    <div className="flex gap-2">
+                                        <Input
+                                            placeholder="Write a comment..."
+                                            value={newComment}
+                                            onChange={(e) =>
+                                                setNewComment(e.target.value)
+                                            }
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    handleAddComment();
+                                                }
+                                            }}
+                                        />
+                                        <Button
+                                            size="icon"
+                                            variant="ghost"
+                                            onClick={handleAddComment}
+                                            disabled={newComment.trim() === ''}
+                                        >
+                                            <Send className="h-4 w-4" />
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {comments.length > 2 && (
-                            <div className="mt-4 mb-2 flex items-center">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="flex items-center gap-1 text-xs"
-                                    onClick={() =>
-                                        setShowAllComments(!showAllComments)
-                                    }
-                                >
-                                    {showAllComments ? (
-                                        <>
-                                            <ChevronUp className="h-4 w-4" />
-                                            See less
-                                        </>
-                                    ) : (
-                                        <>
-                                            <ChevronDown className="h-4 w-4" />
-                                            See all {comments.length} comments
-                                        </>
-                                    )}
-                                </Button>
+                            {comments.length > 2 && (
+                                <div className="mt-4 mb-2 flex items-center">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="flex items-center gap-1 text-xs"
+                                        onClick={() =>
+                                            setShowAllComments(!showAllComments)
+                                        }
+                                    >
+                                        {showAllComments ? (
+                                            <>
+                                                <ChevronUp className="h-4 w-4" />
+                                                See less
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ChevronDown className="h-4 w-4" />
+                                                See all {comments.length} comments
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            )}
+
+                            <Separator className="my-4" />
+                            <div className="space-y-2">
+                                {visibleComments.map((comment, index) => (
+                                    <Comment
+                                        key={comment.id}
+                                        comment={comment}
+                                        onReply={handleReply}
+                                        path={[index]}
+                                    />
+                                ))}
                             </div>
-                        )}
-
-                        <Separator className="my-4" />
-                        <div className="space-y-2">
-                            {visibleComments.map((comment, index) => (
-                                <Comment
-                                    key={comment.id}
-                                    comment={comment}
-                                    onReply={handleReply}
-                                    path={[index]}
-                                />
-                            ))}
                         </div>
-                    </div>
-                )}
-            </CardFooter>
-        </Card>
+                    )}
+                </CardFooter>
+            </Card>
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your post and remove it from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteDiscussion} className="bg-red-600 hover:bg-red-700">
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
+
     );
 }
