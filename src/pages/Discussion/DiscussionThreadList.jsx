@@ -11,7 +11,7 @@ import {
 import { useSelector } from 'react-redux';
 import PostModal from './PostModal';
 import { useDiscussionPost } from '@/hooks/useDiscussionPost.js';
-import { DiscussionPost } from '@/components/DiscussionPost.jsx';
+import { DiscussionPost } from '@/pages/Discussion/DiscussionPost.jsx';
 import EventDetails from '@/pages/Event/EventDetails.jsx';
 import {CreateEditDiscussionPost} from "@/pages/Discussion/CreateEditDiscusisonPost.jsx";
 
@@ -21,7 +21,7 @@ const DiscussionThreadList = ({ eventId }) => {
     const [editingPost, setEditingPost] = useState(null);
     const { fetchPosts, pagination, loading, error, updatePost, deletePost } =
         useDiscussionPost();
-
+    const me = useSelector((state) => state.user.user);
     const posts = useSelector((state) => state.discussionPost.posts) || [];
 
     useEffect(() => {
@@ -36,16 +36,11 @@ const DiscussionThreadList = ({ eventId }) => {
               if (activeTab === 'recent') {
                   const oneWeekAgo = new Date();
                   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-                  return new Date(discussion.created_at) > oneWeekAgo;
+                  return discussion.creator_id._id === me._id;
               }
               return true;
           })
         : [];
-
-    const handleEditPost = (post) => {
-        setEditingPost(post);
-        setIsModalOpen(true);
-    };
 
     const handleUpdatePost = async (postData) => {
         try {
@@ -83,30 +78,24 @@ const DiscussionThreadList = ({ eventId }) => {
         }
     };
 
-    const handleDeletePost = async (postId) => {
-        try {
-            await deletePost(eventId, postId);
-        } catch (error) {
-            console.error('Lỗi khi xóa bài viết:', error);
-        }
-    };
 
     if (error) {
         return (
-            <div className="py-12 text-center text-red-500">
-                Lỗi: {error}
-                <button
+            <div className="py-12 text-center text-red-500 flex flex-col px-4">
+                {error}
+                {error !== "You are not authorized to access this event" ? (<button
                     onClick={() => fetchPosts(eventId, 1, 10, true)}
                     className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                 >
                     Thử lại
-                </button>
+                </button>) : <></>}
+
             </div>
         );
     }
 
     return (
-        <div className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <div className="overflow-y-auto bg-gray-50 p-6">
             {loading ? (
                 <div className="py-12 text-center">Đang tải...</div>
             ) : filteredDiscussions.length > 0 ? (
@@ -135,6 +124,9 @@ const DiscussionThreadList = ({ eventId }) => {
                         Hãy là người đầu tiên bắt đầu một thảo luận cho sự kiện
                         này.
                     </p>
+                    <div className="mt-6">
+                        <CreateEditDiscussionPost onSuccess={handleCreatePost}  eventId={eventId} />
+                    </div>
                 </div>
             )}
             <PostModal

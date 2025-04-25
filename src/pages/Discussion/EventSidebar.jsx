@@ -16,6 +16,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 
 const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -162,15 +163,16 @@ const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <div className="flex justify-center p-2">
-                                                    <Avatar
-                                                        className={`h-10 w-10 ${getAvatarColor(event._id)}`}
-                                                    >
-                                                        <AvatarFallback className="text-white">
-                                                            {getInitials(
-                                                                event.title
-                                                            )}
-                                                        </AvatarFallback>
-                                                    </Avatar>
+                                                    <CustomAvatar
+                                                        src={
+                                                            event.images[0] ||
+                                                            ''
+                                                        }
+                                                        fallbackText={
+                                                            event.title
+                                                        }
+                                                        alt={event.title}
+                                                    />
                                                 </div>
                                             </TooltipTrigger>
                                             <TooltipContent
@@ -184,21 +186,13 @@ const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
                                                     <p className="mt-1 flex items-center text-xs">
                                                         <Calendar className="mr-1 h-3 w-3" />
                                                         {new Date(
-                                                            event.date
+                                                            event.startDate,
                                                         ).toLocaleDateString()}
                                                     </p>
                                                     <p className="mt-1 flex items-center text-xs">
                                                         <MapPin className="mr-1 h-3 w-3" />
                                                         {event.location}
                                                     </p>
-                                                    <div className="mt-1">
-                                                        <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
-                                                            {
-                                                                event.discussionCount
-                                                            }{' '}
-                                                            discussions
-                                                        </span>
-                                                    </div>
                                                 </div>
                                             </TooltipContent>
                                         </Tooltip>
@@ -207,28 +201,25 @@ const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
                                     <div className="p-4">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3">
-                                                <Avatar
-                                                    className={`h-8 w-8 ${getAvatarColor(event._id)}`}
-                                                >
-                                                    <AvatarFallback className="text-white">
-                                                        {getInitials(
-                                                            event.title
-                                                        )}
-                                                    </AvatarFallback>
-                                                </Avatar>
+                                                <CustomAvatar
+                                                    src={event.images[0] || ''}
+                                                    fallbackText={event.title}
+                                                    alt={event.title}
+                                                />
+
                                                 <h3 className="truncate text-sm font-medium text-gray-900">
                                                     {event.title}
                                                 </h3>
                                             </div>
-                                            <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
-                                                {event.discussionCount}
-                                            </span>
+                                            {/*<span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">*/}
+                                            {/*    {event.discussionCount}{' '}*/}
+                                            {/*</span>*/}
                                         </div>
                                         <div className="mt-2 ml-11 space-y-1">
                                             <p className="flex items-center text-xs text-gray-500">
                                                 <Calendar className="mr-1 h-3 w-3" />
                                                 {new Date(
-                                                    event.date
+                                                    event.startDate,
                                                 ).toLocaleDateString()}
                                             </p>
                                             <p className="flex items-center truncate text-xs text-gray-500">

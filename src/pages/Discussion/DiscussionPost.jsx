@@ -3,29 +3,29 @@
 import { useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Heart, MessageCircle, Send, MoreHorizontal } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
+import { Button } from '@/components/ui/button.js';
 import {
     Card,
     CardContent,
     CardFooter,
     CardHeader,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
+} from '@/components/ui/card.js';
+import { Input } from '@/components/ui/input.js';
+import { Separator } from '@/components/ui/separator.js';
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from '@/components/ui/carousel';
+} from '@/components/ui/carousel.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu.js';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 import { useUser } from '@/hooks/useUser.js';
 import { useSelector } from 'react-redux';
@@ -39,7 +39,7 @@ import {
     AlertDialogContent,
     AlertDialogFooter,
     AlertDialogHeader
-} from "@/components/ui/alert-dialog.js";
+} from "@/components/ui/alert-dialog.tsx";
 import useDiscussionPost from "@/hooks/useDiscussionPost.js";
 
 // Mock data for the post
@@ -234,7 +234,7 @@ export function DiscussionPost({ postData }) {
     // Display only 2 comments when collapsed
     const visibleComments = showAllComments ? comments : comments.slice(0, 2);
     const { getUserById } = useUser();
-    const {} = useDiscussionPost();
+    const {deletePost, updatePost} = useDiscussionPost();
     const me = useSelector((state) => state.user.user);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
@@ -287,6 +287,8 @@ export function DiscussionPost({ postData }) {
             console.error('Error updating post:', error);
         }
     };
+    // console.log(postData);
+
 
     const handleDeleteDiscussion = async () => {
         try {
@@ -299,7 +301,8 @@ export function DiscussionPost({ postData }) {
             //
             // if(!confirmed) return;
 
-            Toast.success("Post deleted successfully!");
+
+            await deletePost(postData.event_id, postData._id);
         } catch (error) {
             console.error('Error deleting post:', error);
         }
@@ -349,12 +352,12 @@ export function DiscussionPost({ postData }) {
                 <CardHeader className="flex flex-row items-center gap-4 space-y-0 p-4">
                     <CustomAvatar
                         src={''}
-                        fallbackText={creator.name}
+                        fallbackText={creator?.name || "User"}
                         alt={'User'}
                     />
                     <div className="flex-1">
                         <div className="flex items-center gap-1">
-                            <span className="font-semibold">{creator.name}</span>
+                            <span className="font-semibold">{creator?.name || "User"}</span>
                         </div>
                         <span className="text-muted-foreground text-xs">
                         {formatDistanceToNow(new Date(postData.created_at), {
@@ -383,7 +386,7 @@ export function DiscussionPost({ postData }) {
                                         }
                                     />
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>Delete</DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleDeleteDiscussion}>Delete</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (

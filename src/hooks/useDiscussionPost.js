@@ -176,7 +176,6 @@ export const useDiscussionPost = () => {
                     throw new Error('Failed to delete post');
                 }
 
-                console.log('Deleted post:', postId);
                 dispatch(removePost({ postId }));
                 Toast.success('Post deleted successfully');
                 return response.content;

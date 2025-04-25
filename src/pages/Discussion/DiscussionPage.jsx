@@ -55,7 +55,7 @@ const DiscussionPage = () => {
                 selectedEventId={selectedEvent?._id}
                 onEventSelect={handleEventSelect}
             />
-            <div className="flex flex-1 flex-col overflow-hidden">
+            <div className="flex flex-1 flex-col">
                 {selectedEvent ? (
                     <>
                         <DiscussionThreadList eventId={selectedEvent._id} />
