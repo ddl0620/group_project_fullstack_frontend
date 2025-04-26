@@ -3,33 +3,33 @@
 import { useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Heart, MessageCircle, Send, MoreHorizontal } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
-import { Button } from '@/components/ui/button.js';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
+import { Button } from '@/components/ui/button.tsx';
 import {
     Card,
     CardContent,
     CardFooter,
     CardHeader,
-} from '@/components/ui/card.js';
-import { Input } from '@/components/ui/input.js';
-import { Separator } from '@/components/ui/separator.js';
+} from '@/components/ui/card.tsx';
+import { Input } from '@/components/ui/input.tsx';
+import { Separator } from '@/components/ui/separator.tsx';
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from '@/components/ui/carousel.js';
+} from '@/components/ui/carousel.tsx';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
+} from '@/components/ui/dropdown-menu.tsx';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 import { useUser } from '@/hooks/useUser.js';
 import { useSelector } from 'react-redux';
-import { CreateEditDiscussionPost } from '@/pages/Discussion/CreateEditDiscusisonPost.jsx';
+import { CreateEditDiscussionPost } from '@/pages/Discussion/DiscussionPost/CreateEditDiscusisonPost.jsx';
 import {AlertDialog, AlertDialogDescription, AlertDialogTitle} from "@radix-ui/react-alert-dialog";
 import {AlertDialogUtils} from "@/helpers/AlertDialog.jsx";
 import {Toast} from "@/helpers/toastService.js";
@@ -41,6 +41,7 @@ import {
     AlertDialogHeader
 } from "@/components/ui/alert-dialog.tsx";
 import useDiscussionPost from "@/hooks/useDiscussionPost.js";
+import {CommentSection} from "@/pages/Discussion/DiscussionReply/CommentSection.jsx";
 
 // Mock data for the post
 // const postData = {
@@ -346,6 +347,94 @@ export function DiscussionPost({ postData }) {
         setComments(updatedComments);
     };
 
+    const sampleApiResponse = {
+        success: true,
+        message: "Replies fetched successfully",
+        content: {
+            replies: [
+                {
+                    _id: "680d20dbbd74f00e6443d1cd",
+                    post_id: "680bcb48da87dc72a10348f9",
+                    parent_reply_id: "680d206fbd74f00e6443d1c1",
+                    content: "Giỏi con mẹ m",
+                    creator_id: {
+                        _id: "6801db125ac6f6873198f739",
+                    },
+                    images: [
+                        "https://i.ytimg.com/vi/TK4I4RTOjQo/hq720.jpg?sqp=-oaymwE7CK4FEIIDSFryq4qpAy0IARUAAAAAGAElAADIQj0AgKJD8AEB-AH-CYAC0AWKAgwIABABGGUgUShHMA8=&rs=AOn4CLBvm1oFR0lAueoAqsfCM9_j5yfWfQ",
+                    ],
+                    isDeleted: false,
+                    created_at: "2025-04-26T18:07:23.256Z",
+                    updated_at: "2025-04-26T18:07:23.256Z",
+                    __v: 0,
+                },
+                {
+                    _id: "680d206fbd74f00e6443d1c1",
+                    post_id: "680bcb48da87dc72a10348f9",
+                    parent_reply_id: null,
+                    content: "Mấy bạn giỏi quá",
+                    creator_id: {
+                        _id: "6801db125ac6f6873198f739",
+                    },
+                    images: [
+                        "https://i.ytimg.com/vi/TK4I4RTOjQo/hq720.jpg?sqp=-oaymwE7CK4FEIIDSFryq4qpAy0IARUAAAAAGAElAADIQj0AgKJD8AEB-AH-CYAC0AWKAgwIABABGGUgUShHMA8=&rs=AOn4CLBvm1oFR0lAueoAqsfCM9_j5yfWfQ",
+                    ],
+                    isDeleted: false,
+                    created_at: "2025-04-26T18:05:35.421Z",
+                    updated_at: "2025-04-26T18:05:35.421Z",
+                    __v: 0,
+                },
+            ],
+        },
+    }
+
+// Add more sample data to demonstrate deeper nesting
+    const extendedReplies = [
+        ...sampleApiResponse.content.replies,
+        {
+            _id: "680d21dbbd74f00e6443d1ce",
+            post_id: "680bcb48da87dc72a10348f9",
+            parent_reply_id: "680d20dbbd74f00e6443d1cd", // Reply to the first reply
+            content: "Bình tĩnh nào bạn",
+            creator_id: {
+                _id: "6801db125ac6f6873198f740", // Different user
+            },
+            images: [],
+            isDeleted: false,
+            created_at: "2025-04-26T18:10:23.256Z",
+            updated_at: "2025-04-26T18:10:23.256Z",
+            __v: 0,
+        },
+        {
+            _id: "680d22dbbd74f00e6443d1cf",
+            post_id: "680bcb48da87dc72a10348f9",
+            parent_reply_id: "680d21dbbd74f00e6443d1ce", // Reply to the reply of the first reply (3rd level)
+            content: "Không, tôi không bình tĩnh được",
+            creator_id: {
+                _id: "6801db125ac6f6873198f739", // Same as original commenter
+            },
+            images: [],
+            isDeleted: false,
+            created_at: "2025-04-26T18:15:23.256Z",
+            updated_at: "2025-04-26T18:15:23.256Z",
+            __v: 0,
+        },
+        {
+            _id: "680d23dbbd74f00e6443d1d0",
+            post_id: "680bcb48da87dc72a10348f9",
+            parent_reply_id: null, // Another top-level comment
+            content: "Chủ đề này thật thú vị",
+            creator_id: {
+                _id: "6801db125ac6f6873198f741", // Different user
+            },
+            images: ["https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"],
+            isDeleted: false,
+            created_at: "2025-04-26T18:20:23.256Z",
+            updated_at: "2025-04-26T18:20:23.256Z",
+            __v: 0,
+        },
+    ]
+
     return (
         <div>
             <Card className="mx-auto max-w-2xl rounded-lg bg-white shadow-md sm:w-sm md:w-md lg:w-lg xl:w-xl">
@@ -442,78 +531,7 @@ export function DiscussionPost({ postData }) {
                         </Button>
                     </div>
                     {showComments && (
-                        <div className="w-full border-t p-4">
-                            <div className="flex gap-2">
-                                <Avatar className="h-8 w-8">
-                                    <AvatarImage
-                                        src="/diverse-group-city.png"
-                                        alt="Current user"
-                                    />
-                                    <AvatarFallback>ME</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1">
-                                    <div className="flex gap-2">
-                                        <Input
-                                            placeholder="Write a comment..."
-                                            value={newComment}
-                                            onChange={(e) =>
-                                                setNewComment(e.target.value)
-                                            }
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    handleAddComment();
-                                                }
-                                            }}
-                                        />
-                                        <Button
-                                            size="icon"
-                                            variant="ghost"
-                                            onClick={handleAddComment}
-                                            disabled={newComment.trim() === ''}
-                                        >
-                                            <Send className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {comments.length > 2 && (
-                                <div className="mt-4 mb-2 flex items-center">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="flex items-center gap-1 text-xs"
-                                        onClick={() =>
-                                            setShowAllComments(!showAllComments)
-                                        }
-                                    >
-                                        {showAllComments ? (
-                                            <>
-                                                <ChevronUp className="h-4 w-4" />
-                                                See less
-                                            </>
-                                        ) : (
-                                            <>
-                                                <ChevronDown className="h-4 w-4" />
-                                                See all {comments.length} comments
-                                            </>
-                                        )}
-                                    </Button>
-                                </div>
-                            )}
-
-                            <Separator className="my-4" />
-                            <div className="space-y-2">
-                                {visibleComments.map((comment, index) => (
-                                    <Comment
-                                        key={comment.id}
-                                        comment={comment}
-                                        onReply={handleReply}
-                                        path={[index]}
-                                    />
-                                ))}
-                            </div>
-                        </div>
+                        <CommentSection postId="680bcb48da87dc72a10348f9" initialReplies={extendedReplies} />
                     )}
                 </CardFooter>
             </Card>

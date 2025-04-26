@@ -8,14 +8,14 @@ import {
     Calendar,
     MapPin,
 } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar.js';
+import { Button } from '@/components/ui/button.js';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@/components/ui/tooltip.js';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 import {useNavigate} from "react-router-dom";
 

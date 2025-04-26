@@ -9,11 +9,11 @@ import {
     Trash,
 } from 'lucide-react';
 import { useSelector } from 'react-redux';
-import PostModal from './PostModal';
+import PostModal from './PostModal.jsx';
 import { useDiscussionPost } from '@/hooks/useDiscussionPost.js';
-import { DiscussionPost } from '@/pages/Discussion/DiscussionPost.jsx';
+import { DiscussionPost } from '@/pages/Discussion/DiscussionPost/DiscussionPost.jsx';
 import EventDetails from '@/pages/Event/EventDetails.jsx';
-import {CreateEditDiscussionPost} from "@/pages/Discussion/CreateEditDiscusisonPost.jsx";
+import {CreateEditDiscussionPost} from "@/pages/Discussion/DiscussionPost/CreateEditDiscusisonPost.jsx";
 import {useParams} from "react-router-dom";
 
 const DiscussionThreadList = ({eventId}) => {

@@ -1,7 +1,7 @@
 // src/components/DiscussionHeader.jsx
 import { useState } from 'react';
 import {Calendar, MapPin, Users, MessageSquare, Trash2, PlusIcon, FileIcon} from 'lucide-react';
-import PostModal from './PostModal';
+import PostModal from '../DiscussionPost/PostModal.jsx';
 import {useDiscussionPost} from "@/hooks/useDiscussionPost.js";
 import {
     Dialog,
@@ -10,12 +10,12 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger
-} from "@/components/ui/dialog.js";
-import {Button} from "@/components/ui/button.js";
-import {Input} from "@/components/ui/input.js";
-import {Label} from "@/components/ui/label.js";
-import {Card, CardContent, CardFooter} from "@/components/ui/card.js";
-import {Textarea} from "@/components/ui/textarea.js";
+} from "@/components/ui/dialog.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {Input} from "@/components/ui/input.tsx";
+import {Label} from "@/components/ui/label.tsx";
+import {Card, CardContent, CardFooter} from "@/components/ui/card.tsx";
+import {Textarea} from "@/components/ui/textarea.tsx";
 
 const DiscussionHeader = ({ event }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);

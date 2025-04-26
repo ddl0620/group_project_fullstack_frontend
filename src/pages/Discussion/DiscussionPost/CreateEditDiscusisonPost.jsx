@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { PlusIcon, FileIcon, X, Link, ImageIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button.js"
 import {
     Dialog,
     DialogContent,
@@ -11,15 +11,15 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "@/components/ui/dialog.js"
+import { Input } from "@/components/ui/input.js"
+import { Label } from "@/components/ui/label.js"
+import { Textarea } from "@/components/ui/textarea.js"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.js"
+import { Card, CardContent } from "@/components/ui/card.js"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.js"
 import { formatDistanceToNow } from "date-fns"
-import useDiscussionPost from "@/hooks/useDiscussionPost"
+import useDiscussionPost from "@/hooks/useDiscussionPost.js"
 
 export function CreateEditDiscussionPost({
                                              eventId,

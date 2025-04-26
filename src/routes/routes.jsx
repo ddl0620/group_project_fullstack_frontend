@@ -22,7 +22,7 @@ import settingItems from "@/components/SidebarItems/Setting.js";
 import DiscussionPage from "@/pages/Discussion/DiscussionPage.jsx";
 import MyJoinedEvent from "@/pages/Event/MyJoinedEvents/MyJoinedEvent.jsx";
 import userItems from "@/components/SidebarItems/User.js";
-import DiscussionThreadList from "@/pages/Discussion/DiscussionThreadList.jsx";
+import DiscussionThreadList from "@/pages/Discussion/DiscussionPost/DiscussionThreadList.jsx";
 
 const ProtectedRoute = ({ allowedRoles }) => {
     const { isAuthenticated, role } = useSelector((state) => state.user);

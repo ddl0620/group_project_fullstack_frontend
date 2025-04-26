@@ -14,12 +14,6 @@ import { EditIcon } from 'lucide-react';
 import { Pagination } from '@heroui/pagination';
 import { useEvent } from '@/hooks/useEvent.js';
 import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
-import EventSidebar from '@/pages/Discussion/EventSidebar.jsx';
-import { mockEvents } from '@/pages/Discussion/mockData.js';
-import DiscussionHeader from '@/pages/Discussion/DiscussionHeader.jsx';
-import DiscussionThreadList from '@/pages/Discussion/DiscussionThreadList.jsx';
-import MyEventHeader from '@/pages/Event/MyOrganizedEvents/MyEventHeader.jsx';
-import EventManagement from '@/pages/Event/MyOrganizedEvents/EventManagement.jsx';
 const itemsPerPage = 9;
 
 function MyOrganizedEvents() {

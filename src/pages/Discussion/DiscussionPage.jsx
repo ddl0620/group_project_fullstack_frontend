@@ -1,10 +1,8 @@
 // src/pages/DiscussionPage.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import EventSidebar from './EventSidebar';
-import DiscussionThreadList from './DiscussionThreadList';
-import DiscussionHeader from './DiscussionHeader';
-import { mockEvents } from './mockData';
+import EventSidebar from './components/EventSidebar.jsx';
+import DiscussionThreadList from './DiscussionPost/DiscussionThreadList.jsx';
 import { useEvent } from '@/hooks/useEvent.js';
 
 const DiscussionPage = () => {
