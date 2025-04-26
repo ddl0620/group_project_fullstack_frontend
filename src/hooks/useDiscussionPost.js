@@ -62,9 +62,10 @@ export const useDiscussionPost = () => {
 // src/hooks/useDiscussionPost.js
     const fetchPosts = useCallback(
         async (eventId, page = 1, limit = 10, forceRefresh = false) => {
+            // Bao gồm page và limit trong cacheKey để tránh ghi đè dữ liệu của các lần fetch khác
             const cacheKey = `${eventId}-${page}-${limit}`;
-            if (!forceRefresh && cache.current[cacheKey]) {
-                console.log('Using cached posts:', cacheKey);
+            if (!forceRefresh && cache.current[cacheKey] && cache.current[cacheKey] !== null) {
+                console.log('Sử dụng dữ liệu từ cache:', cacheKey);
                 dispatch(setPosts(cache.current[cacheKey]));
                 return cache.current[cacheKey];
             }
@@ -76,28 +77,32 @@ export const useDiscussionPost = () => {
                 const response = await getPostsAPI(eventId, { page, limit });
 
                 if (!response.success) {
-                    throw new Error('Failed to fetch posts');
+                    throw new Error('Không thể lấy danh sách bài viết');
                 }
 
                 // Xử lý response.content.posts: nếu là object thì chuyển thành mảng
                 const fetchedPosts = Array.isArray(response.content.posts)
                     ? response.content.posts
                     : response.content.posts && typeof response.content.posts === 'object'
-                        ? [response.content.posts] // Chuyển object thành mảng chứa object đó
+                        ? [response.content.posts]
                         : [];
 
                 const result = {
                     posts: fetchedPosts,
                     pagination: response.content.pagination || { page: 1, limit: 10, total: fetchedPosts.length },
                 };
+
+                // Chỉ lưu vào cache nếu fetch thành công
                 cache.current[cacheKey] = result;
                 dispatch(setPosts(result));
+                console.log('Dữ liệu bài viết vừa fetch:', result);
                 return result;
             } catch (error) {
                 const errorMessage =
                     error.response?.data?.message || error.message || 'Đã xảy ra lỗi khi lấy bài viết';
                 dispatch(setError(errorMessage));
                 Toast.error('Không thể lấy bài viết: ' + errorMessage);
+                // Không lưu lỗi vào cache, giữ cache cũ nếu có
                 throw error;
             } finally {
                 dispatch(setLoading(false));

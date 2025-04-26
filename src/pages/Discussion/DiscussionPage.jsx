@@ -42,18 +42,18 @@ const DiscussionPage = () => {
         }
     }, [eventId, navigate]);
 
-    const handleEventSelect = (event) => {
-        setSelectedEvent(event);
-        // navigate(`/discussions/${event._id}`);
-        console.log(event._id);
-    };
+    // const handleEventSelect = (event) => {
+    //     setSelectedEvent(event);
+    //     navigate(`/discussions/${selectedEvent._id}`);
+    //     console.log(event._id);
+    // };
 
     return (
         <div className="flex h-screen bg-gray-100">
             <EventSidebar
                 events={events}
                 selectedEventId={selectedEvent?._id}
-                onEventSelect={handleEventSelect}
+                // onEventSelect={handleEventSelect}
             />
             <div className="flex flex-1 flex-col">
                 {selectedEvent ? (

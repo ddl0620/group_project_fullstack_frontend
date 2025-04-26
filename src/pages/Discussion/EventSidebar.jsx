@@ -17,11 +17,12 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
+import {useNavigate} from "react-router-dom";
 
 const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isCollapsed, setIsCollapsed] = useState(false);
-
+    const navigate = useNavigate();
     // Auto-collapse on small screens
     useEffect(() => {
         const handleResize = () => {
@@ -43,36 +44,6 @@ const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
     const filteredEvents = events.filter((event) =>
         event.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    // Function to get initials from event title
-    const getInitials = (title) => {
-        return title
-            .split(' ')
-            .map((word) => word[0])
-            .join('')
-            .substring(0, 2)
-            .toUpperCase();
-    };
-
-    // Function to get a color based on event id (for consistent colors)
-    const getAvatarColor = (id) => {
-        const colors = [
-            'bg-red-500',
-            'bg-blue-500',
-            'bg-green-500',
-            'bg-yellow-500',
-            'bg-purple-500',
-            'bg-pink-500',
-            'bg-indigo-500',
-            'bg-teal-500',
-        ];
-
-        // Use the sum of char codes to determine color
-        const sum = id
-            .split('')
-            .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        return colors[sum % colors.length];
-    };
 
     return (
         <div
@@ -156,7 +127,11 @@ const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
                                           ? 'hover:bg-gray-100'
                                           : 'hover:bg-gray-50'
                                 }`}
-                                onClick={() => onEventSelect(event)}
+                                onClick={() => {
+                                    navigate(`/discussions/${event._id}`);
+                                    console.log(event._id);
+                                }
+                                }
                             >
                                 {isCollapsed ? (
                                     <TooltipProvider>
