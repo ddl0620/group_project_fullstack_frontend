@@ -22,6 +22,7 @@ import settingItems from "@/components/SidebarItems/Setting.js";
 import DiscussionPage from "@/pages/Discussion/DiscussionPage.jsx";
 import MyJoinedEvent from "@/pages/Event/MyJoinedEvents/MyJoinedEvent.jsx";
 import userItems from "@/components/SidebarItems/User.js";
+import DiscussionThreadList from "@/pages/Discussion/DiscussionThreadList.jsx";
 
 const ProtectedRoute = ({ allowedRoles }) => {
     const { isAuthenticated, role } = useSelector((state) => state.user);
@@ -117,6 +118,8 @@ const routes = [
                 children: [
                     { path: '/dashboard', element: <UserDashboard /> },
                     {path: '/discussions', element: <DiscussionPage />},
+                    {path: '/discussions/:eventId', element: <DiscussionPage />},
+
                     {path: '/notifications', element: <DiscussionPage />},
 
                 ],

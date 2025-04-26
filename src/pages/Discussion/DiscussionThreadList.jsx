@@ -1,118 +1,147 @@
-"use client"
+// src/components/DiscussionThreadList.jsx
+import { useState, useEffect } from 'react';
+import {
+    MessageSquare,
+    ThumbsUp,
+    MessageCircle,
+    Clock,
+    Edit,
+    Trash,
+} from 'lucide-react';
+import { useSelector } from 'react-redux';
+import PostModal from './PostModal';
+import { useDiscussionPost } from '@/hooks/useDiscussionPost.js';
+import { DiscussionPost } from '@/pages/Discussion/DiscussionPost.jsx';
+import EventDetails from '@/pages/Event/EventDetails.jsx';
+import {CreateEditDiscussionPost} from "@/pages/Discussion/CreateEditDiscusisonPost.jsx";
+import {useParams} from "react-router-dom";
 
-import { useState } from "react"
-import { MessageSquare, ThumbsUp, MessageCircle, Clock } from "lucide-react"
-import { mockDiscussions } from "./mockData"
+const DiscussionThreadList = ({eventId}) => {
+    const [activeTab, setActiveTab] = useState('all');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingPost, setEditingPost] = useState(null);
+    const { fetchPosts, pagination, loading, error, updatePost, deletePost } =
+        useDiscussionPost();
+    const me = useSelector((state) => state.user.user);
+    const posts = useSelector((state) => state.discussionPost.posts) || [];
 
-const DiscussionThreadList = ({ eventId }) => {
-  const [activeTab, setActiveTab] = useState("all")
+    useEffect(() => {
+        if (eventId) {
+            fetchPosts(eventId, 1, 10);
+        }
+    }, [eventId, fetchPosts]);
 
-  // Filter discussions by event ID
-  const eventDiscussions = mockDiscussions.filter((discussion) => discussion.eventId === eventId)
+    const filteredDiscussions = Array.isArray(posts)
+        ? posts.filter((discussion) => {
+              if (activeTab === 'all') return true;
+              if (activeTab === 'recent') {
+                  const oneWeekAgo = new Date();
+                  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                  return discussion.creator_id._id === me._id;
+              }
+              return true;
+          })
+        : [];
 
-  // Further filter based on active tab
-  const filteredDiscussions = eventDiscussions.filter((discussion) => {
-    if (activeTab === "all") return true
-    if (activeTab === "popular") return discussion.likes > 5
-    if (activeTab === "recent") {
-      const oneWeekAgo = new Date()
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-      return new Date(discussion.createdAt) > oneWeekAgo
-    }
-    return true
-  })
+    const handleUpdatePost = async (postData) => {
+        try {
+            await updatePost(editingPost._id, postData);
+        } catch (error) {
+            console.error('Lỗi khi cập nhật bài viết:', error);
+        }
+    };
 
-  return (
-    <div className="flex-1 overflow-y-auto bg-gray-50 p-6">
-      <div className="mb-6">
-        <div className="flex space-x-4 border-b border-gray-200">
-          <button
-            className={`pb-2 px-1 ${
-              activeTab === "all"
-                ? "border-b-2 border-blue-500 text-blue-600 font-medium"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-            onClick={() => setActiveTab("all")}
-          >
-            All Discussions
-          </button>
-          <button
-            className={`pb-2 px-1 ${
-              activeTab === "popular"
-                ? "border-b-2 border-blue-500 text-blue-600 font-medium"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-            onClick={() => setActiveTab("popular")}
-          >
-            Popular
-          </button>
-          <button
-            className={`pb-2 px-1 ${
-              activeTab === "recent"
-                ? "border-b-2 border-blue-500 text-blue-600 font-medium"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-            onClick={() => setActiveTab("recent")}
-          >
-            Recent
-          </button>
-        </div>
-      </div>
+    const handleCreatePost = async () => {
+        // Here you would typically send the data to your API
+        try{
 
-      {filteredDiscussions.length > 0 ? (
-        <div className="space-y-4">
-          {filteredDiscussions.map((discussion) => (
-            <div key={discussion.id} className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-10 w-10 rounded-full"
-                    src={
-                      discussion.author.avatar ||
-                      `https://ui-avatars.com/api/?name=${encodeURIComponent(discussion.author.name)}&background=random`
-                    }
-                    alt={discussion.author.name}
-                  />
-                </div>
-                <div className="ml-4 flex-1">
-                  <h3 className="text-lg font-medium text-gray-900">{discussion.title}</h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Started by {discussion.author.name} • {new Date(discussion.createdAt).toLocaleDateString()}
-                  </p>
-                  <p className="mt-3 text-gray-700">{discussion.content}</p>
-                  <div className="mt-4 flex items-center space-x-4 text-sm text-gray-500">
-                    <button className="flex items-center hover:text-blue-600">
-                      <ThumbsUp className="h-4 w-4 mr-1" />
-                      <span>{discussion.likes}</span>
-                    </button>
-                    <div className="flex items-center">
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      <span>{discussion.replies} replies</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      <span>Last reply {discussion.lastReplyTime}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            const images = [];
+            for(let image of allImages) {
+                images.push(image.url);
+            }
+
+            const postData = {
+                content: postContent,
+                images: images
+            }
+
+
+            await createPost(eventId, postData)
+
+            setPostContent('');
+            setImageUrls([]);
+            setUploadedImages([]);
+            setCurrentImageUrl('');
+            setIsModalOpen(false);
+        }
+        catch(err){
+            console.error('Error creating post:', err);
+        }
+    };
+
+
+    if (error) {
+        return (
+            <div className="py-12 text-center text-red-500 flex flex-col px-4">
+                {error}
+                {error !== "You are not authorized to access this event" ? (<button
+                    onClick={() => fetchPosts(eventId, 1, 10, true)}
+                    className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                >
+                    Thử lại
+                </button>) : <></>}
+
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <MessageSquare className="h-12 w-12 mx-auto text-gray-400" />
-          <h3 className="mt-2 text-lg font-medium text-gray-900">No discussions yet</h3>
-          <p className="mt-1 text-gray-500">Be the first to start a discussion for this event.</p>
-          <div className="mt-6">
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-              Start a Discussion
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+        );
+    }
 
-export default DiscussionThreadList
+    return (
+        <div className="overflow-y-auto bg-gray-50 p-6">
+            {loading ? (
+                <div className="py-12 text-center">Đang tải...</div>
+            ) : filteredDiscussions.length > 0 ? (
+                <div className="flex flex-col items-center justify-start space-y-4">
+                    <div className="mb-4 text-gray-500">
+                        Tổng cộng:{' '}
+                        {typeof pagination.total === 'number'
+                            ? pagination.total
+                            : 0}{' '}
+                        bài viết
+                    </div>
+                    <div className="fixed right-4 bottom-10 z-50">
+                        <CreateEditDiscussionPost onSuccess={handleCreatePost}  eventId={eventId} />
+                    </div>
+                    {filteredDiscussions.map((discussion) => {
+                        return <DiscussionPost postData={discussion} />;
+                    })}
+                </div>
+            ) : (
+                <div className="py-12 text-center">
+                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-lg font-medium text-gray-900">
+                        Chưa có thảo luận nào
+                    </h3>
+                    <p className="mt-1 text-gray-500">
+                        Hãy là người đầu tiên bắt đầu một thảo luận cho sự kiện
+                        này.
+                    </p>
+                    <div className="mt-6">
+                        <CreateEditDiscussionPost onSuccess={handleCreatePost}  eventId={eventId} />
+                    </div>
+                </div>
+            )}
+            <PostModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingPost(null);
+                }}
+                onSubmit={handleUpdatePost}
+                initialData={editingPost || {}}
+                eventId={eventId}
+            />
+        </div>
+    );
+};
+
+export default DiscussionThreadList;

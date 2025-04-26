@@ -9,23 +9,22 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button, buttonVariants } from "@/components/ui/button";
-import {InformationCircleIcon, TrashIcon} from "@heroicons/react/24/outline";
-
+} from '@/components/ui/alert-dialog';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { InformationCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 // Hàm hiển thị AlertDialog và trả về Promise với lựa chọn của người dùng
 export const showAlertDialog = ({
-                                    title = "Are you sure?",
-                                    description = "This action cannot be undone.",
-                                    confirmText = "Continue",
-                                    cancelText = "Cancel",
-                                    variant = "destructive", // Màu của nút confirm (destructive, default, etc.)
-                                    icon = <TrashIcon className="size-6 text-red-600 dark:text-red-200" />, // Icon mặc định
-                                }) => {
+    title = 'Are you sure?',
+    description = 'This action cannot be undone.',
+    confirmText = 'Continue',
+    cancelText = 'Cancel',
+    variant = 'destructive', // Màu của nút confirm (destructive, default, etc.)
+    icon = <TrashIcon className="size-6 text-red-600 dark:text-red-200" />, // Icon mặc định
+}) => {
     return new Promise((resolve) => {
         // Tạo một div tạm để render dialog
-        const dialogContainer = document.createElement("div");
+        const dialogContainer = document.createElement('div');
         document.body.appendChild(dialogContainer);
         const root = createRoot(dialogContainer);
 
@@ -85,22 +84,26 @@ export const showAlertDialog = ({
 export const AlertDialogUtils = {
     warning: (options = {}) =>
         showAlertDialog({
-            title: "Are you sure?",
-            description: "This action cannot be undone.",
-            confirmText: "Continue",
-            cancelText: "Cancel",
-            variant: "destructive",
-            icon: <TrashIcon className="size-6 text-red-600 dark:text-red-200" />,
+            title: 'Are you sure?',
+            description: 'This action cannot be undone.',
+            confirmText: 'Continue',
+            cancelText: 'Cancel',
+            variant: 'destructive',
+            icon: (
+                <TrashIcon className="size-6 text-red-600 dark:text-red-200" />
+            ),
             ...options, // Ghi đè các giá trị mặc định bằng options
         }),
     info: (options = {}) =>
         showAlertDialog({
-            title: "Information",
-            description: "Here is some information for you.",
-            confirmText: "OK",
-            cancelText: "Close",
-            variant: "default",
-            icon: <InformationCircleIcon className="size-6 text-blue-600 dark:text-blue-200" />, // Giả định có icon Info
+            title: 'Information',
+            description: 'Here is some information for you.',
+            confirmText: 'OK',
+            cancelText: 'Close',
+            variant: 'default',
+            icon: (
+                <InformationCircleIcon className="size-6 text-blue-600 dark:text-blue-200" />
+            ), // Giả định có icon Info
             ...options,
         }),
 };
