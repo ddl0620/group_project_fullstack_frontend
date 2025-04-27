@@ -1,557 +1,247 @@
+// src/components/DiscussionPost.jsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Heart, MessageCircle, Send, MoreHorizontal } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/ui/avatar.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
 } from '@/components/ui/card.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
 import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from '@/components/ui/carousel.tsx';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 import { useUser } from '@/hooks/useUser.js';
 import { useSelector } from 'react-redux';
 import { CreateEditDiscussionPost } from '@/pages/Discussion/DiscussionPost/CreateEditDiscusisonPost.jsx';
-import {AlertDialog, AlertDialogDescription, AlertDialogTitle} from "@radix-ui/react-alert-dialog";
-import {AlertDialogUtils} from "@/helpers/AlertDialog.jsx";
-import {Toast} from "@/helpers/toastService.js";
 import {
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogFooter,
-    AlertDialogHeader
-} from "@/components/ui/alert-dialog.tsx";
-import useDiscussionPost from "@/hooks/useDiscussionPost.js";
-import {CommentSection} from "@/pages/Discussion/DiscussionReply/CommentSection.jsx";
-
-// Mock data for the post
-// const postData = {
-//     _id: '680826be2a742860cb232bf4c',
-//     content: 'Ai đi 30/4 ko? Ký nam trò',
-//     created_at: '2025-04-18T15:10:50.082Z',
-//     creator_id: '6801db125ac5fc687319bf739',
-//     event_id: '6801dafc5ac5fc687319bf736',
-//     images: [
-//         'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh73LMyo9vVS974D9Gv8R9hkb5707hG2xUccCUP2FzmWG3D0fFkvWtdkvkFigPooBOMBv2QnR4TKG2EfPjmVYnb0CBslO1VW7bbAMDjDNYShhQMb2mg3ZZbF4x_lrQGaymmdL-Bp3-7qRoNaJT4RfNDiRNmHV6VIl87S2qKli9wEFUe4u7jR6g8B4cgREs/s16000-rw/anh-30-4.jpg',
-//         'https://vnpt.com.vn/Media/Images/24042024/tinh-than-30-thang-4.png',
-//         'https://kenh14cdn.com/203336854389633024/2025/4/15/img6239-17446854812561262644741-1744686003628-17446860042171242336120-1744690135519-1744690135650632899270.jpg',
-//     ],
-//     isDeleted: false,
-//     updated_at: '2025-04-18T15:10:50.082Z',
-//     creator: {
-//         name: 'Quốc Khánh',
-//         username: 'qckhanh',
-//         avatar: 'https://image.dienthoaivui.com.vn/x,webp,q90/https://dashboard.dienthoaivui.com.vn/uploads/dashboard/editor_upload/avatar-30-4-2.jpg',
-//     },
-// };
-
-// Mock data for comments
-const mockComments = [
-    {
-        id: 'comment1',
-        content: 'Great post! Love the photos.',
-        created_at: '2025-04-18T16:15:30.082Z',
-        user: {
-            name: 'Alice Smith',
-            username: 'alicesmith',
-            avatar: '/contemplative-artist.png',
-        },
-        likes: 5,
-        replies: [
-            {
-                id: 'reply1',
-                content: 'I agree, the photos are amazing!',
-                created_at: '2025-04-18T17:20:10.082Z',
-                user: {
-                    name: 'Bob Johnson',
-                    username: 'bobjohnson',
-                    avatar: '/contemplative-man.png',
-                },
-                likes: 2,
-            },
-        ],
-    },
-    {
-        id: 'comment2',
-        content: 'Where was this taken?',
-        created_at: '2025-04-18T18:05:45.082Z',
-        user: {
-            name: 'Emma Davis',
-            username: 'emmadavis',
-            avatar: '/placeholder.svg?key=n6vdj',
-        },
-        likes: 3,
-        replies: [],
-    },
-];
-
-// Recursive comment component that can handle unlimited nesting
-const Comment = ({ comment, onReply, path = [] }) => {
-    const [liked, setLiked] = useState(false);
-    const [likeCount, setLikeCount] = useState(comment.likes || 0);
-    const [showReplyInput, setShowReplyInput] = useState(false);
-    const [replyContent, setReplyContent] = useState('');
-    const handleLike = () => {
-        if (liked) {
-            setLikeCount(likeCount - 1);
-        } else {
-            setLikeCount(likeCount + 1);
-        }
-        setLiked(!liked);
-    };
-
-    const handleReplySubmit = () => {
-        if (replyContent.trim() === '') return;
-
-        onReply(path, replyContent);
-        setReplyContent('');
-        setShowReplyInput(false);
-    };
-
-    return (
-        <div className={`${path.length > 0 ? 'mt-2 ml-8' : 'mt-4'}`}>
-            <div className="flex gap-2">
-                <Avatar className="h-8 w-8">
-                    <AvatarImage
-                        src={comment.user.avatar || '/placeholder.svg'}
-                        alt={comment.user.name}
-                    />
-                    <AvatarFallback>
-                        {comment.user.name.charAt(0)}
-                    </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                    <div className="bg-muted rounded-lg p-2">
-                        <div className="flex items-center gap-1">
-                            <span className="text-sm font-semibold">
-                                {comment.user.name}
-                            </span>
-                            <span className="text-muted-foreground text-xs">
-                                @{comment.user.username}
-                            </span>
-                        </div>
-                        <p className="text-sm">{comment.content}</p>
-                    </div>
-                    <div className="text-muted-foreground mt-1 flex items-center gap-4 text-xs">
-                        <span>
-                            {formatDistanceToNow(new Date(comment.created_at), {
-                                addSuffix: true,
-                            })}
-                        </span>
-                        <button
-                            onClick={handleLike}
-                            className={`flex items-center gap-1 ${liked ? 'text-primary' : ''}`}
-                        >
-                            {likeCount} {likeCount === 1 ? 'like' : 'likes'}
-                        </button>
-                        <button
-                            onClick={() => setShowReplyInput(!showReplyInput)}
-                        >
-                            Reply
-                        </button>
-                    </div>
-                    {showReplyInput && (
-                        <div className="mt-2 flex gap-2">
-                            <Avatar className="h-6 w-6">
-                                <AvatarImage
-                                    src="/diverse-group-city.png"
-                                    alt="Current user"
-                                />
-                                <AvatarFallback>ME</AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                                <div className="flex gap-2">
-                                    <Input
-                                        placeholder="Write a reply..."
-                                        className="h-8 text-sm"
-                                        value={replyContent}
-                                        onChange={(e) =>
-                                            setReplyContent(e.target.value)
-                                        }
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                handleReplySubmit();
-                                            }
-                                        }}
-                                    />
-                                    <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-8 px-2"
-                                        onClick={handleReplySubmit}
-                                        disabled={replyContent.trim() === ''}
-                                    >
-                                        <Send className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-            {comment.replies && comment.replies.length > 0 && (
-                <div className="mt-2">
-                    {comment.replies.map((reply, index) => (
-                        <Comment
-                            key={reply.id}
-                            comment={reply}
-                            onReply={onReply}
-                            path={[...path, index]}
-                        />
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
+  AlertDialog,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from '@radix-ui/react-alert-dialog';
+import { AlertDialogUtils } from '@/helpers/AlertDialog.jsx';
+import { Toast } from '@/helpers/toastService.js';
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+} from '@/components/ui/alert-dialog.tsx';
+import useDiscussionPost from '@/hooks/useDiscussionPost.js';
+import { CommentSection } from '@/pages/Discussion/DiscussionReply/CommentSection.jsx';
+import useDiscussionReply from '@/hooks/useDiscussionReply.js';
 
 export function DiscussionPost({ postData }) {
-    const [liked, setLiked] = useState(false);
-    const [likeCount, setLikeCount] = useState(124);
-    const [showComments, setShowComments] = useState(false);
-    const [comments, setComments] = useState(mockComments);
-    const [newComment, setNewComment] = useState('');
-    const [showAllComments, setShowAllComments] = useState(false);
-    const [creator, setCreator] = useState({ name: 'User' });
-    // Display only 2 comments when collapsed
-    const visibleComments = showAllComments ? comments : comments.slice(0, 2);
-    const { getUserById } = useUser();
-    const {deletePost, updatePost} = useDiscussionPost();
-    const me = useSelector((state) => state.user.user);
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const { getUserById } = useUser();
+  const { deletePost, updatePost } = useDiscussionPost();
+  const { fetchReplies } = useDiscussionReply();
+  const me = useSelector((state) => state.user.user);
+  const repliesByPostId = useSelector(
+    (state) => state.discussionReply.repliesByPostId
+  );
 
-    useEffect(() => {
-        const fetchUserData = async (userId) => {
-            const response = await getUserById(userId);
-            const user = response.content;
-            setCreator(user);
-        };
-        fetchUserData(postData.creator_id._id);
-        console.log(postData.creator_id._id);
-    }, []);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(124);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [creator, setCreator] = useState({ name: 'User' });
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
-    const handleLike = () => {
-        if (liked) {
-            setLikeCount(likeCount - 1);
-        } else {
-            setLikeCount(likeCount + 1);
-        }
-        setLiked(!liked);
+  // Lấy replies theo postId từ repliesByPostId
+  const replies = repliesByPostId[postData._id]?.replies || [];
+
+  useEffect(() => {
+    const fetchUserData = async (userId) => {
+      const response = await getUserById(userId);
+      const user = response.content;
+      setCreator(user);
     };
 
-    const isMewPost = me._id === postData.creator_id._id;
-
-    const handleAddComment = () => {
-        if (newComment.trim() === '') return;
-
-        const comment = {
-            id: `comment${comments.length + 1}`,
-            content: newComment,
-            created_at: new Date().toISOString(),
-            user: {
-                name: 'Current User',
-                username: 'currentuser',
-                avatar: '/diverse-group-city.png',
-            },
-            likes: 0,
-            replies: [],
-        };
-
-        setComments([...comments, comment]);
-        setNewComment('');
+    const fetchPostReplies = async () => {
+      await fetchReplies(postData._id, page, limit);
     };
 
-    const handleUpdateDiscussion = async () => {
-        try {
-            // Here you would typically send the updated post data to your API
-            console.log('Post updated:', postData);
-        } catch (error) {
-            console.error('Error updating post:', error);
-        }
-    };
-    // console.log(postData);
+    fetchUserData(postData.creator_id._id);
+    fetchPostReplies();
+  }, [postData._id, page, limit, fetchReplies, postData.creator_id._id]);
 
+  useEffect(() => {
+    console.log(`This is replies of ${postData._id}`, replies);
+  }, [replies, postData._id]);
 
-    const handleDeleteDiscussion = async () => {
-        try {
-            // const confirmed = await AlertDialogUtils.warning({
-            //     title: 'Delete Post',
-            //     description: 'Are you sure you want to delete this post?',
-            //     confirmText: 'Delete',
-            //     cancelText: 'Cancel',
-            // })
-            //
-            // if(!confirmed) return;
-
-
-            await deletePost(postData.event_id, postData._id);
-        } catch (error) {
-            console.error('Error deleting post:', error);
-        }
+  const handleLike = () => {
+    if (liked) {
+      setLikeCount(likeCount - 1);
+    } else {
+      setLikeCount(likeCount + 1);
     }
+    setLiked(!liked);
+  };
 
-    // Recursive function to add a reply at any nesting level
-    const handleReply = (path, content) => {
-        const newReply = {
-            id: `reply-${Date.now()}`,
-            content: content,
-            created_at: new Date().toISOString(),
-            user: {
-                name: 'Current User',
-                username: 'currentuser',
-                avatar: '/diverse-group-city.png',
-            },
-            likes: 0,
-            replies: [],
-        };
-
-        // Create a deep copy of the comments array
-        const updatedComments = JSON.parse(JSON.stringify(comments));
-
-        // If path is empty, it's a top-level comment
-        if (path.length === 0) {
-            updatedComments.push(newReply);
-        } else {
-            // Navigate to the correct comment using the path
-            let current = updatedComments[path[0]];
-            for (let i = 1; i < path.length; i++) {
-                current = current.replies[path[i]];
-            }
-
-            // Add the reply to the current comment's replies
-            if (!current.replies) {
-                current.replies = [];
-            }
-            current.replies.push(newReply);
-        }
-
-        setComments(updatedComments);
-    };
-
-    const sampleApiResponse = {
-        success: true,
-        message: "Replies fetched successfully",
-        content: {
-            replies: [
-                {
-                    _id: "680d20dbbd74f00e6443d1cd",
-                    post_id: "680bcb48da87dc72a10348f9",
-                    parent_reply_id: "680d206fbd74f00e6443d1c1",
-                    content: "Giỏi con mẹ m",
-                    creator_id: {
-                        _id: "6801db125ac6f6873198f739",
-                    },
-                    images: [
-                        "https://i.ytimg.com/vi/TK4I4RTOjQo/hq720.jpg?sqp=-oaymwE7CK4FEIIDSFryq4qpAy0IARUAAAAAGAElAADIQj0AgKJD8AEB-AH-CYAC0AWKAgwIABABGGUgUShHMA8=&rs=AOn4CLBvm1oFR0lAueoAqsfCM9_j5yfWfQ",
-                    ],
-                    isDeleted: false,
-                    created_at: "2025-04-26T18:07:23.256Z",
-                    updated_at: "2025-04-26T18:07:23.256Z",
-                    __v: 0,
-                },
-                {
-                    _id: "680d206fbd74f00e6443d1c1",
-                    post_id: "680bcb48da87dc72a10348f9",
-                    parent_reply_id: null,
-                    content: "Mấy bạn giỏi quá",
-                    creator_id: {
-                        _id: "6801db125ac6f6873198f739",
-                    },
-                    images: [
-                        "https://i.ytimg.com/vi/TK4I4RTOjQo/hq720.jpg?sqp=-oaymwE7CK4FEIIDSFryq4qpAy0IARUAAAAAGAElAADIQj0AgKJD8AEB-AH-CYAC0AWKAgwIABABGGUgUShHMA8=&rs=AOn4CLBvm1oFR0lAueoAqsfCM9_j5yfWfQ",
-                    ],
-                    isDeleted: false,
-                    created_at: "2025-04-26T18:05:35.421Z",
-                    updated_at: "2025-04-26T18:05:35.421Z",
-                    __v: 0,
-                },
-            ],
-        },
+  const isMyPost = me._id === postData.creator_id._id;
+  const handleUpdateDiscussion = async () => {
+    try {
+      console.log('Post updated:', postData);
+    } catch (error) {
+      console.error('Error updating post:', error);
     }
+  };
 
-// Add more sample data to demonstrate deeper nesting
-    const extendedReplies = [
-        ...sampleApiResponse.content.replies,
-        {
-            _id: "680d21dbbd74f00e6443d1ce",
-            post_id: "680bcb48da87dc72a10348f9",
-            parent_reply_id: "680d20dbbd74f00e6443d1cd", // Reply to the first reply
-            content: "Bình tĩnh nào bạn",
-            creator_id: {
-                _id: "6801db125ac6f6873198f740", // Different user
-            },
-            images: [],
-            isDeleted: false,
-            created_at: "2025-04-26T18:10:23.256Z",
-            updated_at: "2025-04-26T18:10:23.256Z",
-            __v: 0,
-        },
-        {
-            _id: "680d22dbbd74f00e6443d1cf",
-            post_id: "680bcb48da87dc72a10348f9",
-            parent_reply_id: "680d21dbbd74f00e6443d1ce", // Reply to the reply of the first reply (3rd level)
-            content: "Không, tôi không bình tĩnh được",
-            creator_id: {
-                _id: "6801db125ac6f6873198f739", // Same as original commenter
-            },
-            images: [],
-            isDeleted: false,
-            created_at: "2025-04-26T18:15:23.256Z",
-            updated_at: "2025-04-26T18:15:23.256Z",
-            __v: 0,
-        },
-        {
-            _id: "680d23dbbd74f00e6443d1d0",
-            post_id: "680bcb48da87dc72a10348f9",
-            parent_reply_id: null, // Another top-level comment
-            content: "Chủ đề này thật thú vị",
-            creator_id: {
-                _id: "6801db125ac6f6873198f741", // Different user
-            },
-            images: ["https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"],
-            isDeleted: false,
-            created_at: "2025-04-26T18:20:23.256Z",
-            updated_at: "2025-04-26T18:20:23.256Z",
-            __v: 0,
-        },
-    ]
+  const handleDeleteDiscussion = async () => {
+    try {
+      await deletePost(postData.event_id, postData._id);
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
 
-    return (
-        <div>
-            <Card className="mx-auto max-w-2xl rounded-lg bg-white shadow-md sm:w-sm md:w-md lg:w-lg xl:w-xl">
-                <CardHeader className="flex flex-row items-center gap-4 space-y-0 p-4">
-                    <CustomAvatar
-                        src={''}
-                        fallbackText={creator?.name || "User"}
-                        alt={'User'}
-                    />
-                    <div className="flex-1">
-                        <div className="flex items-center gap-1">
-                            <span className="font-semibold">{creator?.name || "User"}</span>
-                        </div>
-                        <span className="text-muted-foreground text-xs">
-                        {formatDistanceToNow(new Date(postData.created_at), {
-                            addSuffix: true,
-                        })}
-                    </span>
+  return (
+    <div>
+      <Card className="mx-auto max-w-2xl rounded-lg bg-white shadow-md sm:w-sm md:w-md lg:w-lg xl:w-xl">
+        <CardHeader className="flex flex-row items-center gap-4 space-y-0 p-4">
+          <CustomAvatar
+            src={''}
+            fallbackText={creator?.name || 'User'}
+            alt={'User'}
+          />
+          <div className="flex-1">
+            <div className="flex items-center gap-1">
+              <span className="font-semibold">{creator?.name || 'User'}</span>
+            </div>
+            <span className="text-muted-foreground text-xs">
+              {formatDistanceToNow(new Date(postData.created_at), {
+                addSuffix: true,
+              })}
+            </span>
+          </div>
+          {isMyPost ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-5 w-5" />
+                  <span className="sr-only">More options</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <CreateEditDiscussionPost
+                    isEdit={true}
+                    postData={postData}
+                    onSuccess={handleUpdateDiscussion}
+                    triggerButton={
+                      <div className="rounded-sm p-2 text-sm hover:bg-gray-100">
+                        Edit
+                      </div>
+                    }
+                  />
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDeleteDiscussion}>
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <></>
+          )}
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center p-4 pt-0">
+          <p className="w-full">{postData.content}</p>
+          {postData.images.length > 0 && (
+            <Carousel className="mt-4 w-full">
+              <CarouselContent>
+                {postData.images.map((image, index) => (
+                  <CarouselItem key={index}>
+                    <div className="overflow-hidden rounded-lg">
+                      <img
+                        src={image || '/placeholder.svg'}
+                        alt={`Post image ${index + 1}`}
+                        className="aspect-video w-full object-cover"
+                      />
                     </div>
-                    {isMewPost ? (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="h-5 w-5" />
-                                    <span className="sr-only">More options</span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem asChild>
-                                    <CreateEditDiscussionPost
-                                        isEdit={true}
-                                        postData={postData}
-                                        onSuccess={handleUpdateDiscussion}
-                                        triggerButton={
-                                            <div className="text-sm p-2 rounded-sm hover:bg-gray-100">
-                                                Edit
-                                            </div>
-                                        }
-                                    />
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleDeleteDiscussion}>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    ) : (
-                        <></>
-                    )}
-                </CardHeader>
-                <CardContent className="flex flex-col items-center justify-center p-4 pt-0">
-                    <p className="w-full">{postData.content}</p>
-                    {postData.images.length > 0 && (
-                        <Carousel className="mt-4 w-full">
-                            <CarouselContent>
-                                {postData.images.map((image, index) => (
-                                    <CarouselItem key={index}>
-                                        <div className="overflow-hidden rounded-lg">
-                                            <img
-                                                src={image || '/placeholder.svg'}
-                                                alt={`Post image ${index + 1}`}
-                                                className="aspect-video w-full object-cover"
-                                            />
-                                        </div>
-                                    </CarouselItem>
-                                ))}
-                            </CarouselContent>
-                            <CarouselPrevious className="left-2" />
-                            <CarouselNext className="right-2" />
-                        </Carousel>
-                    )}
-                </CardContent>
-                <CardFooter className="flex flex-col p-0">
-                    <div className="flex w-full items-center justify-start gap-x-4 p-4">
-                        <div className="flex items-center">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleLike}
-                                className={liked ? 'text-red-500' : ''}
-                            >
-                                <Heart
-                                    className={`h-5 w-5 ${liked ? 'fill-current' : ''}`}
-                                />
-                                <span className="sr-only">Like</span>
-                            </Button>
-                            <span className="text-sm">{likeCount}</span>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="flex items-center gap-1"
-                            onClick={() => setShowComments(!showComments)}
-                        >
-                            <MessageCircle className="h-5 w-5" />
-                            <span>{comments.length} comments</span>
-                        </Button>
-                    </div>
-                    {showComments && (
-                        <CommentSection postId="680bcb48da87dc72a10348f9" initialReplies={extendedReplies} />
-                    )}
-                </CardFooter>
-            </Card>
-            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete your post and remove it from our servers.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteDiscussion} className="bg-red-600 hover:bg-red-700">
-                            Delete
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </div>
-
-    );
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-2" />
+              <CarouselNext className="right-2" />
+            </Carousel>
+          )}
+        </CardContent>
+        <CardFooter className="flex flex-col p-0">
+          <div className="flex w-full items-center justify-start gap-x-4 p-4">
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLike}
+                className={liked ? 'text-red-500' : ''}
+              >
+                <Heart className={`h-5 w-5 ${liked ? 'fill-current' : ''}`} />
+                <span className="sr-only">Like</span>
+              </Button>
+              <span className="text-sm">{likeCount}</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-1"
+              onClick={() => setShowComments(!showComments)}
+            >
+              <MessageCircle className="h-5 w-5" />
+              <span>{replies.length} comments</span>
+            </Button>
+          </div>
+          {showComments && (
+            <CommentSection postId={postData._id} initialReplies={replies} />
+          )}
+        </CardFooter>
+      </Card>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              post and remove it from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteDiscussion}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
 }
