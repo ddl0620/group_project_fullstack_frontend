@@ -20,9 +20,9 @@ export const validateForm = (formData, validationRules) => {
           errors[field] = rules.requiredMessage || `${field} is required`;
         }
       } else if (
-          formData[field] === null ||
-          formData[field] === undefined ||
-          formData[field] === ''
+        formData[field] === null ||
+        formData[field] === undefined ||
+        formData[field] === ''
       ) {
         // For non-strings (e.g., boolean, null), check if falsy or undefined
         errors[field] = rules.requiredMessage || `${field} is required`;
@@ -31,36 +31,36 @@ export const validateForm = (formData, validationRules) => {
 
     // Check pattern validation (only for strings)
     if (
-        rules.pattern &&
-        typeof formData[field] === 'string' &&
-        formData[field] &&
-        !rules.pattern.test(formData[field])
+      rules.pattern &&
+      typeof formData[field] === 'string' &&
+      formData[field] &&
+      !rules.pattern.test(formData[field])
     ) {
       errors[field] = rules.patternMessage || `Invalid ${field} format`;
     }
 
     // Check min length (only for strings)
     if (
-        rules.minLength &&
-        typeof formData[field] === 'string' &&
-        formData[field] &&
-        formData[field].length < rules.minLength
+      rules.minLength &&
+      typeof formData[field] === 'string' &&
+      formData[field] &&
+      formData[field].length < rules.minLength
     ) {
       errors[field] =
-          rules.minLengthMessage ||
-          `${field} must be at least ${rules.minLength} characters`;
+        rules.minLengthMessage ||
+        `${field} must be at least ${rules.minLength} characters`;
     }
 
     // Check max length (only for strings)
     if (
-        rules.maxLength &&
-        typeof formData[field] === 'string' &&
-        formData[field] &&
-        formData[field].length > rules.maxLength
+      rules.maxLength &&
+      typeof formData[field] === 'string' &&
+      formData[field] &&
+      formData[field].length > rules.maxLength
     ) {
       errors[field] =
-          rules.maxLengthMessage ||
-          `${field} cannot exceed ${rules.maxLength} characters`;
+        rules.maxLengthMessage ||
+        `${field} cannot exceed ${rules.maxLength} characters`;
     }
 
     // Custom validation
@@ -82,7 +82,11 @@ export const validateForm = (formData, validationRules) => {
  */
 export const scrollToFirstError = (errors, refs) => {
   const firstErrorField = Object.keys(errors)[0];
-  if (firstErrorField && refs[firstErrorField] && refs[firstErrorField].current) {
+  if (
+    firstErrorField &&
+    refs[firstErrorField] &&
+    refs[firstErrorField].current
+  ) {
     refs[firstErrorField].current.scrollIntoView({
       behavior: 'smooth',
       block: 'center',
@@ -101,12 +105,12 @@ export const validationPatterns = {
   phone: {
     pattern: /^\+[1-9][0-9]{0,2}[ ]?[0-9]{1,3}([ ]?[0-9]{2,4}){1,4}$/,
     message:
-        'Please enter a valid phone number with country code (e.g., +1 234 567 8900)',
+      'Please enter a valid phone number with country code (e.g., +1 234 567 8900)',
   },
   url: {
     pattern:
-        /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/,
+      /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/,
     message:
-        'Please enter a valid URL starting with http:// or https:// (e.g., https://example.com)',
+      'Please enter a valid URL starting with http:// or https:// (e.g., https://example.com)',
   },
 };
