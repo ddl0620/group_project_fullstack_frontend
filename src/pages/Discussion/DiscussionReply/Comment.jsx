@@ -22,7 +22,7 @@ import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 import {
   Carousel,
   CarouselContent,
-  CarouselItem,
+  CarouselItem, CarouselNext, CarouselPrevious,
 } from '@/components/ui/carousel.js';
 import {
   DropdownMenu,

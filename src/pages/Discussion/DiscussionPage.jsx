@@ -4,6 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import EventSidebar from './components/EventSidebar.jsx';
 import DiscussionThreadList from './DiscussionPost/DiscussionThreadList.jsx';
 import { useEvent } from '@/hooks/useEvent.js';
+import {useSelector} from "react-redux";
 
 const DiscussionPage = () => {
   const { eventId } = useParams();
@@ -12,11 +13,22 @@ const DiscussionPage = () => {
   const { getAllJoinedEvents } = useEvent();
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const currentUserId = useSelector((state) => state.user.id);
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const response = await getAllJoinedEvents(currentPage, 10, true);
-        setEvents(response.content.events);
+        const validEvents = [];
+        for(const event of response.content.events) {
+          for(const participant of event.participants) {
+            if(participant.userId === currentUserId && participant.status === "ACCEPTED") {
+              validEvents.push(event);
+              break;
+            }
+          }
+        }
+        console.log(response.content.events);
+        setEvents(validEvents);
       } catch (error) {
         console.error('Error fetching events:', error);
       }

@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 
 const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const navigate = useNavigate();
   // Auto-collapse on small screens
   useEffect(() => {
@@ -33,7 +33,6 @@ const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
 
     // Set initial state
     handleResize();
-
     // Add event listener
     window.addEventListener('resize', handleResize);
 
@@ -128,6 +127,7 @@ const EventSidebar = ({ events, selectedEventId, onEventSelect }) => {
                 onClick={() => {
                   navigate(`/discussions/${event._id}`);
                   console.log(event._id);
+                  setIsCollapsed(true);
                 }}
               >
                 {isCollapsed ? (
