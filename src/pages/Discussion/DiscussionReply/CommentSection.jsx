@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Heart, Reply, MoreHorizontal, X, Send, ImageIcon } from 'lucide-react';
+import {X, ImageIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import Comment from '@/pages/Discussion/DiscussionReply/Comment.jsx';
 import { useSelector } from 'react-redux';
 import useDiscussionReply from '@/hooks/useDiscussionReply.js';
+import {Toast} from "@/helpers/toastService.js";
 
 // Function to organize replies into a tree structure
 const organizeRepliesIntoTree = (replies) => {
@@ -44,7 +45,7 @@ export function CommentSection({ postId, initialReplies = [] }) {
   const [imageUrl, setImageUrl] = useState('');
   const [treeStructure, setTreeStructure] = useState([]);
   const currentUser = useSelector((state) => state.user.user);
-  const { createNewReply } = useDiscussionReply();
+  const { createNewReply, deleteReply } = useDiscussionReply();
   // Initialize with provided replies
   useEffect(() => {
     if (initialReplies.length > 0) {
@@ -72,7 +73,6 @@ export function CommentSection({ postId, initialReplies = [] }) {
     if (newComment.trim() === '' && commentImages.length === 0) return;
 
     // Create a new comment
-
     const content = {
       parent_reply_id: null,
       content: newComment,
@@ -119,11 +119,17 @@ export function CommentSection({ postId, initialReplies = [] }) {
     setTreeStructure(organizeRepliesIntoTree(updatedReplies));
   };
 
-  const handleDeleteComment = (commentId) => {
-    // Filter out the deleted comment
-    const updatedReplies = replies.filter((reply) => reply._id !== commentId);
-    setReplies(updatedReplies);
-    setTreeStructure(organizeRepliesIntoTree(updatedReplies));
+  const handleDeleteComment = async (commentId) => {
+   try{
+     // Filter out the deleted comment
+      await deleteReply(postId, commentId);
+     const updatedReplies = replies.filter((reply) => reply._id !== commentId);
+     setReplies(updatedReplies);
+     setTreeStructure(organizeRepliesIntoTree(updatedReplies));
+   }
+   catch (err){
+     Toast.error('Error deleting reply', err);
+   }
   };
 
   return (

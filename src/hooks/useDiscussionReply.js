@@ -13,7 +13,7 @@ import {
   updateReply as updateReplyAction,
 } from '@/store/slices/DiscussionReplySlice.js';
 import {
-  createNewReplyAPI,
+  createNewReplyAPI, deleteReplyAPI,
   getAllRepliesAPI,
 } from '@/services/DiscussionReplyService.js';
 
@@ -153,7 +153,7 @@ export const useDiscussionReply = () => {
         dispatch(setError(null));
         dispatch(setLoading(true));
         checkToken();
-        const response = await deleteReply(replyId);
+        const response = await deleteReplyAPI(replyId);
 
         if (!response.success) {
           throw new Error('Failed to delete reply');

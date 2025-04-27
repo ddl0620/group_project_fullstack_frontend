@@ -31,8 +31,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.js';
 import { formatDistanceToNow } from 'date-fns';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
+import {useUser} from "@/hooks/useUser.js";
 
 const Comment = ({
   comment,
@@ -50,6 +50,18 @@ const Comment = ({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [showImageInput, setShowImageInput] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [user, setUser] = useState(null);
+  const {getUserById} = useUser();
+
+  useEffect(() => {
+    const getUserCommenter = async () => {
+      const response = await getUserById(comment.creator_id._id);
+      const tmpUser = response.content;
+      setUser(tmpUser);
+    }
+    getUserCommenter();
+  }, []);
+
 
   const isOwnComment = currentUserId === comment.creator_id._id;
   const maxDepth = 5; // Limit nesting depth for UI clarity
@@ -73,7 +85,7 @@ const Comment = ({
     setReplyImages(updatedImages);
   };
 
-  const handleSubmitReply = () => {
+  const handleNestedReply = () => {
     if (replyContent.trim() === '' && replyImages.length === 0) return;
 
     onReply({
@@ -89,21 +101,25 @@ const Comment = ({
   };
 
   const handleDelete = () => {
-    setIsDeleteDialogOpen(false);
+    // setIsDeleteDialogOpen(false);
     onDelete(comment._id);
   };
+
+  if (!user) {
+    return <div>Loading user...</div>;
+  }
 
   return (
     <div className="mt-4">
       <div className="flex gap-3">
-        <CustomAvatar src={''} fallbackText={comment.creator_id._id} />
+        <CustomAvatar src={user?.avatar} fallbackText={user?.name} />
 
         <div className="flex-1 space-y-2">
           <div className="bg-muted rounded-lg p-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="font-medium">
-                  User {comment.creator_id._id.substring(0, 4)}
+                  {(user.name)}
                 </span>
                 <span className="text-muted-foreground text-xs">
                   {formatDistanceToNow(new Date(comment.created_at), {
@@ -121,7 +137,7 @@ const Comment = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
-                      onClick={() => setIsDeleteDialogOpen(true)}
+                      onClick={() => handleDelete()}
                       className="text-red-600"
                     >
                       Delete
@@ -201,7 +217,7 @@ const Comment = ({
                 />
                 <div className="flex-1">
                   <Input
-                    placeholder="Write a reply..."
+                    placeholder="Comment..."
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
                     className="text-sm"
@@ -261,7 +277,7 @@ const Comment = ({
 
                 <Button
                   size="sm"
-                  onClick={handleSubmitReply}
+                  onClick={handleNestedReply}
                   disabled={
                     replyContent.trim() === '' && replyImages.length === 0
                   }
