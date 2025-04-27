@@ -13,10 +13,9 @@ import {
   updateReply as updateReplyAction,
 } from '@/store/slices/DiscussionReplySlice.js';
 import {
-  createNewReplyAPI,
-  getAllRepliesAPI,
+  createNewReplyAPI, deleteReplyAPI,
+  getAllRepliesAPI, updateReplyAPI
 } from '@/services/DiscussionReplyService.js';
-
 export const useDiscussionReply = () => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.discussionReply.loading);
@@ -114,17 +113,16 @@ export const useDiscussionReply = () => {
 
   const updateReply = useCallback(
     async (replyId, content) => {
+      const toastId = Toast.loading("Updating reply...");
       try {
         dispatch(setError(null));
         dispatch(setLoading(true));
         checkToken();
-        const response = await updateReply(replyId, content);
+        const response = await updateReplyAPI(replyId, content);
 
         if (!response.success) {
           throw new Error('Failed to update reply');
         }
-
-        console.log('Updated reply:', response.content.reply);
         dispatch(
           updateReplyAction({
             postId: response.content.reply.post_id,
@@ -141,6 +139,7 @@ export const useDiscussionReply = () => {
         );
         throw error;
       } finally {
+        Toast.dismiss(toastId);
         dispatch(setLoading(false));
       }
     },
@@ -153,7 +152,7 @@ export const useDiscussionReply = () => {
         dispatch(setError(null));
         dispatch(setLoading(true));
         checkToken();
-        const response = await deleteReply(replyId);
+        const response = await deleteReplyAPI(replyId);
 
         if (!response.success) {
           throw new Error('Failed to delete reply');

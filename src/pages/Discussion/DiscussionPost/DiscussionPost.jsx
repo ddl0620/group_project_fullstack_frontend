@@ -1,9 +1,13 @@
-// src/components/DiscussionPost.jsx
-'use client';
-
 import { useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Heart, MessageCircle, Send, MoreHorizontal } from 'lucide-react';
+import {
+  Heart,
+  MessageCircle,
+  Send,
+  MoreHorizontal,
+  X,
+  Pencil,
+} from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -52,6 +56,7 @@ import {
 import useDiscussionPost from '@/hooks/useDiscussionPost.js';
 import { CommentSection } from '@/pages/Discussion/DiscussionReply/CommentSection.jsx';
 import useDiscussionReply from '@/hooks/useDiscussionReply.js';
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 export function DiscussionPost({ postData }) {
   const { getUserById } = useUser();
@@ -68,6 +73,7 @@ export function DiscussionPost({ postData }) {
   const [comments, setComments] = useState([]);
   const [creator, setCreator] = useState({ name: 'User' });
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // New state for edit dialog
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
@@ -103,19 +109,33 @@ export function DiscussionPost({ postData }) {
   };
 
   const isMyPost = me._id === postData.creator_id._id;
+
   const handleUpdateDiscussion = async () => {
     try {
       console.log('Post updated:', postData);
+      setIsEditDialogOpen(false); // Close the dialog on success
     } catch (error) {
       console.error('Error updating post:', error);
+      Toast.error('Failed to update post', error.message);
     }
   };
 
   const handleDeleteDiscussion = async () => {
     try {
+      const confirmed = await AlertDialogUtils.warning({
+        title: 'Are you sure?',
+        description: 'This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      });
+
+      if (!confirmed) return;
+
       await deletePost(postData.event_id, postData._id);
+      setIsDeleteDialogOpen(false); // Close the dialog on success
     } catch (error) {
       console.error('Error deleting post:', error);
+      Toast.error('Failed to delete post', error.message);
     }
   };
 
@@ -138,34 +158,29 @@ export function DiscussionPost({ postData }) {
               })}
             </span>
           </div>
-          {isMyPost ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-5 w-5" />
-                  <span className="sr-only">More options</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <CreateEditDiscussionPost
-                    isEdit={true}
-                    postData={postData}
-                    onSuccess={handleUpdateDiscussion}
-                    triggerButton={
-                      <div className="rounded-sm p-2 text-sm hover:bg-gray-100">
-                        Edit
-                      </div>
-                    }
-                  />
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDeleteDiscussion}>
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <></>
+          {isMyPost && (
+            <div>
+              <CreateEditDiscussionPost
+                eventId={postData.event_id}
+                isEdit={true}
+                postData={postData}
+                onSuccess={handleUpdateDiscussion}
+                triggerButton={
+                  <Button size={'sm'} variant={'ghost'}>
+                    <Pencil />
+                  </Button>
+                } // No trigger button, controlled by state
+                isModalOpen={isEditDialogOpen}
+                setIsModalOpen={setIsEditDialogOpen}
+              />
+              <Button
+                size={'sm'}
+                onClick={() => handleDeleteDiscussion()}
+                variant={'ghost'}
+              >
+                <TrashIcon size={'sm'} />
+              </Button>
+            </div>
           )}
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center p-4 pt-0">
@@ -219,29 +234,6 @@ export function DiscussionPost({ postData }) {
           )}
         </CardFooter>
       </Card>
-      <AlertDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              post and remove it from our servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteDiscussion}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

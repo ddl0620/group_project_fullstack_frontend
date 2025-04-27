@@ -15,6 +15,7 @@ import { DiscussionPost } from '@/pages/Discussion/DiscussionPost/DiscussionPost
 import EventDetails from '@/pages/Event/EventDetails.jsx';
 import { CreateEditDiscussionPost } from '@/pages/Discussion/DiscussionPost/CreateEditDiscusisonPost.jsx';
 import { useParams } from 'react-router-dom';
+import {useImageUploader} from "@/components/ImageUploader.jsx";
 
 const DiscussionThreadList = ({ eventId }) => {
   const [activeTab, setActiveTab] = useState('all');
@@ -24,7 +25,7 @@ const DiscussionThreadList = ({ eventId }) => {
     useDiscussionPost();
   const me = useSelector((state) => state.user.user);
   const posts = useSelector((state) => state.discussionPost.posts) || [];
-
+  const {allImages, setCurrentImageUrl, setUploadedImages, setImageUrls} = useImageUploader();
   useEffect(() => {
     if (eventId) {
       fetchPosts(eventId, 1, 10);
