@@ -8,7 +8,10 @@ import Comment from '@/pages/Discussion/DiscussionReply/Comment.jsx';
 import { useSelector } from 'react-redux';
 import useDiscussionReply from '@/hooks/useDiscussionReply.js';
 import { Toast } from '@/helpers/toastService.js';
-import { ImageUploader, useImageUploader } from '@/components/ImageUploader.jsx';
+import {
+  useImageUploader,
+  ImageUploader,
+} from '@/components/ImageUploader.jsx';
 
 // Function to organize replies into a tree structure
 const organizeRepliesIntoTree = (replies) => {
@@ -48,14 +51,8 @@ export function CommentSection({ postId, initialReplies = [] }) {
     fileInputRef,
     uploadedImages,
     setUploadedImages,
-    imageUrls,
-    setImageUrls,
-    currentImageUrl,
-    setCurrentImageUrl,
-    handleAddImageUrl,
     handleFileChange,
     handleRemoveImage,
-    allImages,
   } = useImageUploader();
 
   // Initialize with provided replies
@@ -67,7 +64,7 @@ export function CommentSection({ postId, initialReplies = [] }) {
     }
   }, [initialReplies]);
 
-  // Cleanup images when submitting or resetting
+  // Cleanup object URLs for uploaded images to prevent memory leaks
   useEffect(() => {
     return () => {
       uploadedImages.forEach((image) => {
@@ -79,17 +76,22 @@ export function CommentSection({ postId, initialReplies = [] }) {
   }, [uploadedImages]);
 
   const handleAddComment = async () => {
-    if (newComment.trim() === '' && allImages.length === 0) return;
+    if (newComment.trim() === '' && uploadedImages.length === 0) return;
 
     // Create a new comment
-    const content = {
-      parent_reply_id: null,
-      content: newComment,
-      images: allImages.map((image) => image.url),
-    };
+    const formData = new FormData();
+    formData.append('parent_reply_id', null);
+    formData.append('content', newComment);
+
+    // Thêm file ảnh vào FormData
+    uploadedImages.forEach((image) => {
+      if (image.file) {
+        formData.append('images', image.file);
+      }
+    });
 
     try {
-      const response = await createNewReply(postId, content);
+      const response = await createNewReply(postId, formData);
       const newReply = {
         ...response,
         creator_id: {
@@ -104,9 +106,7 @@ export function CommentSection({ postId, initialReplies = [] }) {
 
       // Reset form
       setNewComment('');
-      setImageUrls([]);
       setUploadedImages([]);
-      setCurrentImageUrl('');
       setShowImageUploader(false);
     } catch (err) {
       Toast.error('Error creating comment', err);
@@ -114,16 +114,21 @@ export function CommentSection({ postId, initialReplies = [] }) {
   };
 
   const handleReply = async (replyData) => {
-    if (replyData.content.trim() === '' && allImages.length === 0) return;
+    if (replyData.content.trim() === '' && uploadedImages.length === 0) return;
 
-    const content = {
-      parent_reply_id: replyData.parent_reply_id,
-      content: replyData.content,
-      images: allImages.map((image) => image.url),
-    };
+    const formData = new FormData();
+    formData.append('parent_reply_id', replyData.parent_reply_id);
+    formData.append('content', replyData.content);
+
+    // Thêm file ảnh vào FormData
+    uploadedImages.forEach((image) => {
+      if (image.file) {
+        formData.append('images', image.file);
+      }
+    });
 
     try {
-      const response = await createNewReply(replyData.post_id, content);
+      const response = await createNewReply(replyData.post_id, formData);
       const newReply = {
         ...response,
         creator_id: {
@@ -137,9 +142,7 @@ export function CommentSection({ postId, initialReplies = [] }) {
       setTreeStructure(organizeRepliesIntoTree(updatedReplies));
 
       // Reset form
-      setImageUrls([]);
       setUploadedImages([]);
-      setCurrentImageUrl('');
       setShowImageUploader(false);
     } catch (err) {
       Toast.error('Error creating reply', err);
@@ -159,16 +162,23 @@ export function CommentSection({ postId, initialReplies = [] }) {
 
   const handleEditComment = async (replyId, editData) => {
     try {
-      const response = await updateReply(replyId, {
-        content: editData.content,
-        images: allImages.map((image) => image.url),
+      const formData = new FormData();
+      formData.append('content', editData.content);
+
+      // Thêm file ảnh vào FormData
+      uploadedImages.forEach((image) => {
+        if (image.file) {
+          formData.append('images', image.file);
+        }
       });
+
+      const response = await updateReply(replyId, formData);
       const updatedReplies = replies.map((reply) => {
         if (reply._id === replyId) {
           return {
             ...reply,
             content: editData.content,
-            images: allImages.map((image) => image.url),
+            images: response.images || [], // Dựa vào phản hồi từ backend
           };
         }
         return reply;
@@ -178,9 +188,7 @@ export function CommentSection({ postId, initialReplies = [] }) {
       setTreeStructure(organizeRepliesIntoTree(updatedReplies));
 
       // Reset form
-      setImageUrls([]);
       setUploadedImages([]);
-      setCurrentImageUrl('');
       setShowImageUploader(false);
     } catch (err) {
       Toast.error('Error editing reply', err);
@@ -213,10 +221,6 @@ export function CommentSection({ postId, initialReplies = [] }) {
           <ImageUploader
             fileInputRef={fileInputRef}
             uploadedImages={uploadedImages}
-            imageUrls={imageUrls}
-            currentImageUrl={currentImageUrl}
-            setCurrentImageUrl={setCurrentImageUrl}
-            handleAddImageUrl={handleAddImageUrl}
             handleFileChange={handleFileChange}
             handleRemoveImage={handleRemoveImage}
           />
@@ -234,7 +238,7 @@ export function CommentSection({ postId, initialReplies = [] }) {
 
           <Button
             onClick={handleAddComment}
-            disabled={newComment.trim() === '' && allImages.length === 0}
+            disabled={newComment.trim() === '' && uploadedImages.length === 0}
           >
             Comment
           </Button>

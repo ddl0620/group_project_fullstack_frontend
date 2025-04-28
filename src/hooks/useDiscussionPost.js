@@ -31,14 +31,14 @@ export const useDiscussionPost = () => {
 
   const createPost = useCallback(
     async (eventId, postData) => {
+      const toastId = Toast.loading('Creating post...');
       try {
         dispatch(setError(null));
         dispatch(setLoading(true));
         checkToken();
         const response = await createPostAPI(eventId, postData);
-        console.log(response);
         if (!response.success) {
-          throw new Error('Failed to create post');
+          throw new Error();
         }
 
         console.log('Created post:', response);
@@ -49,10 +49,11 @@ export const useDiscussionPost = () => {
         dispatch(setError(error.message));
         Toast.error(
           'Failed to create post: ' +
-            (error.response?.content?.message || error.message)
+            (error.response?.data?.message || error.message)
         );
         throw error;
       } finally {
+        Toast.dismiss(toastId);
         dispatch(setLoading(false));
       }
     },
@@ -151,6 +152,8 @@ export const useDiscussionPost = () => {
 
   const updatePost = useCallback(
     async (postId, postData) => {
+      const toastId = Toast.loading('Updating post...');
+
       try {
         dispatch(setError(null));
         dispatch(setLoading(true));
@@ -174,6 +177,7 @@ export const useDiscussionPost = () => {
         throw error;
       } finally {
         dispatch(setLoading(false));
+        Toast.dismiss(toastId);
       }
     },
     [dispatch]
