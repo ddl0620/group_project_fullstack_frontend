@@ -93,7 +93,7 @@ export const ImageUploader = ({
           </TabsTrigger>
           <TabsTrigger value="url">
             <Link className="mr-2 h-4 w-4" />
-            Image URLs
+            Previous Images
           </TabsTrigger>
         </TabsList>
 
@@ -151,47 +151,35 @@ export const ImageUploader = ({
         </TabsContent>
 
         {/* URL Tab */}
-        <TabsContent value="url" className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Paste image URL here"
-              value={currentImageUrl}
-              onChange={(e) => setCurrentImageUrl(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddImageUrl()}
-            />
-            <Button onClick={handleAddImageUrl} type="button">
-              Add
-            </Button>
-          </div>
-
-          {/* URL Images Preview */}
-          {imageUrls.length > 0 && (
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {imageUrls.map((image, index) => (
-                <div key={index} className="group relative">
-                  <img
-                    src={image.url || '/placeholder.svg'}
-                    alt={`URL ${index}`}
-                    className="h-24 w-full rounded-md object-cover"
-                    onError={(e) => {
-                      e.target.src = '/abstract-geometric-shapes.png';
-                      e.target.alt = 'Invalid image URL';
-                    }}
-                  />
-                  <button
-                    className="bg-opacity-50 absolute top-1 right-1 rounded-full bg-black p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => handleRemoveImage(index, 'url')}
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                  <span className="bg-opacity-50 absolute bottom-1 left-1 max-w-[90%] truncate rounded bg-black px-1 text-xs text-white">
-                    URL
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </TabsContent>
+        {/*<TabsContent value="url" className="space-y-4">*/}
+        {/*  /!* URL Images Preview *!/*/}
+        {/*  {imageUrls.length > 0 && (*/}
+        {/*    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">*/}
+        {/*      {imageUrls.map((image, index) => (*/}
+        {/*        <div key={index} className="group relative">*/}
+        {/*          <img*/}
+        {/*            src={image.url || '/placeholder.svg'}*/}
+        {/*            alt={`URL ${index}`}*/}
+        {/*            className="h-24 w-full rounded-md object-cover"*/}
+        {/*            onError={(e) => {*/}
+        {/*              e.target.src = '/abstract-geometric-shapes.png';*/}
+        {/*              e.target.alt = 'Invalid image URL';*/}
+        {/*            }}*/}
+        {/*          />*/}
+        {/*          <button*/}
+        {/*            className="bg-opacity-50 absolute top-1 right-1 rounded-full bg-black p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"*/}
+        {/*            onClick={() => handleRemoveImage(index, 'url')}*/}
+        {/*          >*/}
+        {/*            <X className="h-4 w-4" />*/}
+        {/*          </button>*/}
+        {/*          <span className="bg-opacity-50 absolute bottom-1 left-1 max-w-[90%] truncate rounded bg-black px-1 text-xs text-white">*/}
+        {/*            URL*/}
+        {/*          </span>*/}
+        {/*        </div>*/}
+        {/*      ))}*/}
+        {/*    </div>*/}
+        {/*  )}*/}
+        {/*</TabsContent>*/}
       </Tabs>
     </div>
   );

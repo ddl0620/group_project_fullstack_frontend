@@ -15,7 +15,6 @@ import { DiscussionPost } from '@/pages/Discussion/DiscussionPost/DiscussionPost
 import EventDetails from '@/pages/Event/EventDetails.jsx';
 import { CreateEditDiscussionPost } from '@/pages/Discussion/DiscussionPost/CreateEditDiscusisonPost.jsx';
 import { useParams } from 'react-router-dom';
-import {useImageUploader} from "@/components/ImageUploader.jsx";
 
 const DiscussionThreadList = ({ eventId }) => {
   const [activeTab, setActiveTab] = useState('all');
@@ -25,7 +24,7 @@ const DiscussionThreadList = ({ eventId }) => {
     useDiscussionPost();
   const me = useSelector((state) => state.user.user);
   const posts = useSelector((state) => state.discussionPost.posts) || [];
-  const {allImages, setCurrentImageUrl, setUploadedImages, setImageUrls} = useImageUploader();
+
   useEffect(() => {
     if (eventId) {
       fetchPosts(eventId, 1, 10);
@@ -53,28 +52,8 @@ const DiscussionThreadList = ({ eventId }) => {
   };
 
   const handleCreatePost = async () => {
-    // Here you would typically send the data to your API
-    try {
-      const images = [];
-      for (let image of allImages) {
-        images.push(image.url);
-      }
-
-      const postData = {
-        content: postContent,
-        images: images,
-      };
-
-      await createPost(eventId, postData);
-
-      setPostContent('');
-      setImageUrls([]);
-      setUploadedImages([]);
-      setCurrentImageUrl('');
-      setIsModalOpen(false);
-    } catch (err) {
-      console.error('Error creating post:', err);
-    }
+    // Sau khi tạo bài viết thành công, gọi lại fetchPosts để cập nhật danh sách
+    await fetchPosts(eventId, 1, 10, true);
   };
 
   if (error) {

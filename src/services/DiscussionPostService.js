@@ -2,6 +2,7 @@
 import APIServices from '@/services/APIServices.js';
 
 export const createPostAPI = async (eventId, postData) => {
+  console.log("PostData2: ", postData.getAll("images"));
   const response = await APIServices.post(
     `/api/v1/discussion-posts/${eventId}`,
     postData
