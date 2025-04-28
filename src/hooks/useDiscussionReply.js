@@ -28,12 +28,14 @@ export const useDiscussionReply = () => {
   const cache = useRef({});
 
   const createNewReply = useCallback(
-    async (postId, content) => {
+    async (postId, formData) => {
+      const toastId = Toast.loading("Creating reply...");
       try {
         dispatch(setError(null));
         dispatch(setLoading(true));
         checkToken();
-        const response = await createNewReplyAPI(postId, content);
+        console.log(formData.getAll("parent_reply_id"));
+        const response = await createNewReplyAPI(postId, formData);
         if (!response.success) {
           throw new Error('Failed to create post');
         }
@@ -44,9 +46,12 @@ export const useDiscussionReply = () => {
         dispatch(setError(error.message));
         Toast.error(
           'Failed to create reply: ' +
-            (error.response?.content?.message || error.message)
+            (error.response?.data?.message || error.message)
         );
         throw error;
+      }
+      finally {
+        Toast.dismiss(toastId)
       }
     },
     [dispatch]

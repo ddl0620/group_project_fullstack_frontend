@@ -22,7 +22,6 @@ const organizeRepliesIntoTree = (replies) => {
 
   const rootReplies = [];
 
-  // Organize replies into a tree structure
   replies.forEach((reply) => {
     const replyWithChildren = replyMap.get(reply._id);
 
@@ -51,6 +50,8 @@ export function CommentSection({ postId, initialReplies = [] }) {
     fileInputRef,
     uploadedImages,
     setUploadedImages,
+    existingImageUrls,
+    setExistingImageUrls,
     handleFileChange,
     handleRemoveImage,
   } = useImageUploader();
@@ -78,20 +79,24 @@ export function CommentSection({ postId, initialReplies = [] }) {
   const handleAddComment = async () => {
     if (newComment.trim() === '' && uploadedImages.length === 0) return;
 
-    // Create a new comment
     const formData = new FormData();
-    formData.append('parent_reply_id', null);
     formData.append('content', newComment);
+    formData.append('parent_reply_id', 'null');
 
-    // Thêm file ảnh vào FormData
     uploadedImages.forEach((image) => {
       if (image.file) {
         formData.append('images', image.file);
       }
     });
 
+    const formDataEntries = Object.fromEntries(formData.entries());
+    console.log('FormData add comment sent:', formDataEntries);
+
     try {
       const response = await createNewReply(postId, formData);
+      if (!response) {
+        Toast.error('Failed to create reply');
+      }
       const newReply = {
         ...response,
         creator_id: {
@@ -99,12 +104,10 @@ export function CommentSection({ postId, initialReplies = [] }) {
         },
       };
 
-      // Add to replies and update tree structure
       const updatedReplies = [...replies, newReply];
       setReplies(updatedReplies);
       setTreeStructure(organizeRepliesIntoTree(updatedReplies));
 
-      // Reset form
       setNewComment('');
       setUploadedImages([]);
       setShowImageUploader(false);
@@ -114,18 +117,25 @@ export function CommentSection({ postId, initialReplies = [] }) {
   };
 
   const handleReply = async (replyData) => {
-    if (replyData.content.trim() === '' && uploadedImages.length === 0) return;
+    if (replyData.content.trim() === '' && replyData.uploadedImages.length === 0) return;
+
+    if (!replyData.parent_reply_id || !/^[0-9a-fA-F]{24}$/.test(replyData.parent_reply_id)) {
+      Toast.error('Invalid parent reply ID');
+      return;
+    }
 
     const formData = new FormData();
-    formData.append('parent_reply_id', replyData.parent_reply_id);
     formData.append('content', replyData.content);
+    formData.append('parent_reply_id', replyData.parent_reply_id);
 
-    // Thêm file ảnh vào FormData
-    uploadedImages.forEach((image) => {
+    replyData.uploadedImages.forEach((image) => {
       if (image.file) {
         formData.append('images', image.file);
       }
     });
+
+    const formDataEntries = Object.fromEntries(formData.entries());
+    console.log('FormData add reply sent:', formDataEntries);
 
     try {
       const response = await createNewReply(replyData.post_id, formData);
@@ -136,12 +146,10 @@ export function CommentSection({ postId, initialReplies = [] }) {
         },
       };
 
-      // Add to replies and update tree structure
       const updatedReplies = [...replies, newReply];
       setReplies(updatedReplies);
       setTreeStructure(organizeRepliesIntoTree(updatedReplies));
 
-      // Reset form
       setUploadedImages([]);
       setShowImageUploader(false);
     } catch (err) {
@@ -165,12 +173,19 @@ export function CommentSection({ postId, initialReplies = [] }) {
       const formData = new FormData();
       formData.append('content', editData.content);
 
-      // Thêm file ảnh vào FormData
-      uploadedImages.forEach((image) => {
+      const imageUrls = editData.existingImageUrls.map((image) => image.url);
+      if (imageUrls.length > 0) {
+        formData.append('existingImages', JSON.stringify(imageUrls));
+      }
+
+      editData.uploadedImages.forEach((image) => {
         if (image.file) {
           formData.append('images', image.file);
         }
       });
+
+      const formDataEntries = Object.fromEntries(formData.entries());
+      console.log('FormData edit comment sent:', formDataEntries);
 
       const response = await updateReply(replyId, formData);
       const updatedReplies = replies.map((reply) => {
@@ -178,7 +193,7 @@ export function CommentSection({ postId, initialReplies = [] }) {
           return {
             ...reply,
             content: editData.content,
-            images: response.images || [], // Dựa vào phản hồi từ backend
+            images: response.images || [],
           };
         }
         return reply;
@@ -187,86 +202,85 @@ export function CommentSection({ postId, initialReplies = [] }) {
       setReplies(updatedReplies);
       setTreeStructure(organizeRepliesIntoTree(updatedReplies));
 
-      // Reset form
       setUploadedImages([]);
+      setExistingImageUrls([]);
       setShowImageUploader(false);
     } catch (err) {
-      Toast.error('Error editing reply', err);
+      console.error('Error editing comment:', err);
+      Toast.error('Error editing reply', err.message || 'Unknown error');
     }
   };
 
   return (
-    <div className="w-full space-y-4 px-3">
-      {/* New comment input */}
-      <div className="space-y-3">
-        <div className="flex gap-3">
-          <Avatar className="h-8 w-8">
-            <AvatarImage
-              src={currentUser.avatar || '/placeholder.svg'}
-              alt={currentUser.name}
-            />
-            <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <Input
-              placeholder="Write a comment..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-            />
+      <div className="w-full space-y-4 px-3">
+        <div className="space-y-3">
+          <div className="flex gap-3">
+            <Avatar className="h-8 w-8">
+              <AvatarImage
+                  src={currentUser.avatar || '/placeholder.svg'}
+                  alt={currentUser.name}
+              />
+              <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <Input
+                  placeholder="Write a comment..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {showImageUploader && (
+              <ImageUploader
+                  fileInputRef={fileInputRef}
+                  uploadedImages={uploadedImages}
+                  existingImageUrls={existingImageUrls}
+                  handleFileChange={handleFileChange}
+                  handleRemoveImage={handleRemoveImage}
+              />
+          )}
+
+          <div className="flex justify-between">
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowImageUploader(!showImageUploader)}
+            >
+              <ImageIcon className="mr-1 h-4 w-4" />
+              {showImageUploader ? 'Hide Image Uploader' : 'Add Image'}
+            </Button>
+
+            <Button
+                onClick={handleAddComment}
+                disabled={newComment.trim() === '' && uploadedImages.length === 0}
+            >
+              Comment
+            </Button>
           </div>
         </div>
 
-        {/* Image Uploader */}
-        {showImageUploader && (
-          <ImageUploader
-            fileInputRef={fileInputRef}
-            uploadedImages={uploadedImages}
-            handleFileChange={handleFileChange}
-            handleRemoveImage={handleRemoveImage}
-          />
-        )}
+        <Separator />
 
-        <div className="flex justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowImageUploader(!showImageUploader)}
-          >
-            <ImageIcon className="mr-1 h-4 w-4" />
-            {showImageUploader ? 'Hide Image Uploader' : 'Add Image'}
-          </Button>
-
-          <Button
-            onClick={handleAddComment}
-            disabled={newComment.trim() === '' && uploadedImages.length === 0}
-          >
-            Comment
-          </Button>
+        <div className="space-y-4">
+          {treeStructure.length > 0 ? (
+              treeStructure.map((comment) => (
+                  <Comment
+                      key={comment._id}
+                      comment={comment}
+                      onReply={handleReply}
+                      onEdit={handleEditComment}
+                      onDelete={handleDeleteComment}
+                      currentUserId={currentUser._id}
+                      postId={postId}
+                  />
+              ))
+          ) : (
+              <p className="text-muted-foreground py-4 text-center">
+                No comments yet. Be the first to comment!
+              </p>
+          )}
         </div>
       </div>
-
-      <Separator />
-
-      {/* Comments list */}
-      <div className="space-y-4">
-        {treeStructure.length > 0 ? (
-          treeStructure.map((comment) => (
-            <Comment
-              key={comment._id}
-              comment={comment}
-              onReply={handleReply}
-              onEdit={handleEditComment}
-              onDelete={handleDeleteComment}
-              currentUserId={currentUser._id}
-              postId={postId}
-            />
-          ))
-        ) : (
-          <p className="text-muted-foreground py-4 text-center">
-            No comments yet. Be the first to comment!
-          </p>
-        )}
-      </div>
-    </div>
   );
 }
