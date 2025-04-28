@@ -27,14 +27,13 @@ export function CreateEditDiscussionPost({
                                            postData = null,
                                            onSuccess = () => {},
                                            triggerButton = null,
-                                           isModalOpen: externalIsModalOpen, // Controlled by parent
-                                           setIsModalOpen: externalSetIsModalOpen, // Controlled by parent
+                                           isModalOpen: externalIsModalOpen,
+                                           setIsModalOpen: externalSetIsModalOpen,
                                          }) {
   const [internalIsModalOpen, setInternalIsModalOpen] = useState(false);
   const [postContent, setPostContent] = useState('');
   const { createPost, updatePost } = useDiscussionPost();
 
-  // Determine which open state to use (external or internal)
   const isModalOpen =
       externalIsModalOpen !== undefined
           ? externalIsModalOpen
@@ -45,6 +44,8 @@ export function CreateEditDiscussionPost({
     fileInputRef,
     uploadedImages,
     setUploadedImages,
+    existingImageUrls,
+    setExistingImageUrls,
     handleFileChange,
     handleRemoveImage,
   } = useImageUploader();
@@ -53,17 +54,16 @@ export function CreateEditDiscussionPost({
   useEffect(() => {
     if (isEdit && postData && isModalOpen) {
       setPostContent(postData.content || '');
+      setExistingImageUrls(
+          (postData.images || []).map((url) => ({ url, type: 'url' }))
+      );
       setUploadedImages([]); // Reset uploaded images in edit mode
-    }
-  }, [isEdit, postData, isModalOpen]);
-
-  // Reset form when modal closes (only for create mode)
-  useEffect(() => {
-    if (!isModalOpen && !isEdit) {
+    } else if (!isEdit) {
       setPostContent('');
+      setExistingImageUrls([]);
       setUploadedImages([]);
     }
-  }, [isModalOpen, isEdit]);
+  }, [isEdit, postData, isModalOpen]);
 
   // Cleanup object URLs for uploaded images to prevent memory leaks
   useEffect(() => {
@@ -82,15 +82,18 @@ export function CreateEditDiscussionPost({
       const formData = new FormData();
       formData.append('content', postContent);
 
-      // Thêm file ảnh vào FormData
+      // Append existing image URLs as a JSON string
+      const imageUrls = existingImageUrls.map((image) => image.url);
+      if (imageUrls.length > 0) {
+        formData.append('existingImages', JSON.stringify(imageUrls));
+      }
+
+      // Append new file uploads
       uploadedImages.forEach((image) => {
         if (image.file) {
           formData.append('images', image.file);
-          // console.log("Image.file: ", image.file);
         }
       });
-
-      console.log(formData.get('images'));
 
       if (isEdit && postData) {
         await updatePost(postData._id, formData);
@@ -98,13 +101,11 @@ export function CreateEditDiscussionPost({
         await createPost(eventId, formData);
       }
 
-      // Reset form and close modal
       setPostContent('');
       setUploadedImages([]);
+      setExistingImageUrls([]);
       setIsModalOpen(false);
-
-      // Notify parent component of success
-      // onSuccess();
+      onSuccess();
     } catch (err) {
       console.error(`Error ${isEdit ? 'updating' : 'creating'} post:`, err);
       Toast.error(
@@ -121,6 +122,12 @@ export function CreateEditDiscussionPost({
         New Discussion
       </Button>
   );
+
+  // Combine images for preview
+  const allImages = [
+    ...existingImageUrls.map((img) => ({ ...img, type: 'url' })),
+    ...uploadedImages.map((img) => ({ ...img, type: 'file' })),
+  ];
 
   return (
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -154,12 +161,13 @@ export function CreateEditDiscussionPost({
             <ImageUploader
                 fileInputRef={fileInputRef}
                 uploadedImages={uploadedImages}
+                existingImageUrls={existingImageUrls}
                 handleFileChange={handleFileChange}
                 handleRemoveImage={handleRemoveImage}
             />
 
             {/* Post Preview */}
-            {(postContent || uploadedImages.length > 0) && (
+            {(postContent || allImages.length > 0) && (
                 <div className="space-y-2">
                   <Label>Post Preview</Label>
                   <Card className="overflow-hidden">
@@ -179,17 +187,15 @@ export function CreateEditDiscussionPost({
 
                       {postContent && <p className="mb-3">{postContent}</p>}
 
-                      {uploadedImages.length > 0 && (
+                      {allImages.length > 0 && (
                           <div
-                              className={`grid ${uploadedImages.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-2`}
+                              className={`grid ${allImages.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-2`}
                           >
-                            {uploadedImages.slice(0, 4).map((image, index) => (
+                            {allImages.slice(0, 4).map((image, index) => (
                                 <div
                                     key={index}
-                                    className={`${uploadedImages.length === 3 && index === 0 ? 'col-span-2' : ''} ${
-                                        uploadedImages.length === 1
-                                            ? 'max-h-80'
-                                            : 'max-h-40'
+                                    className={`${allImages.length === 3 && index === 0 ? 'col-span-2' : ''} ${
+                                        allImages.length === 1 ? 'max-h-80' : 'max-h-40'
                                     } overflow-hidden rounded-md`}
                                 >
                                   <img
@@ -202,10 +208,10 @@ export function CreateEditDiscussionPost({
                                   />
                                 </div>
                             ))}
-                            {uploadedImages.length > 4 && (
+                            {allImages.length > 4 && (
                                 <div className="relative col-span-1">
                                   <img
-                                      src={uploadedImages[4].url || '/placeholder.svg'}
+                                      src={allImages[4].url || '/placeholder.svg'}
                                       alt={`Preview 4`}
                                       className="h-full w-full rounded-md object-cover opacity-80"
                                       onError={(e) => {
@@ -214,7 +220,7 @@ export function CreateEditDiscussionPost({
                                   />
                                   <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-md bg-black">
                             <span className="font-medium text-white">
-                              +{uploadedImages.length - 4} more
+                              +{allImages.length - 4} more
                             </span>
                                   </div>
                                 </div>
@@ -233,7 +239,7 @@ export function CreateEditDiscussionPost({
             </Button>
             <Button
                 onClick={handleSubmitPost}
-                disabled={!postContent.trim() && uploadedImages.length === 0}
+                disabled={!postContent.trim() && allImages.length === 0}
             >
               {isEdit ? 'Update Post' : 'Create Post'}
             </Button>
