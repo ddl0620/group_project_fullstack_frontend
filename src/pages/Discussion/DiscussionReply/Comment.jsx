@@ -44,6 +44,7 @@ import { CreateEditDiscussionPost } from '@/pages/Discussion/DiscussionPost/Crea
 import { TrashIcon } from '@heroicons/react/24/outline/index.js';
 import {AlertDialogUtils} from "@/helpers/AlertDialogUtils.jsx";
 import {PencilIcon} from "@heroicons/react/24/outline";
+import ImageCarousel from "@/components/ImageCarousel.jsx";
 
 const Comment = ({
   comment,
@@ -190,22 +191,6 @@ const Comment = ({
 
               {isOwnComment && (
                 <div>
-                  {/*<DropdownMenuTrigger asChild>*/}
-                  {/*  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">*/}
-                  {/*    <MoreHorizontal className="h-4 w-4" />*/}
-                  {/*  </Button>*/}
-                  {/*</DropdownMenuTrigger>*/}
-                  {/*<DropdownMenuContent align="end">*/}
-                  {/*  <DropdownMenuItem onClick={() => setIsEditMode(true)}>*/}
-                  {/*    Edit*/}
-                  {/*  </DropdownMenuItem>*/}
-                  {/*  <DropdownMenuItem*/}
-                  {/*    onClick={() => setIsDeleteDialogOpen(true)}*/}
-                  {/*    className="text-red-600"*/}
-                  {/*  >*/}
-                  {/*    Delete*/}
-                  {/*  </DropdownMenuItem>*/}
-                  {/*</DropdownMenuContent>*/}
                   <Button
                       size={'sm'}
                       onClick={() => handleDelete()}
@@ -240,27 +225,7 @@ const Comment = ({
                     }}
                   />
                 ) : (
-                  <Carousel className="w-full">
-                    <CarouselContent>
-                      {comment.images.map((image, index) => (
-                        <CarouselItem key={index} className="basis-full">
-                          <div className="overflow-hidden rounded-md">
-                            <img
-                              src={image || '/placeholder.svg'}
-                              alt={`Comment attachment ${index + 1}`}
-                              className="h-auto max-h-60 w-full object-cover"
-                              onError={(e) => {
-                                e.target.src = '/colorful-abstract-flow.png';
-                                e.target.alt = 'Failed to load image';
-                              }}
-                            />
-                          </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="left-2" />
-                    <CarouselNext className="right-2" />
-                  </Carousel>
+                    <ImageCarousel images={comment.images} />
                 )}
               </div>
             )}

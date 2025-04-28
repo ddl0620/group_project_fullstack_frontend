@@ -57,6 +57,7 @@ import useDiscussionPost from '@/hooks/useDiscussionPost.js';
 import { CommentSection } from '@/pages/Discussion/DiscussionReply/CommentSection.jsx';
 import useDiscussionReply from '@/hooks/useDiscussionReply.js';
 import { TrashIcon } from '@heroicons/react/24/outline';
+import ImageCarousel from "@/components/ImageCarousel.jsx";
 
 export function DiscussionPost({ postData }) {
   const { getUserById } = useUser();
@@ -186,23 +187,7 @@ export function DiscussionPost({ postData }) {
         <CardContent className="flex flex-col items-center justify-center p-4 pt-0">
           <p className="w-full">{postData.content}</p>
           {postData.images.length > 0 && (
-            <Carousel className="mt-4 w-full">
-              <CarouselContent>
-                {postData.images.map((image, index) => (
-                  <CarouselItem key={index}>
-                    <div className="overflow-hidden rounded-lg">
-                      <img
-                        src={image || '/placeholder.svg'}
-                        alt={`Post image ${index + 1}`}
-                        className="aspect-video w-full object-cover"
-                      />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-2" />
-              <CarouselNext className="right-2" />
-            </Carousel>
+              <ImageCarousel images={postData.images} />
           )}
         </CardContent>
         <CardFooter className="flex flex-col p-0">

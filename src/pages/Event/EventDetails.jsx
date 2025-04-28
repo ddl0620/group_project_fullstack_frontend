@@ -22,6 +22,7 @@ import { AlertDialog } from '@/components/ui/alert-dialog.js';
 import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
 import { useSelector } from 'react-redux';
 import EventDetailsForOrganizer from '@/pages/Event/MyOrganizedEvents/EventDetailsForOrganizer.jsx';
+import ImageCarousel from "@/components/ImageCarousel.jsx";
 
 function EventDetailPage() {
   let { eventId } = useParams();
@@ -186,10 +187,7 @@ function EventDetailPage() {
 
       <div className="mx-auto max-w-5xl py-10 sm:px-6 lg:px-24">
         <div className="flex flex-col items-center justify-center gap-6">
-          <ImageSlider
-            className="w-full max-w-3xl rounded-xl shadow-md"
-            imageList={event.images}
-          />
+          <ImageCarousel images={event.images} />
 
           <div className="mt-2 w-full space-y-6 rounded-2xl bg-white p-4 shadow-lg sm:p-6">
             <h1 className="text-2xl font-bold text-gray-900 sm:text-4xl">
