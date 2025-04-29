@@ -30,9 +30,14 @@ import { AlertDialogUtils } from '@/helpers/AlertDialog.jsx';
 const itemPerPage = 9;
 
 function BrowseEvent() {
-  const [totalItem, setTotalItem] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [events, setEvents] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: itemPerPage,
+    totalPages: 1,
+    totalEvents: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { getAllEvents, deleteEvent } = useEvent();
@@ -48,13 +53,17 @@ function BrowseEvent() {
         const response = await getAllEvents({
           page: currentPage,
           limit: itemPerPage,
-          isAcs: true,
+          isAcs: false,
         });
-        // console.log(response);
-        setEvents(response.content.events || []); // Giả định response có field events
-        setTotalItem(response.content.pagination.totalPages || 0); // Giả định response có field total
+        setEvents(response.content.events || []);
+        setPagination({
+          page: response.content.pagination.page || 1,
+          limit: response.content.pagination.limit || itemPerPage,
+          totalPages: response.content.pagination.totalPages || 1,
+          totalEvents: response.content.pagination.totalEvents || 0,
+        });
       } catch (err) {
-        toast.error('Error fetching events:', err);
+        toast.error('Error fetching events: ' + err.message);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -64,37 +73,37 @@ function BrowseEvent() {
   }, [currentPage]);
 
   const handleChangeCurrentPage = (page) => {
+    if (page < 1 || page > pagination.totalPages) return;
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn lên đầu trang
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top of page
   };
 
   const handleShowEvent = async (eventId) => {
-    navigate(`/events/${eventId}`); // Điều hướng đến trang chi tiết event
+    navigate(`/events/${eventId}`); // Navigate to event detail page
   };
 
   const handleLinkClick = (e) => {
     if (location.pathname === '/events') {
-      e.preventDefault(); // Ngăn chặn điều hướng nếu đã ở cùng route
+      e.preventDefault(); // Prevent navigation if already on the same route
     }
   };
 
-  // Tính toán thông tin pagination
-  const totalPages = Math.ceil(totalItem / itemPerPage);
-  const startIndex = (currentPage - 1) * itemPerPage + 1;
-  const endIndex = Math.min(currentPage * itemPerPage, totalItem);
+  // Calculate display information
+  const startIndex = (pagination.page - 1) * pagination.limit + 1;
+  const endIndex = Math.min(pagination.page * pagination.limit, pagination.totalEvents);
 
-  // Tạo danh sách các trang để hiển thị (giới hạn số nút trang hiển thị)
+  // Generate page numbers for display (limit the number of page buttons shown)
   const getPageNumbers = () => {
     const maxPagesToShow = 5;
     const pages = [];
-    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    let startPage = Math.max(1, pagination.page - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(pagination.totalPages, startPage + maxPagesToShow - 1);
 
     if (endPage - startPage + 1 < maxPagesToShow) {
       startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
 
-    // Thêm các trang và ellipsis nếu cần
+    // Add pages and ellipsis if needed
     if (startPage > 1) {
       pages.push({ type: 'page', value: 1 });
       if (startPage > 2) {
@@ -106,11 +115,11 @@ function BrowseEvent() {
       pages.push({ type: 'page', value: i });
     }
 
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
+    if (endPage < pagination.totalPages) {
+      if (endPage < pagination.totalPages - 1) {
         pages.push({ type: 'ellipsis', value: 'right' });
       }
-      pages.push({ type: 'page', value: totalPages });
+      pages.push({ type: 'page', value: pagination.totalPages });
     }
 
     return pages;
@@ -172,18 +181,18 @@ function BrowseEvent() {
               ))}
             </div>
 
-            {/* Pagination và thông tin Showing */}
+            {/* Pagination and Showing Information */}
             <div className="mt-8 flex flex-col items-center gap-4">
               <p className="text-sm text-gray-600">
-                Showing {startIndex}-{endIndex} of {totalItem} events
+                Showing {startIndex}-{endIndex} of {pagination.totalEvents} events
               </p>
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
-                      onClick={() => handleChangeCurrentPage(currentPage - 1)}
+                      onClick={() => handleChangeCurrentPage(pagination.page - 1)}
                       className={
-                        currentPage === 1
+                        pagination.page === 1
                           ? 'pointer-events-none opacity-50'
                           : 'cursor-pointer'
                       }
@@ -194,9 +203,9 @@ function BrowseEvent() {
                       <PaginationItem key={item.value}>
                         <PaginationLink
                           onClick={() => handleChangeCurrentPage(item.value)}
-                          isActive={currentPage === item.value}
+                          isActive={pagination.page === item.value}
                           className={
-                            currentPage === item.value
+                            pagination.page === item.value
                               ? 'bg-blue-500 text-white'
                               : 'cursor-pointer'
                           }
@@ -212,9 +221,9 @@ function BrowseEvent() {
                   )}
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() => handleChangeCurrentPage(currentPage + 1)}
+                      onClick={() => handleChangeCurrentPage(pagination.page + 1)}
                       className={
-                        currentPage === totalPages
+                        pagination.page === pagination.totalPages
                           ? 'pointer-events-none opacity-50'
                           : 'cursor-pointer'
                       }

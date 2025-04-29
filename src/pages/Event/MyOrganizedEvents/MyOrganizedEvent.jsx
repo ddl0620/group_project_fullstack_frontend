@@ -1,4 +1,3 @@
-// src/pages/MyOrganizedEvent.jsx
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -11,10 +10,19 @@ import {
   EyeIcon,
 } from '@heroicons/react/24/outline';
 import { EditIcon } from 'lucide-react';
-import { Pagination } from '@heroui/pagination';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import { useEvent } from '@/hooks/useEvent.js';
 import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
-const itemsPerPage = 9;
+
+const itemPerPage = 9;
 
 function MyOrganizedEvents() {
   const navigate = useNavigate();
@@ -22,26 +30,40 @@ function MyOrganizedEvents() {
   const { getMyEvents, deleteEvent, loading, error } = useEvent();
   const myEvents = useSelector((state) => state.event.myEvents);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: itemPerPage,
+    totalPages: 1,
+    totalEvents: 0,
+  });
   const [selectedEvent, setSelectedEvent] = useState(null);
+
   const handleEventSelect = (event) => {
     setSelectedEvent(event);
-    // navigate(`/discussions/${event.id}`);
   };
 
-  // Tính tổng số trang
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
+  // Fetch events from backend
   useEffect(() => {
     const fetchEvents = async () => {
-      await getMyEvents({
-        page: currentPage,
-        limit: itemsPerPage,
-        isAcs: true,
-      });
+      try {
+        const response = await getMyEvents({
+          page: currentPage,
+          limit: itemPerPage,
+          isAcs: true,
+        });
+        // Assuming the response structure matches the API
+        setPagination({
+          page: response.content.pagination.page || 1,
+          limit: response.content.pagination.limit || itemPerPage,
+          totalPages: response.content.pagination.totalPages || 1,
+          totalEvents: response.content.pagination.totalEvents || 0,
+        });
+      } catch (err) {
+        console.error('Error fetching events:', err);
+      }
     };
     fetchEvents();
-  }, [currentPage]); // Chỉ phụ thuộc vào currentPage
+  }, [currentPage]);
 
   const handleEditButton = (eventId) => {
     navigate(`/event/update/${eventId}`);
@@ -67,7 +89,46 @@ function MyOrganizedEvents() {
   };
 
   const handlePageChange = (page) => {
+    if (page < 1 || page > pagination.totalPages) return;
     setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top of page
+  };
+
+  // Calculate display information
+  const startIndex = (pagination.page - 1) * pagination.limit + 1;
+  const endIndex = Math.min(pagination.page * pagination.limit, pagination.totalEvents);
+
+  // Generate page numbers for display (limit the number of page buttons shown)
+  const getPageNumbers = () => {
+    const maxPagesToShow = 5;
+    const pages = [];
+    let startPage = Math.max(1, pagination.page - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(pagination.totalPages, startPage + maxPagesToShow - 1);
+
+    if (endPage - startPage + 1 < maxPagesToShow) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    // Add pages and ellipsis if needed
+    if (startPage > 1) {
+      pages.push({ type: 'page', value: 1 });
+      if (startPage > 2) {
+        pages.push({ type: 'ellipsis', value: 'left' });
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push({ type: 'page', value: i });
+    }
+
+    if (endPage < pagination.totalPages) {
+      if (endPage < pagination.totalPages - 1) {
+        pages.push({ type: 'ellipsis', value: 'right' });
+      }
+      pages.push({ type: 'page', value: pagination.totalPages });
+    }
+
+    return pages;
   };
 
   return (
@@ -87,21 +148,6 @@ function MyOrganizedEvents() {
             </Button>
           </Link>
         </div>
-
-        {/* Phân trang */}
-        {totalItems > 0 && (
-          <div className="mb-6 flex justify-center">
-            <Pagination
-              total={totalPages}
-              page={currentPage}
-              onChange={handlePageChange}
-              showControls={true}
-              loop={true}
-              color="success"
-              className="rounded-full"
-            />
-          </div>
-        )}
 
         {loading && (
           <div className="flex justify-center py-10">
@@ -154,27 +200,58 @@ function MyOrganizedEvents() {
           ))}
         </div>
 
-        {/*<div className="flex h-screen bg-gray-100">*/}
-        {/*        <EventSidebar*/}
-        {/*            events={myEvents}*/}
-        {/*            selectedEventId={selectedEvent?.id}*/}
-        {/*            onEventSelect={handleEventSelect}*/}
-        {/*        />*/}
-        {/*    <div className="flex flex-1 flex-col overflow-hidden">*/}
-        {/*        {selectedEvent ? (*/}
-        {/*            <>*/}
-        {/*                <MyEventHeader event={selectedEvent} />*/}
-        {/*                <EventManagement event={selectedEvent} />*/}
-        {/*            </>*/}
-        {/*        ) : (*/}
-        {/*            <div className="flex flex-1 items-center justify-center">*/}
-        {/*                <p className="text-lg text-gray-500">*/}
-        {/*                    Select an event to view discussions*/}
-        {/*                </p>*/}
-        {/*            </div>*/}
-        {/*        )}*/}
-        {/*    </div>*/}
-        {/*</div>*/}
+        {pagination.totalEvents > 0 && (
+          <div className="mt-8 flex flex-col items-center gap-4">
+            <p className="text-sm text-gray-600">
+              Showing {startIndex}-{endIndex} of {pagination.totalEvents} events
+            </p>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    className={
+                      pagination.page === 1
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }
+                  />
+                </PaginationItem>
+                {getPageNumbers().map((item, index) =>
+                  item.type === 'page' ? (
+                    <PaginationItem key={item.value}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(item.value)}
+                        isActive={pagination.page === item.value}
+                        className={
+                          pagination.page === item.value
+                            ? 'bg-blue-500 text-white'
+                            : 'cursor-pointer'
+                        }
+                      >
+                        {item.value}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ) : (
+                    <PaginationItem key={`ellipsis-${item.value}-${index}`}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )
+                )}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    className={
+                      pagination.page === pagination.totalPages
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
 
         {!loading && myEvents.length === 0 && (
           <div className="mt-8 rounded-lg bg-white py-16 text-center shadow-sm">

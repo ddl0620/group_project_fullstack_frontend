@@ -41,6 +41,7 @@ export const deleteEvent = async (id) => {
 };
 
 export const createEvent = async (eventData) => {
+  // console.log(eventData);
   const response = await APIServices.post(`/api/v1/event/add-event`, eventData);
   return response.data;
 };
