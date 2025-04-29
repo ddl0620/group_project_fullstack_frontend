@@ -129,6 +129,7 @@ export const useEvent = () => {
       Toast.info('No data found. Please check the event data');
       throw new Error('No data found');
     }
+    const toastId = Toast.loading("Updating event...");
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
@@ -144,6 +145,7 @@ export const useEvent = () => {
       throw error;
     } finally {
       dispatch(setLoading(false));
+      Toast.dismiss(toastId);
     }
   };
 
@@ -166,20 +168,24 @@ export const useEvent = () => {
   };
 
   const createEvent = async (eventData) => {
+    const toastId = Toast.loading("Creating event...");
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
       checkToken();
+      console.log(eventData.getAll("images"));
+
       const response = await createEventAPI(eventData);
       dispatch(addEvent(response));
       Toast.success('Event created successfully');
       return response;
     } catch (error) {
       dispatch(setError(error.message));
-      Toast.error('Failed to create event: ' + error.message);
+      Toast.error('Failed to create event: ' + error.response.data.message);
       throw error;
     } finally {
       dispatch(setLoading(false));
+      Toast.dismiss(toastId);
     }
   };
 

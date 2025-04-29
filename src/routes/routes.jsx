@@ -102,7 +102,7 @@ const routes = [
           { path: 'event/joined', element: <MyJoinedEvent /> },
           { path: 'event/:eventId', element: <EventDetailPage /> },
           { path: 'event/create', element: <CreateEventPage /> },
-          { path: 'event/update/:eventId', element: <UpdateEventPage /> },
+          { path: 'event/update/:eventId', element: <CreateEventPage /> },
         ],
       },
       // Group using user sidebar
