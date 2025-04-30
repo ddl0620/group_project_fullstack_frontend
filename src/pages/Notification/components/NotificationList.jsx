@@ -13,5 +13,5 @@ export function NotificationList({ notifications, onDelete, onMarkAsRead, onNoti
         />
       ))}
     </div>
-  )
+  );
 }

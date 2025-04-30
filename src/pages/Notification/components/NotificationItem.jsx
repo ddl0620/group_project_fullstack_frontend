@@ -2,7 +2,17 @@
 
 import { useState } from "react"
 import { format, formatDistanceToNow } from "date-fns"
-import { Check, Trash2, Info, AlertCircle, CheckCircle, AlertTriangle } from "lucide-react"
+import {
+  Check,
+  Trash2,
+  Info,
+  AlertCircle,
+  CheckCircle,
+  AlertTriangle,
+  AtSign,
+  MessageCircleMore,
+  Pencil, WandSparkles, BadgeX, MessageCirclePlus, CircleCheckBig, X, CalendarHeart, UserPlus,
+} from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
@@ -12,14 +22,28 @@ export function NotificationItem({ notification, onDelete, onMarkAsRead, onClick
 
   const getTypeIcon = () => {
     switch (notification.type) {
-      case "INFO":
-        return <Info className="h-5 w-5 text-blue-500" />
-      case "SUCCESS":
-        return <CheckCircle className="h-5 w-5 text-green-500" />
-      case "WARNING":
-        return <AlertTriangle className="h-5 w-5 text-amber-500" />
-      case "ERROR":
-        return <AlertCircle className="h-5 w-5 text-red-500" />
+      case "UPDATE_EVENT":
+        return <WandSparkles className="h-5 w-5 text-blue-500" />
+      case "REPLY":
+        return <AtSign className="h-5 w-5 text-amber-600" />
+      case "COMMENT":
+        return <MessageCircleMore className="h-5 w-5 text-blue-500" />
+      case "NEW_POST":
+        return <MessageCirclePlus className="h-5 w-5 text-orange-500" />
+      case "INVITATION":
+        return <CalendarHeart className="h-5 w-5 text-purple-500" />
+      case "DELETE_EVENT":
+        return <BadgeX  className="h-5 w-5 text-red-500" />
+      case "RSVP_ACCEPT":
+        return <CircleCheckBig className="h-5 w-5 text-green-500" />
+      case "RSVP_DENIED":
+        return <X className="h-5 w-5 text-red-500" />
+      case "REQUEST_JOIN":
+        return <UserPlus className="h-5 w-5 text-blue-500" />
+      case "REQUEST_ACCEPT":
+        return <CircleCheckBig  className="h-5 w-5 text-green-500" />
+      case "REQUEST_DENIED":
+        return <X className="h-5 w-5 text-red-500" />
       default:
         return <Info className="h-5 w-5 text-blue-500" />
     }

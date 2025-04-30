@@ -42,6 +42,9 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     fetchNotifications()
+    // const sortedNotifications = [...notifications].sort((a, b) =>
+    //   new Date(b.createdAt) - new Date(a.createdAt)
+    // );
   }, [])
 
   // Filter notifications based on active tab and type filter

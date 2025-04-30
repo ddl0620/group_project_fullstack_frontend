@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { getAllNotifications } from '@/services/NotificationService.js';
+import { Toast } from '@/helpers/toastService.js';
+import { checkToken } from '@/helpers/checkToken.js';
 
 // Mock data for demonstration
 const mockNotifications = [
@@ -59,12 +62,21 @@ export function useNotifications() {
       // In a real app, this would be an API call
       // const response = await fetch('/api/notifications')
       // const data = await response.json()
-
-      // Using mock data for demonstration
-      await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate network delay
-      setNotifications(mockNotifications)
+      setLoading(true)
+      setError(null)
+      checkToken();
+      const response = await getAllNotifications();
+      if(!response.success) {
+        throw new Error(response.message);
+      }
+      Toast.info(response.message);
+      const sortedNotifications = [...response.content.notifications].sort((a, b) =>
+        new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setNotifications(sortedNotifications)
+      return response;
     } catch (err) {
-      console.error("Error fetching notifications:", err)
+      Toast.error(err.message || err.response?.data?.message);
       setError("Failed to load notifications")
     } finally {
       setLoading(false)
