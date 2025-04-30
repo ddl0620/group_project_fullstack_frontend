@@ -1,4 +1,4 @@
-import { Calendar, Plus, UserIcon } from 'lucide-react';
+import { BellIcon, Calendar, Plus, UserIcon } from 'lucide-react';
 
 const userItems = [
   {
@@ -14,7 +14,7 @@ const userItems = [
   {
     title: 'Notifications',
     url: '/notifications',
-    icon: Plus,
+    icon: BellIcon,
   },
 ];
 
