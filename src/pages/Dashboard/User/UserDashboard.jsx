@@ -10,17 +10,23 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const user = useSelector((state) => state.user.user);
   const {
+    // các hàm fetch gọi API để lấy dữ liệu thống kê
     fetchEngagementStats,
     fetchInvitationsOverTime,
     fetchRsvpTrend,
     fetchRsvpDistribution,
     fetchRecipients,
+
+    // các biến
     engagementStats,
     invitationsOverTime,
     rsvpTrend,
     rsvpDistribution,
-    recipients,
+    
+    recipients,     // lưu trữ dữ liệu trả về từ API
     totalRecipients,
+
+    // các trạng thái tải dữ liệu và lỗi
     loading,
     error,
   } = useUserStatis();

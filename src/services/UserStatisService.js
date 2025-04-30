@@ -1,6 +1,7 @@
 // src/services/UserStatisService.js
 import APIServices from '@/services/APIServices.js';
 
+/* Gọi lấy dữ liệu thống kê từ back-end */
 export const getEngagementStatsAPI = async (params = {}) => {
   const response = await APIServices.get(
     '/api/v1/userstatis/statis/engagement-stats',
@@ -50,3 +51,5 @@ export const getRecipientsAPI = async (params = {}) => {
   );
   return response.data;
 };
+
+

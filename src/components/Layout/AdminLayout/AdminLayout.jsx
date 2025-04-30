@@ -10,7 +10,7 @@ function AdminLayout() {
       <NavBar />
       <div className="flex flex-1">
         {/* Thanh bên trái */}
-        {/*<SideBar className="hidden w-64 bg-gray-200 p-4 md:block" />*/}
+        {/* <SideBar className="hidden w-64 bg-gray-200 p-4 md:block" /> */}
         {/* Khu vực chính */}
         <main className="flex-1 bg-gray-100 p-6">
           <Outlet />
