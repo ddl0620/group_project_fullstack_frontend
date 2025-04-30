@@ -6,15 +6,16 @@ import {
   setLoading,
 } from '@/store/slices/invitationSlice.js';
 import {
-  getInvitationsByEventIdAPI,
+  getSentInvitationsByEventIdAPI,
   getRSVPByInvitationIdAPI,
   sendInvitationToOneUserAPI,
+  getReceivedInvitationByEventIdAPI, replyInvitationAPI,
 } from '@/services/InvitationService.js';
 import { checkToken } from '@/helpers/checkToken.js';
 import { Toast } from '@/helpers/toastService.js';
 import { useCallback, useRef } from 'react';
 
-export const useInvitation = () => {
+export const useInvitation = (callback, deps) => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.invitation.loading);
   const error = useSelector((state) => state.invitation.error);
@@ -23,6 +24,7 @@ export const useInvitation = () => {
 
   // Cache để lưu trữ dữ liệu invitations đã fetch
   const invitationCache = useRef({});
+  const receivedIntitationCache = useRef({});
 
   const sendInvitationToOneUser = useCallback(
     async (invitationData) => {
@@ -51,7 +53,7 @@ export const useInvitation = () => {
     [dispatch]
   );
 
-  const fetchInvitationsByEventId = useCallback(
+  const fetchSentInvitationsByEventId = useCallback(
     async (
       eventId,
       page = 1,
@@ -72,7 +74,7 @@ export const useInvitation = () => {
         dispatch(setError(null));
         dispatch(setLoading(true));
         checkToken();
-        const response = await getInvitationsByEventIdAPI(
+        const response = await getSentInvitationsByEventIdAPI(
           eventId,
           page,
           limit,
@@ -105,6 +107,38 @@ export const useInvitation = () => {
       }
     },
     [dispatch]
+  );
+
+  const fetchReceivedInvitationsByEventId = useCallback(
+    async (eventId, forceRefresh = false) => {
+      const cacheKey = `received invitation ${eventId}`;
+
+      // Kiểm tra cache hoặc nếu forceRefresh là true thì fetch lại
+      if (!forceRefresh && receivedIntitationCache.current[cacheKey]) {
+        // console.log('Using cached invitations for:', cacheKey);
+        dispatch(setInvitations(receivedIntitationCache.current[cacheKey]));
+        return receivedIntitationCache.current[cacheKey];
+      }
+
+      try {
+        dispatch(setError(null));
+        dispatch(setLoading(true));
+
+        checkToken();
+
+        const response = await getReceivedInvitationByEventIdAPI(eventId);
+
+        if (!response.success) {
+          throw new Error('Failed to fetch invitations');
+        }
+        return response;
+      } catch (error) {
+        Toast.error(
+          'Failed to fetch invitations: ' +
+            (error.response?.data?.message || error.message)
+        );
+      }
+    }
   );
 
   const fetchRSVPByInvitationId = useCallback(
@@ -140,9 +174,37 @@ export const useInvitation = () => {
     [dispatch]
   );
 
+  const replyInvitation = useCallback(async (invitationId, option) => {
+    try {
+      dispatch(setError(null));
+      dispatch(setLoading(true));
+      checkToken();
+      const response = await replyInvitationAPI(invitationId, option);
+
+      if (!response.success) {
+        throw new Error('Failed to fetch RSVP');
+      }
+
+      console.log(
+        'Fetched RSVP for invitation',
+        invitationId,
+        ':',
+        response.content.rsvp
+      );
+      return response.content.rsvp;
+    } catch (error) {
+      dispatch(setError(error.message));
+      Toast.error(error.response?.data?.message || error.message);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  });
+
   return {
     sendInvitationToOneUser,
-    fetchInvitationsByEventId,
+    replyInvitation,
+    fetchReceivedInvitationsByEventId,
+    fetchInvitationsByEventId: fetchSentInvitationsByEventId,
     fetchRSVPByInvitationId,
     invitations,
     totalInvitations,

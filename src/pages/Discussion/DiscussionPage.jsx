@@ -10,16 +10,24 @@ const DiscussionPage = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const { getAllJoinedEvents } = useEvent();
+  const { getAllJoinedEvents, getMyEvents} = useEvent();
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const currentUserId = useSelector((state) => state.user.id);
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await getAllJoinedEvents(currentPage, 10, true);
+        let response = await getAllJoinedEvents(currentPage, 10, true);
+        const tmp = await getMyEvents({page: currentPage, limit: 10, isAcs: true });
+
+        response.content.events = [...response.content.events, ...tmp];
+        // response.content.events.push(tmp);
         const validEvents = [];
         for(const event of response.content.events) {
+          if(event.organizer === currentUserId) {
+            validEvents.push(event);
+            continue;
+          }
           for(const participant of event.participants) {
             if(participant.userId === currentUserId && participant.status === "ACCEPTED") {
               validEvents.push(event);
