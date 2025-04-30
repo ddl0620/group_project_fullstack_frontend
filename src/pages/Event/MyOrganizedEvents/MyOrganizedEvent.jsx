@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import EventCard from '../../../components/shared/EventCard.jsx';
 import SectionTitle from '../../ProfilePage/SectionTitle.jsx';
 import Button from '../../../components/shared/SubmitButton.jsx';
 import {
@@ -21,6 +20,7 @@ import {
 } from '@/components/ui/pagination';
 import { useEvent } from '@/hooks/useEvent.js';
 import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
+import { EventCard } from '@/components/shared/EventCard.jsx';
 
 const itemPerPage = 9;
 

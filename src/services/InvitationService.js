@@ -8,7 +8,7 @@ export const sendInvitationToOneUserAPI = async (invitationData) => {
   return response.data;
 };
 
-export const getInvitationsByEventIdAPI = async (
+export const getSentInvitationsByEventIdAPI = async (
   eventId,
   page = 1,
   limit = 10,
@@ -23,9 +23,25 @@ export const getInvitationsByEventIdAPI = async (
   return response.data;
 };
 
+export const getReceivedInvitationByEventIdAPI = async (
+  eventId
+) => {
+  const response = await APIServices.get(
+    `/api/v1/invitation/received/${eventId}`
+  );
+  return response.data;
+};
+
 export const getRSVPByInvitationIdAPI = async (invitationId) => {
   const response = await APIServices.get(
     `/api/v1/invitation/invitations/${invitationId}/rsvp`
+  );
+  return response.data;
+};
+
+export const replyInvitationAPI = async (invitationId, option) => {
+  const response = await APIServices.post(
+    `/api/v1/invitation/rsvp/${invitationId}`, option
   );
   return response.data;
 };

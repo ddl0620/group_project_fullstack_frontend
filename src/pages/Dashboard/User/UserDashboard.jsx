@@ -20,14 +20,13 @@ export default function Dashboard() {
     rsvpTrend,
     rsvpDistribution,
     recipients,
-    totalRecipients,
     loading,
     error,
   } = useUserStatis();
 
   useEffect(() => {
-    const startDate = '2025-01-01'; // Example: start of the week
-    const endDate = '2025-04-24'; // Example: end of the week
+    const startDate = '2025-04-23'; // Example: start of the week
+    const endDate = '2025-04-30'; // Example: end of the week
 
     fetchEngagementStats({ startDate, endDate });
     fetchInvitationsOverTime({ startDate, endDate, interval: 'daily' });
