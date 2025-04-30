@@ -69,7 +69,7 @@ export function useNotifications() {
       if(!response.success) {
         throw new Error(response.message);
       }
-      Toast.info(response.message);
+      // Toast.info(response.message);
       const sortedNotifications = [...response.content.notifications].sort((a, b) =>
         new Date(b.createdAt) - new Date(a.createdAt)
       );
