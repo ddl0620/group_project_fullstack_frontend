@@ -46,7 +46,7 @@ export const useAuth = () => {
 
   const handleSignUp = async (userData, setError) => {
     try {
-      if (!userData.name || !userData.email || !userData.password) {
+      if (!userData.name || !userData.email || !userData.password || !userData.confirmPassword || !userData.dateOfBirth) {
         Toast.error('Vui lòng nhập đầy đủ thông tin đăng ký!');
         setError('Vui lòng nhập đầy đủ thông tin đăng ký!');
         return;

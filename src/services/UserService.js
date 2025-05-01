@@ -6,8 +6,13 @@ export const getMe = async () => {
 };
 
 export const updateUser = async (userData, userId) => {
-  const response = await APIServices.put(`/api/v1/user/${userId}`, userData);
-  return response;
+  const response = await APIServices.put(`/api/v1/user/basicInfo/${userId}`, userData);
+  return response.data;
+};
+
+export const updatePassword = async (userData, userId) => {
+  const response = await APIServices.put(`/api/v1/user/password/${userId}`, userData);
+  return response.data;
 };
 
 export const getUserById = async (id) => {

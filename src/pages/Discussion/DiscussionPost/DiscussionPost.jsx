@@ -145,7 +145,7 @@ export function DiscussionPost({ postData }) {
       <Card className="mx-auto max-w-2xl rounded-lg bg-white shadow-md sm:w-sm md:w-md lg:w-lg xl:w-xl">
         <CardHeader className="flex flex-row items-center gap-4 space-y-0 p-4">
           <CustomAvatar
-            src={''}
+            src={creator.avatar}
             fallbackText={creator?.name || 'User'}
             alt={'User'}
           />

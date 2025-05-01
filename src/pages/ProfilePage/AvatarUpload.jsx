@@ -3,13 +3,18 @@ import { Sparkles } from 'lucide-react';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 import { useSelector } from 'react-redux';
 
-function AvatarUpload({ currentAvatar }) {
+function AvatarUpload({ currentAvatar, onAvatarChange }) {
   const [avatar, setAvatar] = useState(currentAvatar);
   const [isHovering, setIsHovering] = useState(false);
   const { user } = useSelector((state) => state.user);
+
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Gửi file gốc lên parent component
+      onAvatarChange(file);
+
+      // Hiển thị preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatar(reader.result);

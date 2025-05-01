@@ -2,6 +2,7 @@ import APIServices from '@/services/APIServices.js';
 import {
   getMe,
   updateUser,
+  updatePassword,
   getUserById as getUserByIdAPI,
 } from '@/services/UserService.js';
 import { useDispatch, useSelector } from 'react-redux';
@@ -43,31 +44,55 @@ export const useUser = () => {
     }
   };
   const handleUpdateUser = async (userData, userId, setError) => {
+    const loadingToast = Toast.loading('Updating user information...');
     try {
-      if (!userData.name || !userData.email || !userData) {
+      if (!userData.get("name") || !userData.get("dateOfBirth")) {
         Toast.error('Please fill in all required information!');
         setError('Please fill in all required information!');
         return;
       }
       const response = await updateUser(userData, userId);
-      console.log(response.status);
 
-      if (response.success) {
+      if (!response.success) {
         Toast.error('Update failed!');
         setError('Update failed!');
         return;
       }
 
-      console.log(response.data);
-
-      // dispatch(login({user: updatedUser, role: updatedRole})); // Dispatch updated user data
       Toast.success('User information updated successfully!');
     } catch (e) {
       console.error(e);
-      Toast.error('Something went wrong. Please try again.');
+      Toast.error(e.response.data.message || 'Something went wrong. Please try again.');
       setError('Something went wrong. Please try again.');
     }
+    finally {
+      Toast.dismiss(loadingToast);
+    }
   };
+
+  const handleUpdatePassword = async (userData, userId, setError) => {
+    const loadingToast = Toast.loading('Updating password information...');
+    try {
+      console.log(userData);
+      const response = await updatePassword(userData, userId);
+
+      if (!response.success) {
+        Toast.error('Update failed!');
+        setError('Update failed!');
+        return;
+      }
+
+      Toast.success('Password updated successfully!');
+    } catch (e) {
+      console.error(e);
+      Toast.error(e.response.data.message || 'Something went wrong. Please try again.');
+      setError(e.response.data.message || 'Something went wrong. Please try again.');
+    }
+    finally {
+      Toast.dismiss(loadingToast);
+    }
+  };
+
 
   const getUserById = async (userId) => {
     try {
@@ -92,5 +117,6 @@ export const useUser = () => {
     getUserById,
     handleGetMe,
     handleUpdateUser,
+    handleUpdatePassword
   };
 };
