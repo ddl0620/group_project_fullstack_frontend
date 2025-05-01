@@ -5,6 +5,11 @@ const settingItems = [
   //     header: "Setting",
   // },
   {
+    title: 'My Profile',
+    url: '/profile',
+    icon: UserIcon,
+  },
+  {
     title: 'Basic Information',
     url: '/profile/edit',
     icon: UserIcon,

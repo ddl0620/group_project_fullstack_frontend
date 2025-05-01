@@ -1,24 +1,34 @@
+'use client';
+
 import { useState, useRef, useEffect } from 'react';
 import Button from '../../components/shared/SubmitButton.jsx';
 import SectionTitle from './SectionTitle.jsx';
 import AvatarUpload from './AvatarUpload.jsx';
-import SocialLinkInput from './SocialLinkInput.jsx';
-import TextareaField from '../../components/shared/TextareaField.jsx';
 import {
   validateForm,
   scrollToFirstError,
-  validationPatterns,
 } from '../../components/shared/validationUtils.jsx';
 import TextInputField from '@/components/shared/TextInputField.jsx';
 import { Toast } from '@/helpers/toastService.js';
 import { useSelector } from 'react-redux';
 import { useUser } from '@/hooks/useUser.js';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Button as UIButton } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 function EditProfilePage() {
   // Create refs object for all fields that need validation
   const refs = {
     name: useRef(null),
-    email: useRef(null),
+    dateOfBirth: useRef(null),
     phone: useRef(null),
   };
 
@@ -26,8 +36,11 @@ function EditProfilePage() {
 
   const [formData, setFormData] = useState({
     name: user.name,
-    email: user.email,
+    dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth) : undefined,
   });
+
+  // State để lưu file avatar
+  const [avatarFile, setAvatarFile] = useState(null);
 
   // Add state for success message
   const [error, setError] = useState(false);
@@ -39,23 +52,11 @@ function EditProfilePage() {
   const validationRules = {
     name: {
       required: true,
-      requiredMessage: 'Full name is required (first and last name)',
+      requiredMessage: 'Full name is required',
     },
-    email: {
+    dateOfBirth: {
       required: true,
-      requiredMessage: 'Email address is required',
-      pattern: validationPatterns.email.pattern,
-      patternMessage: validationPatterns.email.message,
-    },
-    phone: {
-      required: true,
-      requiredMessage: 'Phone number is required',
-      pattern: validationPatterns.phone.pattern,
-      patternMessage: validationPatterns.phone.message,
-    },
-    website: {
-      pattern: validationPatterns.url.pattern,
-      patternMessage: validationPatterns.url.message,
+      requiredMessage: 'Date of birth is required',
     },
   };
 
@@ -74,6 +75,25 @@ function EditProfilePage() {
       }));
     }
   };
+
+  // Handle date of birth selection
+  const handleDateChange = (date) => {
+    setFormData((prev) => ({ ...prev, dateOfBirth: date }));
+
+    // Clear error when field is being edited
+    if (errors.dateOfBirth) {
+      setErrors((prev) => ({
+        ...prev,
+        dateOfBirth: '',
+      }));
+    }
+  };
+
+  // Callback để nhận file từ AvatarUpload
+  const handleAvatarChange = (file) => {
+    setAvatarFile(file);
+  };
+
   const { handleUpdateUser } = useUser();
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,30 +102,64 @@ function EditProfilePage() {
     const newErrors = validateForm(formData, validationRules);
     setErrors(newErrors);
 
-    if (!isChanged()) {
+    if (Object.keys(newErrors).length > 0) {
+      scrollToFirstError(refs);
+      return;
+    }
+
+    if (!isChanged() && !avatarFile) {
       Toast.warning('No changes made to your profile!');
       return;
     }
-    await handleUpdateUser(formData, user._id, setError);
+
+    // Tạo FormData để gửi lên API
+    const data = new FormData();
+    data.append('name', formData.name);
+    data.append('email', user.email);
+    if (formData.dateOfBirth) {
+      data.append('dateOfBirth', formData.dateOfBirth.toISOString());
+    }
+    if (avatarFile) {
+      data.append('avatar', avatarFile); // Gửi file avatar
+    }
+
+    console.log('FormData sent:', data.get('name'));
+    console.log('FormData sent:', data.get('dateOfBirth'));
+    console.log('FormData sent:', data.get('avatar'));
+    await handleUpdateUser(data, user._id, setError);
   };
 
   const handleCancel = (e) => {
     e.preventDefault();
     setFormData({
       name: user.name,
-      email: user.email,
+      dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth) : undefined,
     });
+    setAvatarFile(null); // Reset file avatar
     Toast.info('All changes have been reverted!');
   };
 
   const isChanged = () => {
-    return formData.name !== user.name || formData.email !== user.email;
+    const originalDate = user.dateOfBirth
+      ? new Date(user.dateOfBirth)
+      : undefined;
+    const currentDate = formData.dateOfBirth;
+
+    // Compare dates by converting to ISO string or comparing undefined
+    const dateChanged =
+      (originalDate &&
+        currentDate &&
+        originalDate.toISOString() !== currentDate.toISOString()) ||
+      (originalDate && !currentDate) ||
+      (!originalDate && currentDate);
+
+    return formData.name !== user.name || dateChanged || avatarFile;
   };
 
   useEffect(() => {
     setFormData({
       name: user.name || '',
-      email: user.email || '',
+      dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth) : undefined,
     });
   }, [user]);
 
@@ -117,13 +171,14 @@ function EditProfilePage() {
           subtitle="Update your information and manage your EventApp presence"
         />
 
-        {/* Success Message */}
-
         <div className="mt-8 rounded-lg bg-white p-6 shadow-sm sm:p-8">
           <form onSubmit={handleSubmit}>
             {/* Avatar Upload Section */}
             <div className="mb-8 flex flex-col items-center">
-              <AvatarUpload currentAvatar="" />
+              <AvatarUpload
+                currentAvatar={user.avatar}
+                onAvatarChange={handleAvatarChange} // Truyền callback
+              />
             </div>
 
             {/* Personal Information */}
@@ -145,17 +200,83 @@ function EditProfilePage() {
                   />
                 </div>
 
-                <div ref={refs.email}>
-                  <TextInputField
-                    label="Email Address"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={(e) => handleChange(e)}
-                    placeholder="Enter your email address"
-                    error={errors.email}
-                    required
-                  />
+                {/* Date of Birth Field */}
+                <div ref={refs.dateOfBirth} className="space-y-2">
+                  <label
+                    htmlFor="dateOfBirth"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Date of Birth
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <UIButton
+                        id="dateOfBirth"
+                        variant="outline"
+                        className={cn(
+                          'w-full justify-start border border-gray-300 bg-white text-left font-normal hover:bg-gray-50',
+                          !formData.dateOfBirth && 'text-gray-500',
+                          errors.dateOfBirth && 'border-red-500'
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {formData.dateOfBirth ? (
+                          format(formData.dateOfBirth, 'PPP')
+                        ) : (
+                          <span>Select your date of birth</span>
+                        )}
+                      </UIButton>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={formData.dateOfBirth}
+                        onSelect={handleDateChange}
+                        initialFocus
+                        disabled={(date) =>
+                          date > new Date() || date < new Date('1900-01-01')
+                        }
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {errors.dateOfBirth && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.dateOfBirth}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Account Management Links */}
+            <div className="mb-8">
+              <h3 className="mb-4 text-xl font-bold text-gray-900">
+                Account Management
+              </h3>
+              <div className="space-y-4 rounded-md border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-gray-900">Email Address</h4>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                  </div>
+                  <Link
+                    to="/profile/email"
+                    className="text-sm font-medium text-blue-600 hover:text-blue-800"
+                  >
+                    Update
+                  </Link>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-gray-900">Password</h4>
+                    <p className="text-sm text-gray-500">••••••••</p>
+                  </div>
+                  <Link
+                    to="/profile/password"
+                    className="text-sm font-medium text-blue-600 hover:text-blue-800"
+                  >
+                    Change
+                  </Link>
                 </div>
               </div>
             </div>

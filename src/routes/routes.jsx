@@ -24,6 +24,9 @@ import MyJoinedEvent from '@/pages/Event/MyJoinedEvents/MyJoinedEvent.jsx';
 import userItems from '@/components/SidebarItems/User.js';
 import DiscussionThreadList from '@/pages/Discussion/DiscussionPost/DiscussionThreadList.jsx';
 import NotificationsPage from '@/pages/Notification/NotificationPage.jsx';
+import UpdatePasswordPage from '@/pages/ProfilePage/UpdatePasswordPage.jsx';
+import UpdateEmailPage from '@/pages/ProfilePage/UpdateEmailPage.jsx';
+import ProfilePage from '@/pages/ProfilePage/ProfilePage.jsx';
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { isAuthenticated, role } = useSelector((state) => state.user);
@@ -112,9 +115,10 @@ const routes = [
           <SidebarLayout title={'Profile Setting'} items={settingItems} />
         ),
         children: [
+          { path: 'profile/', element: <ProfilePage /> },
           { path: 'profile/edit', element: <EditProfilePage /> },
-          { path: 'profile/password', element: <EditProfilePage /> },
-          { path: 'profile/email', element: <EditProfilePage /> },
+          { path: 'profile/password', element: <UpdatePasswordPage /> },
+          { path: 'profile/email', element: <UpdateEmailPage /> },
         ],
       },
       // Dashboard route (not using sidebar layout)

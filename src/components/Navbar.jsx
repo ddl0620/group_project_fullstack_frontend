@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.js"
 import { NotificationDropdown } from '@/components/NotificationDropdown.jsx';
+import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 
 function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -88,17 +89,14 @@ function NavBar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="flex h-auto items-center gap-2 px-3 py-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src="/placeholder.svg?height=24&width=24" alt="User" />
-                      <AvatarFallback>{user?.name?.charAt(0) || "U"}</AvatarFallback>
-                    </Avatar>
+                    <CustomAvatar src={user.avatar} alt={user.name} fallbackText={user.name} />
                     <span className="hidden md:inline">{user?.name || "User"}</span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="text-black" align="end">
-                  <DropdownMenuItem onClick={() => navigate("/profile/edit")}>Profile</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/settings")}>Settings</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile/edit")}>Settings</DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut}>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
