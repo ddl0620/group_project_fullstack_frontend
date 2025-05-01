@@ -26,8 +26,8 @@ export const useAuth = () => {
       console.log(role);
 
       if (!content?.token) {
-        Toast.error('Đăng nhập thất bại!');
-        setError('Sai tài khoản hoặc mật khẩu.');
+        Toast.error(response.message);
+        setError(response.message);
         return;
       }
 
@@ -38,9 +38,9 @@ export const useAuth = () => {
       navigate(role === 'admin' ? '/dashboard' : '/dashboard');
     } catch (e) {
       console.error(e);
-      Toast.error('Sai tài khoản hoặc mật khẩu');
+      Toast.error(e.response.data.message || "Có lỗi xảy ra. Vui lòng thử lại.");
 
-      setError('Có lỗi xảy ra. Vui lòng thử lại.');
+      setError(e.response.data.message || "Có lỗi xảy ra. Vui lòng thử lại.");
     }
   };
 
