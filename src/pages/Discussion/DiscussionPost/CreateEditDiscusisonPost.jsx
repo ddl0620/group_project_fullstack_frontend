@@ -107,11 +107,7 @@ export function CreateEditDiscussionPost({
       setIsModalOpen(false);
       onSuccess();
     } catch (err) {
-      console.error(`Error ${isEdit ? 'updating' : 'creating'} post:`, err);
-      Toast.error(
-        `Failed to ${isEdit ? 'update' : 'create'} post`,
-        err.message
-      );
+      console.log(err)
     }
   };
 

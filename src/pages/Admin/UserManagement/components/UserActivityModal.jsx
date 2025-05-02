@@ -112,13 +112,13 @@ export default function UserActivityModal({
             onValueChange={setActiveTab}
             value={activeTab}
           >
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger
                 value="organized"
                 className="px-1 text-xs sm:px-3 sm:text-sm"
               >
                 <Calendar className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Organized</span>
+                <span className="hidden sm:inline">Organized and Joined</span>
                 <span className="sm:hidden">Events</span>
               </TabsTrigger>
               <TabsTrigger
@@ -129,14 +129,14 @@ export default function UserActivityModal({
                 <span className="hidden sm:inline">Participated</span>
                 <span className="sm:hidden">Joined</span>
               </TabsTrigger>
-              <TabsTrigger
-                value="posts"
-                className="px-1 text-xs sm:px-3 sm:text-sm"
-              >
-                <MessageSquare className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Discussion</span>
-                <span className="sm:hidden">Posts</span>
-              </TabsTrigger>
+              {/*<TabsTrigger*/}
+              {/*  value="posts"*/}
+              {/*  className="px-1 text-xs sm:px-3 sm:text-sm"*/}
+              {/*>*/}
+              {/*  <MessageSquare className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />*/}
+              {/*  <span className="hidden sm:inline">Discussion</span>*/}
+              {/*  <span className="sm:hidden">Posts</span>*/}
+              {/*</TabsTrigger>*/}
             </TabsList>
 
             <TabsContent value="organized">
@@ -241,66 +241,66 @@ export default function UserActivityModal({
               )}
             </TabsContent>
 
-            <TabsContent value="posts">
-              <div className="max-h-[40vh] overflow-y-auto">
-                {discussionPosts.length === 0 ? (
-                  <p className="py-4 text-center text-gray-500">
-                    No discussion posts found
-                  </p>
-                ) : (
-                  <div className="space-y-3 sm:space-y-4">
-                    {postsCurrentItems.map((post) => (
-                      <div
-                        key={post._id}
-                        className="rounded-lg border p-3 sm:p-4"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
-                          <p className="text-xs text-gray-500 sm:text-sm">
-                            Posted on {formatDate(post.created_at)}
-                          </p>
-                          <Badge
-                            variant="outline"
-                            className="mt-1 self-start text-xs sm:mt-0"
-                          >
-                            Event:{' '}
-                            {userActivity.organizedEvents.find(
-                              (e) => e._id === post.event_id
-                            )?.title || post.event_id}
-                          </Badge>
-                        </div>
-                        <p className="mt-2 text-xs sm:text-sm">
-                          {post.content}
-                        </p>
-                        {post.images && post.images.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {post.images.map((img, i) => (
-                              <img
-                                key={i}
-                                src={img || '/placeholder.svg'}
-                                alt={`Post image ${i + 1}`}
-                                className="h-12 w-12 rounded object-cover sm:h-16 sm:w-16"
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {discussionPosts.length > 0 && (
-                <div className="mt-4 border-t pt-4">
-                  <Pagination
-                    currentPage={postsCurrentPage}
-                    totalPages={postsTotalPages}
-                    onPageChange={setPostsCurrentPage}
-                    totalItems={discussionPosts.length}
-                    itemsPerPage={itemsPerPage}
-                    itemName="posts"
-                  />
-                </div>
-              )}
-            </TabsContent>
+            {/*<TabsContent value="posts">*/}
+            {/*  <div className="max-h-[40vh] overflow-y-auto">*/}
+            {/*    {discussionPosts.length === 0 ? (*/}
+            {/*      <p className="py-4 text-center text-gray-500">*/}
+            {/*        No discussion posts found*/}
+            {/*      </p>*/}
+            {/*    ) : (*/}
+            {/*      <div className="space-y-3 sm:space-y-4">*/}
+            {/*        {postsCurrentItems.map((post) => (*/}
+            {/*          <div*/}
+            {/*            key={post._id}*/}
+            {/*            className="rounded-lg border p-3 sm:p-4"*/}
+            {/*          >*/}
+            {/*            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">*/}
+            {/*              <p className="text-xs text-gray-500 sm:text-sm">*/}
+            {/*                Posted on {formatDate(post.created_at)}*/}
+            {/*              </p>*/}
+            {/*              <Badge*/}
+            {/*                variant="outline"*/}
+            {/*                className="mt-1 self-start text-xs sm:mt-0"*/}
+            {/*              >*/}
+            {/*                Event:{' '}*/}
+            {/*                {userActivity.organizedEvents.find(*/}
+            {/*                  (e) => e._id === post.event_id*/}
+            {/*                )?.title || post.event_id}*/}
+            {/*              </Badge>*/}
+            {/*            </div>*/}
+            {/*            <p className="mt-2 text-xs sm:text-sm">*/}
+            {/*              {post.content}*/}
+            {/*            </p>*/}
+            {/*            {post.images && post.images.length > 0 && (*/}
+            {/*              <div className="mt-2 flex flex-wrap gap-2">*/}
+            {/*                {post.images.map((img, i) => (*/}
+            {/*                  <img*/}
+            {/*                    key={i}*/}
+            {/*                    src={img || '/placeholder.svg'}*/}
+            {/*                    alt={`Post image ${i + 1}`}*/}
+            {/*                    className="h-12 w-12 rounded object-cover sm:h-16 sm:w-16"*/}
+            {/*                  />*/}
+            {/*                ))}*/}
+            {/*              </div>*/}
+            {/*            )}*/}
+            {/*          </div>*/}
+            {/*        ))}*/}
+            {/*      </div>*/}
+            {/*    )}*/}
+            {/*  </div>*/}
+            {/*  {discussionPosts.length > 0 && (*/}
+            {/*    <div className="mt-4 border-t pt-4">*/}
+            {/*      <Pagination*/}
+            {/*        currentPage={postsCurrentPage}*/}
+            {/*        totalPages={postsTotalPages}*/}
+            {/*        onPageChange={setPostsCurrentPage}*/}
+            {/*        totalItems={discussionPosts.length}*/}
+            {/*        itemsPerPage={itemsPerPage}*/}
+            {/*        itemName="posts"*/}
+            {/*      />*/}
+            {/*    </div>*/}
+            {/*  )}*/}
+            {/*</TabsContent>*/}
           </Tabs>
         </div>
 
