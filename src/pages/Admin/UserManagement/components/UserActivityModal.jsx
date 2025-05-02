@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, Users, MessageSquare } from 'lucide-react';
+import { Calendar, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,13 +17,20 @@ import {
   DialogTitle,
   DialogClose,
 } from '@/components/ui/dialog';
+import { useUser } from '@/hooks/useUser.js';
+import { useAdminManagement } from '@/hooks/useAdminManagement.js';
 
-export default function UserActivityModal({
-  isOpen,
-  setIsOpen,
-  selectedUser,
-  userActivity,
-}) {
+export default function UserActivityModal({ isOpen, setIsOpen, userId }) {
+  // State for user data and activities
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [userActivity, setUserActivity] = useState({
+    organizedEvents: [],
+    participatedEvents: [],
+    discussionPosts: [],
+  });
+
   // Pagination state for each tab
   const [organizedCurrentPage, setOrganizedCurrentPage] = useState(1);
   const [participatedCurrentPage, setParticipatedCurrentPage] = useState(1);
@@ -32,14 +39,48 @@ export default function UserActivityModal({
 
   const itemsPerPage = 5;
 
-  // Reset pagination when user changes or modal opens
+  // Hooks for fetching data
+  const { getUserById } = useUser();
+  const { fetchUserActivities } = useAdminManagement();
+
+  // Fetch user data and activities when modal opens or userId changes
   useEffect(() => {
+    const fetchUserData = async () => {
+      if (!userId || !isOpen) return;
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Fetch user details
+        const userResponse = await getUserById(userId);
+        if (!userResponse.success) {
+          throw new Error('Failed to fetch user details');
+        }
+        setUser(userResponse.content);
+
+        // Fetch user activities
+        const activities = await fetchUserActivities(userId);
+        setUserActivity({
+          organizedEvents: activities.organizedEvents,
+          participatedEvents: activities.joiningEvents,
+          // discussionPosts,
+        });
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+        setError(err.message || 'Failed to load user data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+
+    // Reset pagination when user changes or modal opens
     setOrganizedCurrentPage(1);
     setParticipatedCurrentPage(1);
     setPostsCurrentPage(1);
-  }, [selectedUser, isOpen]);
-
-  if (!selectedUser) return null;
+  }, [userId, isOpen]);
 
   // Format date for display
   const formatDate = (date) => {
@@ -49,6 +90,7 @@ export default function UserActivityModal({
 
   // Get initials for avatar
   const getInitials = (name) => {
+    if (!name) return '';
     return name
       .split(' ')
       .map((n) => n[0])
@@ -86,223 +128,172 @@ export default function UserActivityModal({
         <DialogHeader className="space-y-2">
           <DialogTitle>User Activity</DialogTitle>
           <DialogDescription>
-            {selectedUser
-              ? `Viewing activity for ${selectedUser.name}`
-              : 'User activity'}
+            {user ? `Viewing activity for ${user.name}` : 'User activity'}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-2 sm:py-4">
-          <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-            <Avatar className="mx-auto mb-2 h-16 w-16 sm:mx-0 sm:mb-0">
-              <AvatarImage
-                src={selectedUser.avatar || '/placeholder.svg'}
-                alt={selectedUser.name}
-              />
-              <AvatarFallback>{getInitials(selectedUser.name)}</AvatarFallback>
-            </Avatar>
-            <div className="text-center sm:text-left">
-              <h3 className="text-lg font-medium">{selectedUser.name}</h3>
-              <p className="text-sm text-gray-500">{selectedUser.email}</p>
-            </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"></div>
+            <span className="ml-2">Loading user data...</span>
           </div>
+        ) : error ? (
+          <div className="py-8 text-center text-red-500">
+            <p>Error: {error}</p>
+            <Button onClick={() => setIsOpen(false)} className="mt-4">
+              Close
+            </Button>
+          </div>
+        ) : user ? (
+          <div className="py-2 sm:py-4">
+            <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:gap-x-4">
+              <Avatar className="mx-auto mb-2 h-16 w-16 sm:mx-0 sm:mb-0">
+                <AvatarImage
+                  src={user.avatar || '/placeholder.svg'}
+                  alt={user.name}
+                />
+                <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+              </Avatar>
+              <div className="text-center sm:text-left">
+                <h3 className="text-lg font-medium">{user.name}</h3>
+                <p className="text-sm text-gray-500">{user.email}</p>
+              </div>
+            </div>
 
-          <Tabs
-            defaultValue="organized"
-            onValueChange={setActiveTab}
-            value={activeTab}
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger
-                value="organized"
-                className="px-1 text-xs sm:px-3 sm:text-sm"
-              >
-                <Calendar className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Organized and Joined</span>
-                <span className="sm:hidden">Events</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="participated"
-                className="px-1 text-xs sm:px-3 sm:text-sm"
-              >
-                <Users className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Participated</span>
-                <span className="sm:hidden">Joined</span>
-              </TabsTrigger>
-              {/*<TabsTrigger*/}
-              {/*  value="posts"*/}
-              {/*  className="px-1 text-xs sm:px-3 sm:text-sm"*/}
-              {/*>*/}
-              {/*  <MessageSquare className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />*/}
-              {/*  <span className="hidden sm:inline">Discussion</span>*/}
-              {/*  <span className="sm:hidden">Posts</span>*/}
-              {/*</TabsTrigger>*/}
-            </TabsList>
+            <Tabs
+              defaultValue="organized"
+              onValueChange={setActiveTab}
+              value={activeTab}
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger
+                  value="organized"
+                  className="px-1 text-xs sm:px-3 sm:text-sm"
+                >
+                  <Calendar className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Organized</span>
+                  <span className="sm:hidden">Events</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="participated"
+                  className="px-1 text-xs sm:px-3 sm:text-sm"
+                >
+                  <Users className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Participated</span>
+                  <span className="sm:hidden">Joined</span>
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="organized">
-              <div className="max-h-[40vh] overflow-y-auto">
-                {organizedEvents.length === 0 ? (
-                  <p className="py-4 text-center text-gray-500">
-                    No organized events found
-                  </p>
-                ) : (
-                  <div className="space-y-3 sm:space-y-4">
-                    {organizedCurrentItems.map((event) => (
-                      <div
-                        key={event._id}
-                        className="rounded-lg border p-3 sm:p-4"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
-                          <div>
-                            <h4 className="text-sm font-medium sm:text-base">
-                              {event.title}
-                            </h4>
-                            <p className="text-xs text-gray-500 sm:text-sm">
-                              {formatDate(event.startDate)} -{' '}
-                              {formatDate(event.endDate)}
-                            </p>
+              <TabsContent value="organized">
+                <div className="max-h-[40vh] overflow-y-auto">
+                  {organizedEvents.length === 0 ? (
+                    <p className="py-4 text-center text-gray-500">
+                      No organized events found
+                    </p>
+                  ) : (
+                    <div className="space-y-3 sm:space-y-4">
+                      {organizedCurrentItems.map((event) => (
+                        <div
+                          key={event._id}
+                          className="rounded-lg border p-3 sm:p-4"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                            <div>
+                              <h4 className="text-sm font-medium sm:text-base">
+                                {event.title}
+                              </h4>
+                              <p className="text-xs text-gray-500 sm:text-sm">
+                                {formatDate(event.startDate)} -{' '}
+                                {formatDate(event.endDate)}
+                              </p>
+                            </div>
+                            <Badge className="mt-1 self-start text-xs sm:mt-0">
+                              {event.type}
+                            </Badge>
                           </div>
-                          <Badge className="mt-1 self-start text-xs sm:mt-0">
-                            {event.type}
-                          </Badge>
+                          <p className="mt-2 text-xs sm:text-sm">
+                            {event.description}
+                          </p>
+                          <div className="mt-2 flex items-center text-xs text-gray-500">
+                            <Users className="mr-1 h-3 w-3" />
+                            <span>
+                              {event.participants?.length || 0} participants
+                            </span>
+                          </div>
                         </div>
-                        <p className="mt-2 text-xs sm:text-sm">
-                          {event.description}
-                        </p>
-                        <div className="mt-2 flex items-center text-xs text-gray-500">
-                          <Users className="mr-1 h-3 w-3" />
-                          <span>{event.participants.length} participants</span>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {organizedEvents.length > 0 && (
+                  <div className="mt-4 border-t pt-4">
+                    <Pagination
+                      currentPage={organizedCurrentPage}
+                      totalPages={organizedTotalPages}
+                      onPageChange={setOrganizedCurrentPage}
+                      totalItems={organizedEvents.length}
+                      itemsPerPage={itemsPerPage}
+                      itemName="events"
+                    />
                   </div>
                 )}
-              </div>
-              {organizedEvents.length > 0 && (
-                <div className="mt-4 border-t pt-4">
-                  <Pagination
-                    currentPage={organizedCurrentPage}
-                    totalPages={organizedTotalPages}
-                    onPageChange={setOrganizedCurrentPage}
-                    totalItems={organizedEvents.length}
-                    itemsPerPage={itemsPerPage}
-                    itemName="events"
-                  />
-                </div>
-              )}
-            </TabsContent>
+              </TabsContent>
 
-            <TabsContent value="participated">
-              <div className="max-h-[40vh] overflow-y-auto">
-                {participatedEvents.length === 0 ? (
-                  <p className="py-4 text-center text-gray-500">
-                    No participated events found
-                  </p>
-                ) : (
-                  <div className="space-y-3 sm:space-y-4">
-                    {participatedCurrentItems.map((event) => (
-                      <div
-                        key={event._id}
-                        className="rounded-lg border p-3 sm:p-4"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
-                          <div>
-                            <h4 className="text-sm font-medium sm:text-base">
-                              {event.title}
-                            </h4>
-                            <p className="text-xs text-gray-500 sm:text-sm">
-                              {formatDate(event.startDate)} -{' '}
-                              {formatDate(event.endDate)}
-                            </p>
+              <TabsContent value="participated">
+                <div className="max-h-[40vh] overflow-y-auto">
+                  {participatedEvents.length === 0 ? (
+                    <p className="py-4 text-center text-gray-500">
+                      No participated events found
+                    </p>
+                  ) : (
+                    <div className="space-y-3 sm:space-y-4">
+                      {participatedCurrentItems.map((event) => (
+                        <div
+                          key={event._id}
+                          className="rounded-lg border p-3 sm:p-4"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                            <div>
+                              <h4 className="text-sm font-medium sm:text-base">
+                                {event.title}
+                              </h4>
+                              <p className="text-xs text-gray-500 sm:text-sm">
+                                {formatDate(event.startDate)} -{' '}
+                                {formatDate(event.endDate)}
+                              </p>
+                            </div>
+                            <Badge className="mt-1 self-start text-xs sm:mt-0">
+                              {event.type}
+                            </Badge>
                           </div>
-                          <Badge className="mt-1 self-start text-xs sm:mt-0">
-                            {event.type}
-                          </Badge>
+                          <p className="mt-2 text-xs sm:text-sm">
+                            {event.description}
+                          </p>
                         </div>
-                        <p className="mt-2 text-xs sm:text-sm">
-                          {event.description}
-                        </p>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {participatedEvents.length > 0 && (
+                  <div className="mt-4 border-t pt-4">
+                    <Pagination
+                      currentPage={participatedCurrentPage}
+                      totalPages={participatedTotalPages}
+                      onPageChange={setParticipatedCurrentPage}
+                      totalItems={participatedEvents.length}
+                      itemsPerPage={itemsPerPage}
+                      itemName="events"
+                    />
                   </div>
                 )}
-              </div>
-              {participatedEvents.length > 0 && (
-                <div className="mt-4 border-t pt-4">
-                  <Pagination
-                    currentPage={participatedCurrentPage}
-                    totalPages={participatedTotalPages}
-                    onPageChange={setParticipatedCurrentPage}
-                    totalItems={participatedEvents.length}
-                    itemsPerPage={itemsPerPage}
-                    itemName="events"
-                  />
-                </div>
-              )}
-            </TabsContent>
-
-            {/*<TabsContent value="posts">*/}
-            {/*  <div className="max-h-[40vh] overflow-y-auto">*/}
-            {/*    {discussionPosts.length === 0 ? (*/}
-            {/*      <p className="py-4 text-center text-gray-500">*/}
-            {/*        No discussion posts found*/}
-            {/*      </p>*/}
-            {/*    ) : (*/}
-            {/*      <div className="space-y-3 sm:space-y-4">*/}
-            {/*        {postsCurrentItems.map((post) => (*/}
-            {/*          <div*/}
-            {/*            key={post._id}*/}
-            {/*            className="rounded-lg border p-3 sm:p-4"*/}
-            {/*          >*/}
-            {/*            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">*/}
-            {/*              <p className="text-xs text-gray-500 sm:text-sm">*/}
-            {/*                Posted on {formatDate(post.created_at)}*/}
-            {/*              </p>*/}
-            {/*              <Badge*/}
-            {/*                variant="outline"*/}
-            {/*                className="mt-1 self-start text-xs sm:mt-0"*/}
-            {/*              >*/}
-            {/*                Event:{' '}*/}
-            {/*                {userActivity.organizedEvents.find(*/}
-            {/*                  (e) => e._id === post.event_id*/}
-            {/*                )?.title || post.event_id}*/}
-            {/*              </Badge>*/}
-            {/*            </div>*/}
-            {/*            <p className="mt-2 text-xs sm:text-sm">*/}
-            {/*              {post.content}*/}
-            {/*            </p>*/}
-            {/*            {post.images && post.images.length > 0 && (*/}
-            {/*              <div className="mt-2 flex flex-wrap gap-2">*/}
-            {/*                {post.images.map((img, i) => (*/}
-            {/*                  <img*/}
-            {/*                    key={i}*/}
-            {/*                    src={img || '/placeholder.svg'}*/}
-            {/*                    alt={`Post image ${i + 1}`}*/}
-            {/*                    className="h-12 w-12 rounded object-cover sm:h-16 sm:w-16"*/}
-            {/*                  />*/}
-            {/*                ))}*/}
-            {/*              </div>*/}
-            {/*            )}*/}
-            {/*          </div>*/}
-            {/*        ))}*/}
-            {/*      </div>*/}
-            {/*    )}*/}
-            {/*  </div>*/}
-            {/*  {discussionPosts.length > 0 && (*/}
-            {/*    <div className="mt-4 border-t pt-4">*/}
-            {/*      <Pagination*/}
-            {/*        currentPage={postsCurrentPage}*/}
-            {/*        totalPages={postsTotalPages}*/}
-            {/*        onPageChange={setPostsCurrentPage}*/}
-            {/*        totalItems={discussionPosts.length}*/}
-            {/*        itemsPerPage={itemsPerPage}*/}
-            {/*        itemName="posts"*/}
-            {/*      />*/}
-            {/*    </div>*/}
-            {/*  )}*/}
-            {/*</TabsContent>*/}
-          </Tabs>
-        </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        ) : (
+          <div className="py-8 text-center text-gray-500">
+            <p>No user data available</p>
+          </div>
+        )}
 
         <DialogFooter>
           <DialogClose asChild>

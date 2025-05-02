@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
   users: [],
@@ -23,78 +23,64 @@ const initialState = {
   },
   loading: false,
   error: null,
-};
+}
 
 const adminManagementSlice = createSlice({
-  name: 'adminManagement',
+  name: "adminManagement",
   initialState,
   reducers: {
     // User Management Actions
     setUsers(state, action) {
-      state.users = action.payload.users;
-      state.pagination.users = action.payload.pagination;
+      state.users = action.payload.users
+      state.pagination.users = action.payload.pagination
     },
     addUser(state, action) {
-      state.users.unshift(action.payload);
-      state.pagination.users.total += 1;
+      state.users.unshift(action.payload)
+      state.pagination.users.total += 1
     },
     updateUser(state, action) {
-      const updatedUser = action.payload;
-      const index = state.users.findIndex(
-        (user) => user._id === updatedUser._id
-      );
+      const updatedUser = action.payload
+      const index = state.users.findIndex((user) => user._id === updatedUser._id)
       if (index !== -1) {
-        state.users[index] = {
-          ...state.users[index],
-          name: updatedUser.name,
-          dateOfBirth: updatedUser.dateOfBirth,
-          role: updatedUser.role,
-          avatar: updatedUser.avatar,
-          maxEventCreate: updatedUser.maxEventCreate,
-          maxParticipantPerEvent: updatedUser.maxParticipantPerEvent,
-          updatedAt: new Date(),
-        };
+        state.users[index] = updatedUser
       }
-
     },
     deleteUser(state, action) {
-      const { userId } = action.payload;
-      const index = state.users.findIndex((user) => user._id === userId);
+      const { userId } = action.payload
+      const index = state.users.findIndex((user) => user._id === userId)
       if (index !== -1) {
-        state.users[index].isDeleted = true;
+        state.users[index].isDeleted = true
       }
-      state.pagination.users.total -= 1;
+      state.pagination.users.total -= 1
     },
     reactivateUser(state, action) {
-      const { userId } = action.payload;
-      const index = state.users.findIndex((user) => user._id === userId);
+      const { userId } = action.payload
+      const index = state.users.findIndex((user) => user._id === userId)
       if (index !== -1) {
-        state.users[index].isDeleted = false;
+        state.users[index].isDeleted = false
       }
-      state.pagination.users.total += 1;
+      state.pagination.users.total += 1
     },
     setUserActivities(state, action) {
       state.userActivities = {
         joiningEvents: action.payload.joiningEvents,
         organizedEvents: action.payload.organizedEvents,
         // discussionPosts: action.payload.discussionPosts,
-      };
+      }
     },
 
     // Event Management Actions
     setEvents(state, action) {
-      state.events = action.payload.events;
-      state.pagination.events = action.payload.pagination;
+      state.events = action.payload.events
+      state.pagination.events = action.payload.pagination
     },
     addEvent(state, action) {
-      state.events.unshift(action.payload);
-      state.pagination.events.total += 1;
+      state.events.unshift(action.payload)
+      state.pagination.events.total += 1
     },
     updateEvent(state, action) {
-      const updatedEvent = action.payload;
-      const index = state.events.findIndex(
-        (event) => event._id === updatedEvent._id
-      );
+      const updatedEvent = action.payload
+      const index = state.events.findIndex((event) => event._id === updatedEvent._id)
       if (index !== -1) {
         state.events[index] = {
           ...state.events[index],
@@ -107,16 +93,16 @@ const adminManagementSlice = createSlice({
           images: updatedEvent.images,
           isPublic: updatedEvent.isPublic,
           updatedAt: new Date(),
-        };
+        }
       }
     },
     deleteEvent(state, action) {
-      const { eventId } = action.payload;
-      const index = state.events.findIndex((event) => event._id === eventId);
+      const { eventId } = action.payload
+      const index = state.events.findIndex((event) => event._id === eventId)
       if (index !== -1) {
-        state.events[index].isDeleted = true;
+        state.events[index].isDeleted = true
       }
-      state.pagination.events.total -= 1;
+      state.pagination.events.total -= 1
     },
     setEventDetails(state, action) {
       state.eventDetails = {
@@ -127,18 +113,18 @@ const adminManagementSlice = createSlice({
           denied: action.payload.participants.denied,
         },
         invitations: action.payload.invitations,
-      };
+      }
     },
 
     // Common Actions
     setLoading(state, action) {
-      state.loading = action.payload;
+      state.loading = action.payload
     },
     setError(state, action) {
-      state.error = action.payload;
+      state.error = action.payload
     },
   },
-});
+})
 
 export const {
   setUsers,
@@ -154,6 +140,6 @@ export const {
   setEventDetails,
   setLoading,
   setError,
-} = adminManagementSlice.actions;
+} = adminManagementSlice.actions
 
-export default adminManagementSlice.reducer;
+export default adminManagementSlice.reducer

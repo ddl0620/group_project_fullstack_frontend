@@ -7,6 +7,12 @@ export const getAllUsersAPI = async (page, limit, isAcs) => {
   return response.data;
 }
 
+export const createNewUserAPI = async (data) => {
+  const response = await APIServices.post(
+    `/api/v1/admin/user-management`, data);
+  return response.data;
+}
+
 export const updateUserAPI = async (userId, data) => {
   const response = await APIServices.put(
     `/api/v1/admin/user-management/${userId}`, data);

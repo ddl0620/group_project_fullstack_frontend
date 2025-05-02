@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { UserPlus } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Info, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAdminManagement } from '@/hooks/useAdminManagement.js';
+import { useSelector } from 'react-redux';
 
 // Import components
 import UserFilters from './components/UserFilters';
@@ -12,55 +13,28 @@ import Pagination from '../../../components/shared/Pagination.jsx';
 import CreateUserModal from './components/CreateUserModal';
 import EditUserModal from './components/EditUserModal';
 import UserActivityModal from './components/UserActivityModal';
-
-// Mock data for demonstration
-const mockEvents = Array(100)
-  .fill()
-  .map((_, i) => ({
-    _id: `event_${i + 1}`,
-    title: `Event ${i + 1}`,
-    description: `Description for event ${i + 1}`,
-    type: i % 3 === 0 ? 'CONFERENCE' : i % 3 === 1 ? 'WORKSHOP' : 'MEETUP',
-    startDate: new Date(2023, i % 12, (i % 28) + 1),
-    endDate: new Date(2023, i % 12, (i % 28) + 2),
-    location: `Location ${i + 1}`,
-    images: [`/placeholder.svg?text=Event${i + 1}`],
-    organizer: `user_${(i % 20) + 1}`,
-    participants: Array((i % 10) + 1)
-      .fill()
-      .map((_, j) => ({
-        user: `user_${(j % 50) + 1}`,
-        status: j % 3 === 0 ? 'GOING' : j % 3 === 1 ? 'NOT_GOING' : 'MAYBE',
-      })),
-    isPublic: i % 4 !== 0,
-    createdAt: new Date(2022, 11, 31 - i),
-    updatedAt: new Date(2023, 0, 1),
-    isDeleted: i % 15 === 0,
-  }));
-
-const mockPosts = Array(200)
-  .fill()
-  .map((_, i) => ({
-    _id: `post_${i + 1}`,
-    creator_id: `user_${(i % 50) + 1}`,
-    event_id: `event_${(i % 100) + 1}`,
-    content: `This is post ${i + 1} content. It contains some text about the event.`,
-    images: i % 3 === 0 ? [`/placeholder.svg?text=Post${i + 1}`] : [],
-    isDeleted: i % 20 === 0,
-    created_at: new Date(2023, i % 12, (i % 28) + 1),
-    updated_at: new Date(2023, i % 12, (i % 28) + 1),
-  }));
+import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
+import { Toast } from '@/helpers/toastService.js';
 
 const UserManagement = () => {
-  const { fetchUsers, users, pagination, createUser, updateUserInfo, softDeleteUser, reactivateUserAccount, fetchUserActivities } = useAdminManagement();
-  const [allUsers, setAllUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const {
+    fetchUsers,
+    createUser,
+    updateUserInfo,
+    softDeleteUser,
+  } = useAdminManagement();
+
+  // Get users directly from Redux store
+  const users = useSelector((state) => state.adminManagement.users);
+  const pagination = useSelector(
+    (state) => state.adminManagement.pagination.users
+  );
+  const loading = useSelector((state) => state.adminManagement.loading);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [roleFilter, setRoleFilter] = useState('all');
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
@@ -74,27 +48,15 @@ const UserManagement = () => {
     maxParticipantPerEvent: 50,
   });
   const [editUser, setEditUser] = useState(null);
-  const [userActivity, setUserActivity] = useState({
-    organizedEvents: [],
-    participatedEvents: [],
-    discussionPosts: [],
-  });
 
   // Fetch users on component mount
   useEffect(() => {
-    const fetchUsersData = async () => {
-      setIsLoading(true);
-      await fetchUsers(currentPage, pagination.users.limit, false);
-      setAllUsers(users);
-      setFilteredUsers(users);
-      setIsLoading(false);
-    };
-    fetchUsersData();
-  }, [fetchUsers, users, currentPage, pagination.users.limit]);
+    fetchUsers(pagination.page, pagination.limit, false);
+  }, [fetchUsers, pagination.page, pagination.limit]);
 
-  // Filter users when search term or filters change
-  useEffect(() => {
-    let result = [...allUsers];
+  // Filter users using useMemo to avoid unnecessary recalculations
+  const filteredUsers = useMemo(() => {
+    let result = [...users];
 
     // Apply search filter
     if (searchTerm) {
@@ -116,13 +78,12 @@ const UserManagement = () => {
       result = result.filter((user) => user.role === roleFilter);
     }
 
-    setFilteredUsers(result);
-  }, [searchTerm, statusFilter, roleFilter, allUsers]);
+    return result;
+  }, [users, searchTerm, statusFilter, roleFilter]);
 
   // Handle page change
   const paginate = async (pageNumber) => {
-    setCurrentPage(pageNumber);
-    await fetchUsers(pageNumber, pagination.users.limit);
+    await fetchUsers(pageNumber, pagination.limit);
   };
 
   // Handle user creation
@@ -139,14 +100,11 @@ const UserManagement = () => {
     }
 
     try {
-      const createdUser = await createUser({
+      await createUser({
         ...newUser,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        isDeleted: false,
+        confirmPassword: newUser.password,
       });
 
-      setAllUsers([createdUser, ...allUsers]);
       setNewUser({
         name: '',
         email: '',
@@ -157,44 +115,48 @@ const UserManagement = () => {
         maxParticipantPerEvent: 50,
       });
       setIsCreateModalOpen(false);
+
+      // Refresh the user list
+      fetchUsers(pagination.page, pagination.limit, false, true);
     } catch (error) {
-      alert('Failed to create user: ' + error.message);
+      console.log(error);
     }
   };
 
   // Handle user deletion (soft delete)
   const handleDeleteUser = async (userId) => {
-    if (window.confirm('Are you sure you want to deactivate this user?')) {
-      try {
-        await softDeleteUser(userId);
-        setAllUsers(
-          allUsers.map((user) =>
-            user._id === userId
-              ? { ...user, isDeleted: true, updatedAt: new Date() }
-              : user
-          )
-        );
-      } catch (error) {
-        alert('Failed to deactivate user: ' + error.message);
-      }
+    const confirmed = await AlertDialogUtils.danger({
+      title: 'Delete User',
+      description: 'Are you sure you want to deactivate this user?',
+      confirmText: 'Confirm',
+      cancelText: 'Cancel',
+      variant: 'default',
+    });
+
+    if (!confirmed) return;
+
+    try {
+      await softDeleteUser(userId);
+    } catch (error) {
+      alert('Failed to deactivate user: ' + error.message);
     }
   };
 
   // Handle user reactivation
   const handleReactivateUser = async (userId) => {
-    if (window.confirm('Are you sure you want to reactivate this user?')) {
-      try {
-        await reactivateUserAccount(userId);
-        setAllUsers(
-          allUsers.map((user) =>
-            user._id === userId
-              ? { ...user, isDeleted: false, updatedAt: new Date() }
-              : user
-          )
-        );
-      } catch (error) {
-        alert('Failed to reactivate user: ' + error.message);
-      }
+    const confirmed = await AlertDialogUtils.info({
+      title: 'Reactivate User',
+      description: 'Are you sure you want to reactivate this user?',
+      confirmText: 'Confirm',
+      cancelText: 'Cancel',
+      variant: 'default',
+    });
+    if (!confirmed) return;
+
+    try {
+      await updateUserInfo(userId, { isDeleted: false });
+    } catch (error) {
+      alert('Failed to reactivate user: ' + error.message);
     }
   };
 
@@ -206,24 +168,15 @@ const UserManagement = () => {
     }
 
     try {
-      const updatedUser = await updateUserInfo(editUser._id, {
+      await updateUserInfo(editUser._id, {
         name: editUser.name,
         dateOfBirth: editUser.dateOfBirth,
         role: editUser.role,
         maxEventCreate: editUser.maxEventCreate,
         maxParticipantPerEvent: editUser.maxParticipantPerEvent,
+        isDeleted: editUser.isDeleted,
       });
 
-      console.log(updatedUser);
-
-      setFilteredUsers(
-        filteredUsers.map((user) =>
-          user._id === updatedUser._id
-            ? { ...updatedUser, updatedAt: new Date() }
-            : user
-        )
-      );
-      // setFilteredUsers(allUsers)
       setIsEditModalOpen(false);
     } catch (error) {
       alert('Failed to update user: ' + error.message);
@@ -232,40 +185,8 @@ const UserManagement = () => {
 
   // Handle view user activity
   const handleViewActivity = async (userId) => {
-    const user = allUsers.find((u) => u._id === userId);
-    setSelectedUser(user);
-
-    try {
-      const activities = await fetchUserActivities(userId);
-      // Get user's organized events
-      const organizedEvents = activities.organizedEvents.filter(
-        (event) => !event.isDeleted
-      );
-
-      // Get events user is participating in
-      const participatedEvents = mockEvents.filter(
-        (event) =>
-          !event.isDeleted &&
-          event.participants.some(
-            (p) => p.user === userId && p.status === 'GOING'
-          )
-      );
-
-      // Get user's discussion posts
-      const discussionPosts = mockPosts.filter(
-        (post) => post.creator_id === userId && !post.isDeleted
-      );
-
-      setUserActivity({
-        organizedEvents,
-        participatedEvents,
-        discussionPosts,
-      });
-
-      setIsActivityModalOpen(true);
-    } catch (error) {
-      alert('Failed to fetch user activities: ' + error.message);
-    }
+    setSelectedUserId(userId);
+    setIsActivityModalOpen(true);
   };
 
   return (
@@ -275,7 +196,7 @@ const UserManagement = () => {
       </h1>
 
       {/* Filters and Actions */}
-      <div className="mb-6 flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+      <div className="mb-6 flex flex-col space-y-2 md:flex-row md:items-start md:justify-between md:space-x-2">
         <UserFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -297,7 +218,7 @@ const UserManagement = () => {
       {/* Users Table */}
       <UserTable
         users={filteredUsers}
-        isLoading={isLoading}
+        isLoading={loading}
         handleDeleteUser={handleDeleteUser}
         handleReactivateUser={handleReactivateUser}
         handleViewActivity={handleViewActivity}
@@ -307,11 +228,11 @@ const UserManagement = () => {
 
       {/* Pagination */}
       <Pagination
-        currentPage={pagination.users.page}
-        totalPages={pagination.users.totalPages}
+        currentPage={pagination.page}
+        totalPages={pagination.totalPages}
         onPageChange={paginate}
-        totalItems={pagination.users.totalUsers}
-        itemsPerPage={pagination.users.limit}
+        totalItems={pagination.totalUsers}
+        itemsPerPage={pagination.limit}
         itemName="users"
       />
 
@@ -335,8 +256,7 @@ const UserManagement = () => {
       <UserActivityModal
         isOpen={isActivityModalOpen}
         setIsOpen={setIsActivityModalOpen}
-        selectedUser={selectedUser}
-        userActivity={userActivity}
+        userId={selectedUserId}
       />
     </div>
   );

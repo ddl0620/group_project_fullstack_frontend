@@ -64,7 +64,7 @@ function App() {
             <BrowserRouter>
                 <Routes>{renderRoutes(routes)}</Routes>
                 <Toaster
-                    position="top-right"
+                    position="bottom-left"
                     theme="light"
                     richColors={true}
                     closeButton={false}

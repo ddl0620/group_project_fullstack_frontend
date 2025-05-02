@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
+import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 
 export default function UserTable({
   users,
@@ -204,15 +205,7 @@ export default function UserTable({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0">
-                        <Avatar>
-                          <AvatarImage
-                            src={user.avatar || '/placeholder.svg'}
-                            alt={user.name}
-                          />
-                          <AvatarFallback>
-                            {getInitials(user.name)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <CustomAvatar _classname={"h-10 w-10"} src={user.avatar || '/placeholder.svg'} alt={user.name} fallbackText={user.name} />
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
