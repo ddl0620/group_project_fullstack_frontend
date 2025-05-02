@@ -3,7 +3,7 @@ import userReducer from './slices/userSlice.js';
 import eventReducer from './slices/eventSlice.js';
 import invitationReducer from './slices/invitationSlice.js';
 import userStatisReducer from './slices/userStatisSlice.js';
-import discussionPostReducer from './slices/DiscussionPostSlice.js';
+import discussionPostReducer from './slices/discussionPostSlice.js';
 import discussionReplySlice from './slices/DiscussionReplySlice.js';
 import AdminManagementSlice from './slices/adminManagementSlice.js';
 
