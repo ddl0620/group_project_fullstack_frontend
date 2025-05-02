@@ -12,7 +12,7 @@ import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
 import EditProfilePage from '../pages/ProfilePage/EditProfilePage.jsx';
 import MyEvents from '../pages/Event/MyOrganizedEvents/MyOrganizedEvent.jsx';
-import CreateEventPage from '../pages/Event/CreateEventPage.jsx';
+import CreateEventPage from '../pages/Event/CreateEvent/CreateEventPage.jsx';
 import UpdateEventPage from '../pages/Event/UpdateEventPage.jsx';
 import BrowseEvent from '@/pages/Event/BrowseEvent.jsx';
 import EventDetailPage from '@/pages/Event/EventDetails.jsx';
@@ -27,6 +27,9 @@ import NotificationsPage from '@/pages/Notification/NotificationPage.jsx';
 import UpdatePasswordPage from '@/pages/ProfilePage/UpdatePasswordPage.jsx';
 import UpdateEmailPage from '@/pages/ProfilePage/UpdateEmailPage.jsx';
 import ProfilePage from '@/pages/ProfilePage/ProfilePage.jsx';
+import UserManagement from '@/pages/Admin/UserManagement/UserManagement.jsx';
+import adminManagementItems from '@/components/SidebarItems/AdminManagement.js';
+import EventManagement from '@/pages/Admin/EventManagement/EventManagement.jsx';
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { isAuthenticated, role } = useSelector((state) => state.user);
@@ -104,6 +107,55 @@ const routes = [
           { path: 'event', element: <BrowseEvent /> },
           { path: 'event/organized', element: <MyEvents /> },
           { path: 'event/joined', element: <MyJoinedEvent /> },
+          { path: 'event/:eventId', element: <EventDetailPage /> },
+          { path: 'event/create', element: <CreateEventPage /> },
+          { path: 'event/update/:eventId', element: <CreateEventPage /> },
+        ],
+      },
+      // Group using user sidebar
+      {
+        element: (
+          <SidebarLayout title={'Profile Setting'} items={settingItems} />
+        ),
+        children: [
+          { path: 'profile/', element: <ProfilePage /> },
+          { path: 'profile/edit', element: <EditProfilePage /> },
+          { path: 'profile/password', element: <UpdatePasswordPage /> },
+          { path: 'profile/email', element: <UpdateEmailPage /> },
+        ],
+      },
+      // Dashboard route (not using sidebar layout)
+      {
+        element: <SidebarLayout title={'Dashboard'} items={userItems} />,
+        children: [
+          { path: '/dashboard', element: <UserDashboard /> },
+          { path: '/discussions', element: <DiscussionPage /> },
+          { path: '/discussions/:eventId', element: <DiscussionPage /> },
+
+          { path: '/notifications', element: <NotificationsPage /> },
+        ],
+      },
+      // Home page with user layout
+      {
+        path: 'home',
+        element: <UserLayout />,
+        children: [{ path: '', element: <Home /> }],
+      },
+    ],
+  },
+  {
+    path: '/',
+    element: <ProtectedRoute allowedRoles={['user', 'admin']} />,
+    children: [
+      // Group using event sidebar
+      {
+        element: (
+          <SidebarLayout title={'Admin'} items={adminManagementItems} />
+        ),
+        children: [
+          { path: 'management', element: <BrowseEvent /> },
+          { path: 'management/user', element: <UserManagement /> },
+          { path: 'management/event', element: <EventManagement /> },
           { path: 'event/:eventId', element: <EventDetailPage /> },
           { path: 'event/create', element: <CreateEventPage /> },
           { path: 'event/update/:eventId', element: <CreateEventPage /> },
