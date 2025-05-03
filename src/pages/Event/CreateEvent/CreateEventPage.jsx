@@ -174,9 +174,9 @@ export default function CreateEventPage() {
       postData.append("type", String(formData.category))
 
       // Append existing image URLs as a JSON string
-      const imageUrls = uploadedImages.filter((image) => image.type === "url").map((image) => image.url)
-      if (imageUrls.length > 0) {
-        postData.append("existingImages", JSON.stringify(imageUrls))
+      // const imageUrls = uploadedImages.filter((image) => image.type === "url").map((image) => image.url)
+      if (existingImageUrls.length > 0) {
+        postData.append("existingImages", JSON.stringify(existingImageUrls.map((image) => image.url)))
       }
 
       // Append new file uploads

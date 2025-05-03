@@ -15,10 +15,13 @@ import EventModal from '@/pages/Admin/EventManagement/components/EventModal.jsx'
 import EventDetailsModal from '@/pages/Admin/EventManagement/components/EventDetailsModal.jsx';
 import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
 import { Toast } from '@/helpers/toastService.js';
-import { createEventAdminAPI, updateEventAdminAPI } from '@/services/AdminManagementService.js';
+import {
+  createEventAdminAPI,
+  updateEventAdminAPI,
+} from '@/services/AdminManagementService.js';
 
 const EventManagement = () => {
-  const { fetchEvents, createEvent, updateEventInfo, softDeleteEvent } =
+  const { fetchEvents, updateEventInfo, updateActiveStatus } =
     useAdminManagement();
   const { getUserById } = useUser();
 
@@ -175,22 +178,11 @@ const EventManagement = () => {
   };
 
   // Handle event creation
-  const handleCreateEvent = async (formData, organizerId) => {
+  const handleCreateEvent = async () => {
     setIsSubmitting(true);
 
     try {
-      // const eventData = {
-      //   title: formData.get('title'),
-      //   description: formData.get('description'),
-      //   type: formData.get('type'),
-      //   startDate: new Date(formData.get('startDate')),
-      //   endDate: new Date(formData.get('endDate')),
-      //   location: formData.get('location'),
-      //   isPublic: formData.get('isPublic') === 'true',
-      //   organizerId: formData.get('organizer') || undefined,
-      // };
-
-      await createEvent(organizerId, formData);
+      // await createEvent(organizerId, formData);
       setIsCreateModalOpen(false);
 
       // Refresh the event list
@@ -203,11 +195,11 @@ const EventManagement = () => {
   };
 
   // Handle event update
-  const handleUpdateEvent = async (eventId, formData) => {
+  const handleUpdateEvent = async () => {
     setIsSubmitting(true);
 
     try {
-      await updateEventInfo(eventId, formData);
+      // await updateEventInfo(eventId, formData);
       setIsEditModalOpen(false);
 
       // Refresh the event list
@@ -232,9 +224,11 @@ const EventManagement = () => {
     if (!confirmed) return;
 
     try {
-      await softDeleteEvent(eventId);
+      await updateActiveStatus(eventId, {
+        isDeleted: true,
+      });
     } catch (error) {
-      Toast.error('Failed to delete event: ' + error.message);
+      console.error(error);
     }
   };
 
@@ -251,9 +245,13 @@ const EventManagement = () => {
     if (!confirmed) return;
 
     try {
-      await updateEventInfo(eventId, { isDeleted: false });
+      await updateActiveStatus(eventId, {
+        isDeleted: false,
+      });
+      fetchEvents(pagination.page, pagination.limit, false, true);
+
     } catch (error) {
-      Toast.error('Failed to restore event: ' + error.message);
+      console.error(error);
     }
   };
 
