@@ -19,4 +19,8 @@ export const navbarItems = [
     path: '/sign-up',
     title: 'Sign Up',
   },
+  {
+    path: '/management',
+    title: 'Admin',
+  },
 ];

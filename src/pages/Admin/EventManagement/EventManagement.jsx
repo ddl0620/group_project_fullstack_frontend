@@ -14,9 +14,9 @@ import { Toast } from "@/helpers/toastService.js"
 import { getAllUsersAPI } from "@/services/AdminManagementService.js"
 import EventFilters from '@/pages/Admin/EventManagement/components/EventFilters.jsx';
 import EventTable from '@/pages/Admin/EventManagement/components/EventTable.jsx';
-import { Pagination } from '@heroui/react';
 import EventModal from '@/pages/Admin/EventManagement/components/EventModal.jsx';
 import EventDetailsModal from '@/pages/Admin/EventManagement/components/EventDetailsModal.jsx';
+import Pagination from '@/components/shared/Pagination.jsx';
 
 const EventManagement = () => {
   const { fetchEvents, updateActiveStatus, fetchUsers } = useAdminManagement()
