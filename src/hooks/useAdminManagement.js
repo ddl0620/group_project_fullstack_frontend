@@ -7,7 +7,6 @@ import {
   addUser,
   updateUser,
   deleteUser,
-  reactivateUser,
   setUserActivities,
   setEvents,
   addEvent,
@@ -22,8 +21,7 @@ import {
   deleteUserAPI,
   getAllEventsAPI,
   getAllEventsByUserIdAPI,
-  updateEventAPI,
-  deleteEventAPI, createNewUserAPI,
+  deleteEventAPI, createNewUserAPI, createEventAdminAPI, updateEventAdminAPI,
 } from '@/services/AdminManagementService.js';
 import { checkToken } from "@/helpers/checkToken.js"
 import { Toast } from "@/helpers/toastService.js"
@@ -174,35 +172,35 @@ export const useAdminManagement = () => {
     [dispatch],
   )
 
-  const reactivateUserAccount = useCallback(
-    async (userId) => {
-      const toastId = Toast.loading("Reactivating user...")
-      try {
-        dispatch(setError(null))
-        dispatch(setLoading(true))
-        checkToken()
-        const response = await APIServices.patch(`/api/v1/admin/user-management/${userId}/reactivate`)
-        if (!response.data.success) {
-          throw new Error(response.data.message || "Failed to reactivate user")
-        }
-
-        dispatch(reactivateUser({ userId }))
-        // Clear users cache to force refresh on next fetch
-        clearCache("users-")
-        Toast.success("User reactivated successfully")
-        return response.data.content
-      } catch (error) {
-        const errorMessage = error.response?.data?.message || error.message
-        dispatch(setError(errorMessage))
-        Toast.error(`Failed to reactivate user: ${errorMessage}`)
-        throw error
-      } finally {
-        Toast.dismiss(toastId)
-        dispatch(setLoading(false))
-      }
-    },
-    [dispatch],
-  )
+  // const reactivateUserAccount = useCallback(
+  //   async (userId) => {
+  //     const toastId = Toast.loading("Reactivating user...")
+  //     try {
+  //       dispatch(setError(null))
+  //       dispatch(setLoading(true))
+  //       checkToken()
+  //       const response = await APIServices.patch(`/api/v1/admin/user-management/${userId}/reactivate`)
+  //       if (!response.data.success) {
+  //         throw new Error(response.data.message || "Failed to reactivate user")
+  //       }
+  //
+  //       dispatch(reactivateUser({ userId }))
+  //       // Clear users cache to force refresh on next fetch
+  //       clearCache("users-")
+  //       Toast.success("User reactivated successfully")
+  //       return response.data.content
+  //     } catch (error) {
+  //       const errorMessage = error.response?.data?.message || error.message
+  //       dispatch(setError(errorMessage))
+  //       Toast.error(`Failed to reactivate user: ${errorMessage}`)
+  //       throw error
+  //     } finally {
+  //       Toast.dismiss(toastId)
+  //       dispatch(setLoading(false))
+  //     }
+  //   },
+  //   [dispatch],
+  // )
 
   const fetchUserActivities = useCallback(
     async (userId, page = 1, limit = 10, isAcs = true) => {
@@ -261,22 +259,22 @@ export const useAdminManagement = () => {
 
   // Note: didnt impl
   const createEvent = useCallback(
-    async (eventData) => {
+    async (organizerId, eventData) => {
       const toastId = Toast.loading("Creating event...")
       try {
         dispatch(setError(null))
         dispatch(setLoading(true))
         checkToken()
-        const response = await APIServices.post("/api/v1/admin/event-management", eventData)
-        if (!response.data.success) {
-          throw new Error(response.data.message || "Failed to create event")
+        const response = await createEventAdminAPI(organizerId, eventData)
+        if (!response.success) {
+          throw new Error(response.message || "Failed to create event")
         }
 
-        dispatch(addEvent(response.data.content.event))
+        dispatch(addEvent(response.content.event))
         // Clear events cache
         clearCache("events-")
         Toast.success("Event created successfully")
-        return response.data.content.event
+        return response.content.event
       } catch (error) {
         const errorMessage = error.response?.data?.message || error.message
         dispatch(setError(errorMessage))
@@ -334,7 +332,7 @@ export const useAdminManagement = () => {
         dispatch(setError(null))
         dispatch(setLoading(true))
         checkToken()
-        const response = await updateEventAPI(eventId, eventData)
+        const response = await updateEventAdminAPI(eventId, eventData)
         if (!response.success) {
           throw new Error(response.message || "Failed to update event")
         }
@@ -393,7 +391,7 @@ export const useAdminManagement = () => {
     fetchUsers,
     updateUserInfo,
     softDeleteUser,
-    reactivateUserAccount,
+    // reactivateUserAccount,
     fetchUserActivities,
     // Event Management
     createEvent,
