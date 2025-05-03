@@ -1,15 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { format } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, MapPin, Users, Clock, Globe, Lock, ImageIcon } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog"
+import { Calendar, Clock, Globe, ImageIcon, Lock, MapPin, Users } from "lucide-react"
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import ImageCarousel from "@/components/ImageCarousel"
-import Pagination from '@/components/shared/Pagination.jsx';
+import Pagination from "@/components/shared/Pagination.jsx"
 
 export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
   const [activeTab, setActiveTab] = useState("details")
@@ -26,7 +26,10 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
     }
   }, [isParticipantsFilterChanged])
 
-  if (!event) return null
+  // Use the event directly since it should already have complete user data
+  const displayEvent = event
+
+  if (!displayEvent) return null
 
   // Format date for display
   const formatDate = (date) => {
@@ -45,15 +48,15 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
   }
 
   // Filter participants by status
-  const acceptedParticipants = event.participants?.filter((p) => p.status === "GOING") || []
-  const pendingParticipants = event.participants?.filter((p) => p.status === "PENDING") || []
-  const declinedParticipants = event.participants?.filter((p) => p.status === "NOT_GOING") || []
+  const acceptedParticipants = displayEvent.participants?.filter((p) => p.status === "ACCEPTED") || []
+  const pendingParticipants = displayEvent.participants?.filter((p) => p.status === "PENDING") || []
+  const declinedParticipants = displayEvent.participants?.filter((p) => p.status === "DENIED") || []
 
   // Filter participants based on selected filter
   const filteredParticipants =
     participantFilter === "all"
-      ? event.participants || []
-      : event.participants?.filter((p) => p.status === participantFilter) || []
+      ? displayEvent.participants || []
+      : displayEvent.participants?.filter((p) => p.status === participantFilter) || []
 
   // Pagination for participants
   const totalParticipants = filteredParticipants.length
@@ -79,7 +82,9 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
   const getStatusDisplay = (status) => {
     const statusMap = {
       GOING: { label: "Going", color: "bg-green-100 text-green-800" },
+      ACCEPTED: { label: "Going", color: "bg-green-100 text-green-800" },
       NOT_GOING: { label: "Declined", color: "bg-red-100 text-red-800" },
+      DENIED: { label: "Declined", color: "bg-red-100 text-red-800" },
       PENDING: { label: "Pending", color: "bg-yellow-100 text-yellow-800" },
       MAYBE: { label: "Maybe", color: "bg-blue-100 text-blue-800" },
     }
@@ -93,9 +98,9 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[800px] p-4 sm:p-6">
+      <DialogContent className="max-h-[90vh] overflow-y-auto p-4 sm:max-w-[800px] sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-xl sm:text-2xl">{event.title}</DialogTitle>
+          <DialogTitle className="text-xl sm:text-2xl">{displayEvent.title}</DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="details" onValueChange={setActiveTab} value={activeTab} className="mt-4">
@@ -114,21 +119,21 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
             <div className="rounded-lg border p-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="mb-2 sm:mb-0">
-                  <Badge className="mb-2">{getEventTypeDisplay(event.type)}</Badge>
+                  <Badge className="mb-2">{getEventTypeDisplay(displayEvent.type)}</Badge>
                   <div className="flex items-center">
-                    {event.isPublic ? (
+                    {displayEvent.isPublic ? (
                       <Globe className="mr-1 h-4 w-4 text-muted-foreground" />
                     ) : (
                       <Lock className="mr-1 h-4 w-4 text-muted-foreground" />
                     )}
                     <span className="text-sm text-muted-foreground">
-                      {event.isPublic ? "Public Event" : "Private Event"}
+                      {displayEvent.isPublic ? "Public Event" : "Private Event"}
                     </span>
                   </div>
                 </div>
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Clock className="mr-1 h-4 w-4" />
-                  <span>Created: {formatDate(event.createdAt)}</span>
+                  <span>Created: {formatDate(displayEvent.createdAt)}</span>
                 </div>
               </div>
             </div>
@@ -136,7 +141,7 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
             <div className="space-y-4">
               <div>
                 <h3 className="mb-1 text-sm font-medium text-muted-foreground">Description</h3>
-                <p className="whitespace-pre-line">{event.description}</p>
+                <p className="whitespace-pre-line">{displayEvent.description}</p>
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -145,7 +150,7 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
                   <div className="flex items-center">
                     <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
                     <p>
-                      {formatDate(event.startDate)} - {formatDate(event.endDate)}
+                      {formatDate(displayEvent.startDate)} - {formatDate(displayEvent.endDate)}
                     </p>
                   </div>
                 </div>
@@ -154,7 +159,7 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
                   <h3 className="mb-1 text-sm font-medium text-muted-foreground">Location</h3>
                   <div className="flex items-center">
                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <p>{event.location}</p>
+                    <p>{displayEvent.location}</p>
                   </div>
                 </div>
               </div>
@@ -164,12 +169,12 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
                 <div className="flex items-center">
                   <Avatar className="mr-2 h-8 w-8">
                     <AvatarImage
-                      src={event.organizer?.avatar || "/placeholder.svg"}
-                      alt={event.organizer?.name || "Organizer"}
+                      src={displayEvent.organizer?.avatar || "/placeholder.svg"}
+                      alt={displayEvent.organizer?.name || "Organizer"}
                     />
-                    <AvatarFallback>{getInitials(event.organizer?.name || "Organizer")}</AvatarFallback>
+                    <AvatarFallback>{getInitials(displayEvent.organizer?.name || "Organizer")}</AvatarFallback>
                   </Avatar>
-                  <p>{event.organizer?.name || "Unknown Organizer"}</p>
+                  <p>{displayEvent.organizer?.name || "Unknown Organizer"}</p>
                 </div>
               </div>
             </div>
@@ -192,12 +197,12 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
 
           <TabsContent value="participants" className="mt-4">
             <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <h3 className="mb-2 sm:mb-0 text-lg font-medium">Participants</h3>
+              <h3 className="mb-2 text-lg font-medium sm:mb-0">Participants</h3>
               <div className="flex space-x-2">
                 <Button
-                  variant={participantFilter === "GOING" ? "default" : "outline"}
+                  variant={participantFilter === "ACCEPTED" ? "default" : "outline"}
                   size="sm"
-                  onClick={() => handleParticipantFilterChange("GOING")}
+                  onClick={() => handleParticipantFilterChange("ACCEPTED")}
                 >
                   Going ({acceptedParticipants.length})
                 </Button>
@@ -226,11 +231,11 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
                 </div>
               ) : (
                 <div className="divide-y">
-                  {currentParticipants.map((participant) => {
+                  {currentParticipants.map((participant, index) => {
                     const status = getStatusDisplay(participant.status)
                     return (
                       <div
-                        key={participant.userId._id || participant.userId}
+                        key={`${participant.userId._id || participant.userId}-${index}`}
                         className="flex items-center justify-between p-4"
                       >
                         <div className="flex items-center">
@@ -278,13 +283,13 @@ export default function EventDetailsModal({ isOpen, setIsOpen, event }) {
           </TabsContent>
 
           <TabsContent value="images" className="mt-4">
-            {!event.images || event.images.length === 0 ? (
+            {!displayEvent.images || displayEvent.images.length === 0 ? (
               <div className="rounded-lg border p-8 text-center">
                 <ImageIcon className="mx-auto h-10 w-10 text-muted-foreground" />
                 <p className="mt-2 text-muted-foreground">No images available</p>
               </div>
             ) : (
-              <ImageCarousel images={event.images} />
+              <ImageCarousel images={displayEvent.images} />
             )}
           </TabsContent>
         </Tabs>

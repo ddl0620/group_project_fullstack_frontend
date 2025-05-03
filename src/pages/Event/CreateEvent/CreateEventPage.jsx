@@ -242,7 +242,7 @@ export default function CreateEventPage() {
         "Đã xảy ra lỗi khi " +
         (isUpdateMode ? "cập nhật" : "tạo") +
         " sự kiện: " +
-        (error.message || "Lỗi không xác định"),
+        ( error.response.data.message || "Lỗi không xác định"),
       )
     }
   }
