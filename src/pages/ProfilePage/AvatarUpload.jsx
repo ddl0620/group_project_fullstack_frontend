@@ -29,13 +29,14 @@ function AvatarUpload({ currentAvatar, onAvatarChange }) {
       <div className="flex items-center justify-center gap-10">
         <div className="scale-230">
           <CustomAvatar
+            _classname={"h-10 w-10"}
             src={avatar}
             alt={user?.avatar}
             fallbackText={user?.name}
           />
         </div>
 
-        {/* Generate AI Avatar Circle - With hover effects and upload functionality */}
+
         <div
           className="relative flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-gray-200 transition-colors hover:border-gray-300 hover:bg-gray-50"
           onMouseEnter={() => setIsHovering(true)}
@@ -84,7 +85,7 @@ function AvatarUpload({ currentAvatar, onAvatarChange }) {
         </div>
       </div>
       <p className="mt-2 text-sm text-gray-600">
-        Upload / Generate a new avatar
+        Upload a new avatar
       </p>
     </div>
   );

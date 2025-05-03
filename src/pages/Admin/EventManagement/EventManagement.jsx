@@ -1,98 +1,159 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import { CalendarPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import EventFilters from '@/pages/Admin/EventManagement/components/EventFilters.jsx';
-import EventTable from '@/pages/Admin/EventManagement/components/EventTable.jsx';
-import Pagination from '@/components/shared/Pagination.jsx';
-import EventModal from '@/pages/Admin/EventManagement/components/EventModal.jsx';
-import EventDetailsModal from '@/pages/Admin/EventManagement/components/EventDetailsModal.jsx';
+import { useAdminManagement } from "@/hooks/useAdminManagement.js"
+import { useSelector } from "react-redux"
+import { useUser } from "@/hooks/useUser.js"
 
 // Import components
 
-// Mock data for demonstration
-const mockEvents = Array(50)
-  .fill()
-  .map((_, i) => ({
-    _id: `event_${i + 1}`,
-    title: `Event ${i + 1}`,
-    description: `This is a description for event ${i + 1}. It contains details about what the event is about, where it will be held, and other important information.`,
-    type:
-      i % 5 === 0
-        ? "SOCIAL"
-        : i % 5 === 1
-          ? "EDUCATION"
-          : i % 5 === 2
-            ? "BUSINESS"
-            : i % 5 === 3
-              ? "ENTERTAINMENT"
-              : "OTHER",
-    startDate: new Date(2023, i % 12, (i % 28) + 1),
-    endDate: new Date(2023, i % 12, (i % 28) + 3),
-    location: `Location ${i + 1}, City ${i % 10}`,
-    images: i % 3 === 0 ? [`/placeholder.svg?text=Event${i + 1}`] : [],
-    organizer: {
-      _id: `user_${(i % 10) + 1}`,
-      name: `Organizer ${(i % 10) + 1}`,
-      avatar: `/placeholder.svg?text=O${(i % 10) + 1}`,
-    },
-    participants: Array((i % 8) + 1)
-      .fill()
-      .map((_, j) => ({
-        userId: {
-          _id: `user_${(j % 20) + 1}`,
-          name: `User ${(j % 20) + 1}`,
-          avatar: `/placeholder.svg?text=U${(j % 20) + 1}`,
-        },
-        status: j % 3 === 0 ? "GOING" : j % 3 === 1 ? "NOT_GOING" : "PENDING",
-        invitedAt: new Date(2023, (i % 12) - 1, (i % 28) + 1),
-        respondedAt: j % 3 === 2 ? null : new Date(2023, (i % 12) - 1, (i % 28) + 2),
-        isDeleted: false,
-      })),
-    isPublic: i % 4 !== 0,
-    createdAt: new Date(2023, (i % 12) - 1, 1),
-    updatedAt: new Date(2023, i % 12, 1),
-    isDeleted: i % 10 === 0,
-  }))
-
-const mockUsers = Array(10)
-  .fill()
-  .map((_, i) => ({
-    _id: `user_${i + 1}`,
-    name: `User ${i + 1}`,
-    avatar: `/placeholder.svg?text=U${i + 1}`,
-  }))
+import { AlertDialogUtils } from "@/helpers/AlertDialogUtils.jsx"
+import { Toast } from "@/helpers/toastService.js"
+import { getAllUsersAPI } from "@/services/AdminManagementService.js"
+import EventFilters from '@/pages/Admin/EventManagement/components/EventFilters.jsx';
+import EventTable from '@/pages/Admin/EventManagement/components/EventTable.jsx';
+import EventModal from '@/pages/Admin/EventManagement/components/EventModal.jsx';
+import EventDetailsModal from '@/pages/Admin/EventManagement/components/EventDetailsModal.jsx';
+import Pagination from '@/components/shared/Pagination.jsx';
 
 const EventManagement = () => {
-  const [events, setEvents] = useState([])
-  const [filteredEvents, setFilteredEvents] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const { fetchEvents, updateActiveStatus, fetchUsers } = useAdminManagement()
+  const { getUserById } = useUser()
+
+  // Get events directly from Redux store
+  const events = useSelector((state) => state.adminManagement.events)
+  const pagination = useSelector((state) => state.adminManagement.pagination.events)
+  const loading = useSelector((state) => state.adminManagement.loading)
+
+  // State for users specifically for the modal
+  const [modalUsers, setModalUsers] = useState([])
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false)
+  const usersLoadedRef = useRef(false)
+
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [typeFilter, setTypeFilter] = useState("all")
-  const [isLoading, setIsLoading] = useState(true)
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const eventsPerPage = 10
+  const [enhancedEvents, setEnhancedEvents] = useState([])
+  const [isEnhancingEvents, setIsEnhancingEvents] = useState(false)
 
   // Fetch events on component mount
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setEvents(mockEvents)
-      setFilteredEvents(mockEvents)
-      setIsLoading(false)
-    }, 1000)
-  }, [])
+    fetchEvents(pagination.page, pagination.limit, false)
+  }, [fetchEvents, pagination.page, pagination.limit])
 
-  // Filter events when search term or filters change
+  // Function to fetch users for the modal
+  const fetchUsersForModal = async () => {
+    if (usersLoadedRef.current) return
+
+    setIsLoadingUsers(true)
+    try {
+      // Fetch users with pagination - adjust limit as needed
+      const response = await fetchUsers(1,100,true);
+      if (response.users) {
+        setModalUsers(response.users)
+        console.log(response.users)
+        usersLoadedRef.current = true
+      } else {
+        throw new Error("Failed to fetch users")
+      }
+    } catch (error) {
+      console.error("Error fetching users for event modal:", error)
+      Toast.error("Failed to load users. Please try again.")
+    } finally {
+      setIsLoadingUsers(false)
+    }
+  }
+
+  // Enhance events with user data for organizers and participants
   useEffect(() => {
-    let result = [...events]
+    const enhanceEventsWithUserData = async () => {
+      if (!events.length || isEnhancingEvents) return
+
+      setIsEnhancingEvents(true)
+
+      try {
+        // Create a map to store all user IDs that need to be fetched
+        const userIdsToFetch = new Set()
+
+        // Collect all user IDs from events (organizers and participants)
+        events.forEach((event) => {
+          // Add organizer ID
+          if (event.organizer) {
+            userIdsToFetch.add(event.organizer)
+          }
+
+          // Add participant IDs
+          if (event.participants && event.participants.length > 0) {
+            event.participants.forEach((participant) => {
+              if (participant.userId) {
+                userIdsToFetch.add(participant.userId)
+              }
+            })
+          }
+        })
+
+        // Convert Set to Array for fetching
+        const userIds = Array.from(userIdsToFetch)
+
+        // Fetch all users in parallel
+        const userResponses = await Promise.all(userIds.map((id) => getUserById(id)))
+
+        // Create a map of user IDs to user data for easy lookup
+        const userMap = {}
+        userResponses.forEach((response, index) => {
+          if (response && response.content) {
+            userMap[userIds[index]] = response.content
+          }
+        })
+
+        // Enhance events with user data
+        const enhanced = events.map((event) => {
+          // Enhanced organizer
+          const enhancedOrganizer = event.organizer ? userMap[event.organizer] || null : null
+
+          // Enhanced participants
+          const enhancedParticipants = event.participants
+            ? event.participants.map((participant) => ({
+              ...participant,
+              userId: participant.userId
+                ? userMap[participant.userId] || { name: "Unknown User" }
+                : { name: "Unknown User" },
+            }))
+            : []
+
+          // Return enhanced event
+          return {
+            ...event,
+            organizer: enhancedOrganizer,
+            participants: enhancedParticipants,
+          }
+        })
+
+        setEnhancedEvents(enhanced)
+      } catch (error) {
+        console.error("Error enhancing events with user data:", error)
+        Toast.error("Failed to load user data for events")
+        // Fallback to original events if enhancement fails
+        setEnhancedEvents(events)
+      } finally {
+        setIsEnhancingEvents(false)
+      }
+    }
+
+    enhanceEventsWithUserData()
+  }, [events])
+
+  // Filter events using useMemo to avoid unnecessary recalculations
+  const filteredEvents = useMemo(() => {
+    // Use enhanced events if available, otherwise use original events
+    let result = [...(enhancedEvents.length ? enhancedEvents : events)]
 
     // Apply search filter
     if (searchTerm) {
@@ -123,126 +184,129 @@ const EventManagement = () => {
       result = result.filter((event) => event.type === typeFilter)
     }
 
-    setFilteredEvents(result)
-    setCurrentPage(1) // Reset to first page when filters change
-  }, [searchTerm, statusFilter, typeFilter, events])
-
-  // Get current events for pagination
-  const indexOfLastEvent = currentPage * eventsPerPage
-  const indexOfFirstEvent = indexOfLastEvent - eventsPerPage
-  const currentEvents = filteredEvents.slice(indexOfFirstEvent, indexOfLastEvent)
-  const totalPages = Math.ceil(filteredEvents.length / eventsPerPage)
+    return result
+  }, [enhancedEvents, events, searchTerm, statusFilter, typeFilter])
 
   // Handle page change
-  const paginate = (pageNumber) => setCurrentPage(pageNumber)
+  const paginate = async (pageNumber) => {
+    await fetchEvents(pageNumber, pagination.limit)
+  }
 
   // Handle event creation
-  const handleCreateEvent = (formData) => {
+  const handleCreateEvent = async () => {
     setIsSubmitting(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      // Get organizer from form data
-      const organizerId = formData.get("organizer")
-      const organizer = organizerId
-        ? mockUsers.find((user) => user._id === organizerId)
-        : {
-          _id: "user_1",
-          name: "Current Admin",
-          avatar: "/placeholder.svg?text=A",
-        }
-
-      // Create new event object
-      const newEvent = {
-        _id: `event_${events.length + 1}`,
-        title: formData.get("title"),
-        description: formData.get("description"),
-        type: formData.get("type"),
-        startDate: new Date(formData.get("startDate")),
-        endDate: new Date(formData.get("endDate")),
-        location: formData.get("location"),
-        isPublic: formData.get("isPublic") === "true",
-        images: [],
-        organizer: organizer,
-        participants: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        isDeleted: false,
-      }
-
-      // Add to events list
-      setEvents([newEvent, ...events])
+    try {
+      // await createEvent(organizerId, formData);
       setIsCreateModalOpen(false)
+
+      // Refresh the event list
+      fetchEvents(pagination.page, pagination.limit, false, true)
+    } catch (error) {
+      console.error(error)
+    } finally {
       setIsSubmitting(false)
-      alert("Event created successfully!")
-    }, 1500)
+    }
   }
 
   // Handle event update
-  const handleUpdateEvent = (formData, eventId) => {
+  const handleUpdateEvent = async () => {
     setIsSubmitting(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      // Update event in the list
-      setEvents(
-        events.map((event) => {
-          if (event._id === eventId) {
-            return {
-              ...event,
-              title: formData.get("title"),
-              description: formData.get("description"),
-              type: formData.get("type"),
-              startDate: new Date(formData.get("startDate")),
-              endDate: new Date(formData.get("endDate")),
-              location: formData.get("location"),
-              isPublic: formData.get("isPublic") === "true",
-              updatedAt: new Date(),
-            }
-          }
-          return event
-        }),
-      )
-
+    try {
+      // await updateEventInfo(eventId, formData);
       setIsEditModalOpen(false)
+
+      // Refresh the event list
+      fetchEvents(pagination.page, pagination.limit, false, true)
+    } catch (error) {
+      console.error(error)
+    } finally {
       setIsSubmitting(false)
-      alert("Event updated successfully!")
-    }, 1500)
+    }
   }
 
   // Handle event deletion (soft delete)
-  const handleDeleteEvent = (eventId) => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      setEvents(
-        events.map((event) => (event._id === eventId ? { ...event, isDeleted: true, updatedAt: new Date() } : event)),
-      )
+  const handleDeleteEvent = async (eventId) => {
+    const confirmed = await AlertDialogUtils.danger({
+      title: "Delete Event",
+      description: "Are you sure you want to delete this event?",
+      confirmText: "Confirm",
+      cancelText: "Cancel",
+      variant: "default",
+    })
+
+    if (!confirmed) return
+
+    try {
+      await updateActiveStatus(eventId, {
+        isDeleted: true,
+      })
+    } catch (error) {
+      console.error(error)
     }
   }
 
   // Handle event restoration
-  const handleRestoreEvent = (eventId) => {
-    if (window.confirm("Are you sure you want to restore this event?")) {
-      setEvents(
-        events.map((event) => (event._id === eventId ? { ...event, isDeleted: false, updatedAt: new Date() } : event)),
-      )
+  const handleRestoreEvent = async (eventId) => {
+    const confirmed = await AlertDialogUtils.info({
+      title: "Restore Event",
+      description: "Are you sure you want to restore this event?",
+      confirmText: "Confirm",
+      cancelText: "Cancel",
+      variant: "default",
+    })
+
+    if (!confirmed) return
+
+    try {
+      await updateActiveStatus(eventId, {
+        isDeleted: false,
+      })
+      fetchEvents(pagination.page, pagination.limit, false, true)
+    } catch (error) {
+      console.error(error)
     }
   }
 
   // Handle view event details
   const handleViewEvent = (event) => {
-    setSelectedEvent(event)
+    // Find the enhanced version of the event if available
+    const enhancedEvent = enhancedEvents.find((e) => e._id === event._id) || event
+    setSelectedEvent(enhancedEvent)
     setIsDetailsModalOpen(true)
   }
 
   // Handle edit event
   const handleEditEvent = (event) => {
-    setSelectedEvent(event)
-    setIsEditModalOpen(true)
+    // Find the enhanced version of the event if available
+    const enhancedEvent = enhancedEvents.find((e) => e._id === event._id) || event
+    setSelectedEvent(enhancedEvent)
+
+    // Ensure users are loaded before opening the edit modal
+    fetchUsersForModal().then(() => {
+      setIsEditModalOpen(true)
+    })
   }
+
+  // Handle opening create modal - ensure users are loaded first
+  const handleOpenCreateModal = () => {
+    fetchUsersForModal().then(() => {
+      setIsCreateModalOpen(true)
+    })
+  }
+
+  // Get users for the event modal - use our independently fetched users if available,
+  // otherwise fall back to Redux state
+  const reduxUsers = useSelector((state) => state.adminManagement.users)
+  const availableUsers = modalUsers.length > 0 ? modalUsers : reduxUsers
+
+  // Determine if we're still loading data
+  const isDataLoading = loading || isEnhancingEvents
 
   return (
     <div className="container mx-auto px-4 py-6 sm:py-8">
-      <h1 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">Event Management</h1>
+      <h1 className="mb-4 text-2xl font-bold sm:mb-6 sm:text-3xl">Event Management</h1>
 
       {/* Filters and Actions */}
       <div className="mb-6 flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
@@ -255,16 +319,40 @@ const EventManagement = () => {
           setTypeFilter={setTypeFilter}
         />
 
-        <Button className="whitespace-nowrap mt-4 md:mt-0" onClick={() => setIsCreateModalOpen(true)}>
-          <CalendarPlus className="mr-2 h-4 w-4" />
-          Create Event
+        <Button className="mt-4 whitespace-nowrap md:mt-0" onClick={handleOpenCreateModal} disabled={isLoadingUsers}>
+          {isLoadingUsers ? (
+            <>
+              <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              Loading...
+            </>
+          ) : (
+            <>
+              <CalendarPlus className="mr-2 h-4 w-4" />
+              Create Event
+            </>
+          )}
         </Button>
       </div>
 
       {/* Events Table */}
       <EventTable
-        events={currentEvents}
-        isLoading={isLoading}
+        events={filteredEvents}
+        isLoading={isDataLoading}
         handleDeleteEvent={handleDeleteEvent}
         handleRestoreEvent={handleRestoreEvent}
         handleViewEvent={handleViewEvent}
@@ -273,11 +361,11 @@ const EventManagement = () => {
 
       {/* Pagination */}
       <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
+        currentPage={pagination.page}
+        totalPages={pagination.totalPages}
         onPageChange={paginate}
-        totalItems={filteredEvents.length}
-        itemsPerPage={eventsPerPage}
+        totalItems={pagination.totalEvents}
+        itemsPerPage={pagination.limit}
         itemName="events"
       />
 
@@ -287,7 +375,7 @@ const EventManagement = () => {
         setIsOpen={setIsCreateModalOpen}
         onSubmit={handleCreateEvent}
         isLoading={isSubmitting}
-        users={mockUsers}
+        users={availableUsers}
       />
 
       <EventModal
@@ -296,7 +384,7 @@ const EventManagement = () => {
         event={selectedEvent}
         onSubmit={handleUpdateEvent}
         isLoading={isSubmitting}
-        users={mockUsers}
+        users={availableUsers}
       />
 
       <EventDetailsModal isOpen={isDetailsModalOpen} setIsOpen={setIsDetailsModalOpen} event={selectedEvent} />

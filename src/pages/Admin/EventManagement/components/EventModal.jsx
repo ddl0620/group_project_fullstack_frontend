@@ -14,16 +14,16 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog"
-import EventBasicInfoForm from '@/pages/Event/CreateEvent/EventBasicInforForm.jsx';
-import EventDateForm from '@/pages/Event/CreateEvent/EventDateForm.jsx';
-import EventLocationForm from '@/pages/Event/CreateEvent/EventLocationForm.jsx';
-import EventOrganizerForm from '@/pages/Event/CreateEvent/EventOrganizerForm.jsx';
-import EventImagesForm from '@/pages/Event/CreateEvent/EventImagesForm.jsx';
-import EventProgressIndicator from '@/pages/Event/CreateEvent/EventProcessIndicator.jsx';
-import EventSummary from '@/pages/Event/CreateEvent/EventSummary.jsx';
+import EventBasicInfoForm from "@/pages/Event/CreateEvent/EventBasicInforForm.jsx"
+import EventDateForm from "@/pages/Event/CreateEvent/EventDateForm.jsx"
+import EventLocationForm from "@/pages/Event/CreateEvent/EventLocationForm.jsx"
+import EventOrganizerForm from "@/pages/Event/CreateEvent/EventOrganizerForm.jsx"
+import EventImagesForm from "@/pages/Event/CreateEvent/EventImagesForm.jsx"
+import EventProgressIndicator from "@/pages/Event/CreateEvent/EventProcessIndicator.jsx"
+import EventSummary from "@/pages/Event/CreateEvent/EventSummary.jsx"
+import useAdminManagement from "@/hooks/useAdminManagement.js"
 
 // Import form components
-
 
 export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, isLoading = false, users = [] }) {
   const isUpdateMode = !!event?._id
@@ -39,12 +39,14 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
     handleRemoveImage,
   } = useImageUploader()
 
+  const { updateEventInfo, createEvent } = useAdminManagement()
+
   // Form stages
   const [currentStage, setCurrentStage] = useState(1)
   const totalStages = 5
 
   // Form state
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     title: "",
     description: "",
     category: "",
@@ -60,7 +62,7 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
   // Populate form data if in update mode
   useEffect(() => {
     if (isUpdateMode && event) {
-      setFormData({
+      setForm({
         title: event.title || "",
         description: event.description || "",
         category: event.type || "",
@@ -85,7 +87,7 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
     if (!isOpen) {
       setCurrentStage(1)
       if (!isUpdateMode) {
-        setFormData({
+        setForm({
           title: "",
           description: "",
           category: "",
@@ -105,7 +107,7 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
 
   // Handle form field changes
   const handleChange = (field, value) => {
-    setFormData((prev) => ({
+    setForm((prev) => ({
       ...prev,
       [field]: value,
     }))
@@ -114,24 +116,24 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
   // Handle checkbox changes with mutual exclusivity
   const handleCheckboxChange = (field, checked) => {
     if (field === "isPublic" && checked === false) {
-      setFormData((prev) => ({
+      setForm((prev) => ({
         ...prev,
         isPublic: false,
       }))
     } else if (field === "isPublic" && checked === true) {
-      setFormData((prev) => ({
+      setForm((prev) => ({
         ...prev,
         isPublic: true,
         requiresApproval: false,
       }))
     } else if (field === "requiresApproval" && checked === true) {
-      setFormData((prev) => ({
+      setForm((prev) => ({
         ...prev,
         isPublic: false,
         requiresApproval: true,
       }))
     } else if (field === "requiresApproval" && checked === false) {
-      setFormData((prev) => ({
+      setForm((prev) => ({
         ...prev,
         requiresApproval: false,
       }))
@@ -139,25 +141,25 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
   }
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validate required fields
-    if (!formData.title) {
+    if (!form.title) {
       alert("Event name is required")
       return
     }
-    if (!formData.description) {
+    if (!form.description) {
       alert("Event description is required")
       return
     }
-    if (!formData.category) {
+    if (!form.category) {
       alert("Event category is required")
       return
     }
-    if (!formData.location) {
+    if (!form.location) {
       alert("Event location is required")
       return
     }
-    if (!formData.dateRange?.from || !formData.dateRange?.to) {
+    if (!form.dateRange?.from || !form.dateRange?.to) {
       alert("Please select a valid date range")
       return
     }
@@ -166,34 +168,40 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
     const postData = new FormData()
 
     // Append fields
-    postData.append("title", String(formData.title))
-    postData.append("description", String(formData.description))
-    postData.append("startDate", formData.dateRange.from.toISOString())
-    postData.append("endDate", formData.dateRange.to.toISOString())
-    postData.append("isPublic", String(formData.isPublic))
-    postData.append("location", String(formData.location))
-    postData.append("type", String(formData.category))
+    postData.append("title", String(form.title))
+    postData.append("description", String(form.description))
+    postData.append("startDate", form.dateRange.from.toISOString())
+    postData.append("endDate", form.dateRange.to.toISOString())
+    postData.append("isPublic", String(form.isPublic))
+    postData.append("location", String(form.location))
+    postData.append("type", String(form.category))
 
     // Append organizer if selected
-    if (formData.organizer) {
-      postData.append("organizer", formData.organizer._id)
+    if (form.organizer) {
+      postData.append("organizer", form.organizer._id || event.organizer._id)
     }
 
     // Append existing image URLs as a JSON string
-    const imageUrls = existingImageUrls.map((image) => image.url)
-    if (imageUrls.length > 0) {
-      postData.append("existingImages", JSON.stringify(imageUrls))
+    if (existingImageUrls.length > 0) {
+      postData.append("existingImages", JSON.stringify(existingImageUrls.map((image) => image.url)))
     }
 
     // Append new file uploads
     uploadedImages.forEach((image) => {
-      if (image.file && image.file instanceof File) {
+      if (image.type === "file" && image.file && image.file instanceof File) {
         postData.append("images", image.file)
       }
     })
 
     // Call the onSubmit callback with the form data and event ID if in update mode
-    onSubmit(postData, isUpdateMode ? event._id : null)
+    // onSubmit(isUpdateMode ? event._id : form.organizer._id, postData);
+    if (isUpdateMode) {
+      await updateEventInfo(event._id, postData)
+    } else {
+      await createEvent(form.organizer._id, postData)
+    }
+
+    onSubmit()
   }
 
   // Navigation between stages
@@ -214,18 +222,14 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
     switch (currentStage) {
       case 1:
         return (
-          <EventBasicInfoForm
-            formData={formData}
-            handleChange={handleChange}
-            handleCheckboxChange={handleCheckboxChange}
-          />
+          <EventBasicInfoForm formData={form} handleChange={handleChange} handleCheckboxChange={handleCheckboxChange} />
         )
       case 2:
-        return <EventDateForm formData={formData} handleChange={handleChange} />
+        return <EventDateForm formData={form} handleChange={handleChange} />
       case 3:
-        return <EventLocationForm formData={formData} handleChange={handleChange} />
+        return <EventLocationForm formData={form} handleChange={handleChange} />
       case 4:
-        return <EventOrganizerForm formData={formData} handleChange={handleChange} users={users} />
+        return <EventOrganizerForm formData={form} handleChange={handleChange} users={users} />
       case 5:
         return (
           <EventImagesForm
@@ -243,7 +247,7 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[800px] p-4 sm:p-6">
+      <DialogContent className="max-h-[90vh] overflow-y-auto p-4 sm:max-w-[800px] sm:p-6">
         <DialogHeader>
           <DialogTitle>{isUpdateMode ? "Update Event" : "Create New Event"}</DialogTitle>
           <DialogDescription>
@@ -255,14 +259,10 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
           <EventProgressIndicator currentStage={currentStage} totalStages={totalStages} />
 
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="pt-6 min-h-[600px] sm:min-h-[400px]">
               {renderFormStage()}
               {currentStage === totalStages && (
-                <EventSummary
-                  formData={formData}
-                  uploadedImages={uploadedImages}
-                  existingImageUrls={existingImageUrls}
-                />
+                <EventSummary formData={form} uploadedImages={uploadedImages} existingImageUrls={existingImageUrls} />
               )}
 
               <div className="mt-8 flex justify-between">

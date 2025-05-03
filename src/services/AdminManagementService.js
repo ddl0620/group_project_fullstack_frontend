@@ -42,15 +42,21 @@ export const getAllEventsByUserIdAPI = async (userId, page, limit, isAcs) => {
   return response.data;
 }
 
-export const updateEventAPI = async (eventId) => {
-  const response = await APIServices.put(
-    `/api/v1/admin/event-management/${eventId}`);
+export const createEventAdminAPI = async (userId, data) => {
+  const response = await APIServices.post(
+    `/api/v1/admin/event-management/${userId}`, data);
   return response.data;
 }
 
-export const deleteEventAPI = async (eventId) => {
-  const response = await APIServices.delete(
-    `/api/v1/admin/event-management/${eventId}`);
+export const updateEventAdminAPI = async (eventId, data) => {
+  const response = await APIServices.put(
+    `/api/v1/admin/event-management/${eventId}`, data);
+  return response.data;
+}
+
+export const updateActiveStatusAPI = async (eventId, data) => {
+  const response = await APIServices.put(
+    `/api/v1/admin/event-management/active/${eventId}`, data);
   return response.data;
 }
 
