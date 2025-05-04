@@ -29,7 +29,7 @@ const DiscussionThreadList = ({ eventId }) => {
   const posts = useSelector((state) => state.discussionPost.posts) || []
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  const [postsPerPage, setPostsPerPage] = useState(5)
+  const [postsPerPage, setPostsPerPage] = useState(10)
 
   useEffect(() => {
     if (eventId) {
