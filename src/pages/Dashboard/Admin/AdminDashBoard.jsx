@@ -68,6 +68,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Main Section */}
       <div className="flex-1 space-y-4 p-8 pt-6">
         {/* Date Picking and interval select section */}
         <div className="flex items-center justify-between space-y-2">
@@ -107,7 +108,7 @@ export default function AdminDashboard() {
                   viewport={{ once: false, amount: 0.2 }}
                   variants={fadeIn}
                 >
-                  <Card>
+                  <Card className="hover:shadow-xl transition-shadow duration-500">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">{data.title}</CardTitle>
                       {data.icon}
@@ -140,7 +141,7 @@ export default function AdminDashboard() {
                 variants={fadeIn}
                 className="col-span-4"
               >
-                <Card>
+                <Card className="hover:shadow-xl transition-shadow duration-50">
                   <CardHeader>
                     <CardTitle>Invitations Over Time</CardTitle>
                     <CardDescription>
@@ -161,7 +162,7 @@ export default function AdminDashboard() {
                 variants={fadeIn}
                 className="col-span-3"
               >
-                <Card>
+                <Card className="hover:shadow-xl transition-shadow duration-50">
                   <CardHeader>
                     <CardTitle>RSVP Distribution</CardTitle>
                     <CardDescription>Distribution of RSVP responses</CardDescription>
@@ -179,7 +180,7 @@ export default function AdminDashboard() {
               whileInView="visible"
               viewport={{ once: false, amount: 0.2 }}
               variants={fadeIn}
-              className="grid gap-4 md:grid-cols-2 lg:grid-cols-7"
+              className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 hover:shadow-xl transition-shadow duration-50"
             >
               <Card className="col-span-7">
                 <CardHeader>
@@ -200,6 +201,7 @@ export default function AdminDashboard() {
               whileInView="visible"
               viewport={{ once: false, amount: 0.2 }}
               variants={fadeIn}
+              className="hover:shadow-xl transition-shadow duration-50"
             >
               <Card>
                 <CardHeader>
@@ -220,6 +222,7 @@ export default function AdminDashboard() {
               whileInView="visible"
               viewport={{ once: false, amount: 0.2 }}
               variants={fadeIn}
+              className="hover:shadow-xl transition-shadow duration-50"
             >
               <Card>
                 <CardHeader>
@@ -231,47 +234,25 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </motion.div>
+              {/* RSVP overtimer chart */}
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: false, amount: 0.2 }}
+                variants={fadeIn}
+                className="col-span-3 hover:shadow-xl transition-shadow duration-50"
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle>RSVP Distribution</CardTitle>
+                    <CardDescription>Distribution of RSVP responses</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <RsvpDistribution />
+                  </CardContent>
+                </Card>
+              </motion.div>
           </TabsContent>
-                    {/* RECIPENTS TAB */}
-          <TabsContent value="recipients" className="space-y-4">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: false, amount: 0.2 }}
-              variants={fadeIn}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle>All Recipients</CardTitle>
-                  <CardDescription>Manage all your event recipients</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <RecentRecipients fullTable={true} />
-                </CardContent>
-              </Card>
-            </motion.div>
-          </TabsContent>
-
-          {/* ANALYTICS TAB */}
-          <TabsContent value="analytics" className="space-y-4">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: false, amount: 0.2 }}
-              variants={fadeIn}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle>RSVP Trend</CardTitle>
-                  <CardDescription>RSVP responses over time</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Overview interval={interval} isRsvpTrend={true} />
-                </CardContent>
-              </Card>
-            </motion.div>
-          </TabsContent>
-
         </Tabs>
       </div>
     </div>
