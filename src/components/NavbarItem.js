@@ -11,14 +11,14 @@ export const navbarItems = [
     path: '/dashboard',
     title: 'Dashboard',
   },
-  {
-    path: '/sign-in',
-    title: 'Sign in',
-  },
-  {
-    path: '/sign-up',
-    title: 'Sign Up',
-  },
+  // {
+  //   path: '/sign-in',
+  //   title: 'Sign in',
+  // },
+  // {
+  //   path: '/sign-up',
+  //   title: 'Sign Up',
+  // },
   {
     path: '/management',
     title: 'Admin',
