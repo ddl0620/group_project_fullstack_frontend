@@ -2,35 +2,8 @@
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Legend } from "recharts"
 import { ChartContainer, ChartTooltipContent } from "./ui/index"
 
-export function Overview({ interval, isRsvpTrend = false }) {
-  // Sample data for invitations over time
-  const dailyData = [
-    { date: "2023-05-01", invitations: 12, accepted: 8, denied: 2, pending: 2 },
-    { date: "2023-05-02", invitations: 18, accepted: 10, denied: 3, pending: 5 },
-    { date: "2023-05-03", invitations: 15, accepted: 9, denied: 2, pending: 4 },
-    { date: "2023-05-04", invitations: 25, accepted: 15, denied: 5, pending: 5 },
-    { date: "2023-05-05", invitations: 30, accepted: 20, denied: 4, pending: 6 },
-    { date: "2023-05-06", invitations: 22, accepted: 14, denied: 3, pending: 5 },
-    { date: "2023-05-07", invitations: 18, accepted: 12, denied: 2, pending: 4 },
-    { date: "2023-05-08", invitations: 24, accepted: 16, denied: 3, pending: 5 },
-    { date: "2023-05-09", invitations: 28, accepted: 18, denied: 4, pending: 6 },
-    { date: "2023-05-10", invitations: 32, accepted: 22, denied: 5, pending: 5 },
-    { date: "2023-05-11", invitations: 35, accepted: 25, denied: 4, pending: 6 },
-    { date: "2023-05-12", invitations: 30, accepted: 20, denied: 5, pending: 5 },
-    { date: "2023-05-13", invitations: 28, accepted: 18, denied: 4, pending: 6 },
-    { date: "2023-05-14", invitations: 24, accepted: 16, denied: 3, pending: 5 },
-  ]
-
-  const weeklyData = [
-    { date: "Week 1", invitations: 120, accepted: 80, denied: 20, pending: 20 },
-    { date: "Week 2", invitations: 150, accepted: 100, denied: 25, pending: 25 },
-    { date: "Week 3", invitations: 180, accepted: 120, denied: 30, pending: 30 },
-    { date: "Week 4", invitations: 210, accepted: 140, denied: 35, pending: 35 },
-    { date: "Week 5", invitations: 240, accepted: 160, denied: 40, pending: 40 },
-    { date: "Week 6", invitations: 270, accepted: 180, denied: 45, pending: 45 },
-  ]
-
-  const data = interval === "daily" ? dailyData : weeklyData
+export function Overview({ data, isRsvpTrend = false }) {
+  console.log("Data passed to Overview:", data) // Kiểm tra dữ liệu truyền vào component
 
   if (isRsvpTrend) {
     return (

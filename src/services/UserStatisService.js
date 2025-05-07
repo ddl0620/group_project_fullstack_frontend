@@ -11,15 +11,15 @@ export const getEngagementStatsAPI = async (params = {}) => {
   return response.data;
 };
 
-export const getInvitationsOverTimeAPI = async (params) => {
-  const response = await APIServices.get(
-    '/api/v1/userstatis/statis/invitations-over-time',
-    {
-      params,
-    }
-  );
-  return response.data;
-};
+export const getInvitationsOverTimeAPI = async ({ startDate, endDate }) => {
+  const response = await APIServices.get('/api/v1/userstatis/statis/invitations-over-time', {
+    params: {
+      startDate,
+      endDate,
+    },
+  })
+  return response.data
+}
 
 export const getRsvpTrendAPI = async (params) => {
   const response = await APIServices.get(

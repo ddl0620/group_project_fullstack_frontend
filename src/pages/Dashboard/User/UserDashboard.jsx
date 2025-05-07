@@ -12,12 +12,15 @@ import { Overview } from "./components/Overview"
 import { RsvpDistribution } from "./components/RsvpDistribution"
 import { RecentRecipients } from "./components/RecentRecipents"
 import { motion } from "framer-motion"
-import { getEngagementStatsAPI } from "@/services/UserStatisService"
-import { setEngagementStats } from "@/store/slices/userStatisSlice"
+import { getEngagementStatsAPI, getInvitationsOverTimeAPI, getRsvpDistributionAPI } from "@/services/UserStatisService"
+import { setEngagementStats, setInvitationsOverTime, setRsvpDistribution } from "@/store/slices/userStatisSlice"
+import { InvitationOvertime } from "./components/InvitationOverTime"
 
 export default function UserDashboard() {
   const dispatch = useDispatch()
   const engagementStats = useSelector((state) => state.userStatis.engagementStats)
+  const invitationsOverTime = useSelector((state) => state.userStatis.invitationsOverTime)
+  const rsvpDistribution = useSelector((state) => state.userStatis.rsvpDistribution)
 
   const [date, setDate] = useState({
     from: subDays(new Date(), 30),
@@ -37,6 +40,36 @@ export default function UserDashboard() {
       }
     }
     fetchEngagementStats()
+  }, [dispatch])
+
+  // Fetch invitations over time on date change
+  useEffect(() => {
+    const fetchInvitationsOverTime = async () => {
+      try {
+        const startDate = date.from.toISOString().split("T")[0] // Chuyển đổi sang định dạng YYYY-MM-DD
+        const endDate = date.to.toISOString().split("T")[0]
+        console.log("Fetching invitations over time with dates:", { startDate, endDate }) // Kiểm tra tham số ngày
+        const data = await getInvitationsOverTimeAPI({ startDate, endDate })
+        console.log("Invitations Over Time Data:", data.content) // Kiểm tra dữ liệu trả về
+        dispatch(setInvitationsOverTime(data.content))
+      } catch (error) {
+        console.error("Failed to fetch invitations over time:", error)
+      }
+    }
+    fetchInvitationsOverTime()
+  }, [date, dispatch]) // Thêm `date` vào dependency để gọi lại API khi ngày thay đổi
+
+  useEffect(() => {
+    const fetchRsvpDistribution = async () => {
+      try {
+        const data = await getRsvpDistributionAPI()
+        console.log("RSVP Distribution Data:", data.content) // Kiểm tra dữ liệu trả về
+        dispatch(setRsvpDistribution(data.content))
+      } catch (error) {
+        console.error("Failed to fetch RSVP distribution:", error)
+      }
+    }
+    fetchRsvpDistribution()
   }, [dispatch])
 
   // Map engagement stats to numeric data
@@ -183,7 +216,12 @@ export default function UserDashboard() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pl-2">
-                    <Overview interval={interval} />
+                    {/* <Overview data={invitationsOverTime.map(item => ({
+                      date: item.date,
+                      invitations: item.invitations,
+                    }))} /> */}
+                    {/* <Overview data={invitationsOverTime isRSVPTrend={true}}/> */}
+                    <InvitationOvertime data={invitationsOverTime} />
                   </CardContent>
                 </Card>
               </motion.div>
@@ -205,12 +243,12 @@ export default function UserDashboard() {
                     <CardDescription>Distribution of RSVP responses</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <RsvpDistribution />
+                    <RsvpDistribution data={rsvpDistribution} />
                   </CardContent>
                 </Card>
               </motion.div>
             </div>
-
+            
             {/* Recipent table section */}
             <motion.div
               initial="hidden"
@@ -286,8 +324,8 @@ export default function UserDashboard() {
               whileInView="visible"
               viewport={{ once: false, amount: 0.2 }}
               variants={{
-                hidden: { opacity: 0, y: 50 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+                  hidden: { opacity: 0, y: 50 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
               }}
               className="col-span-3 hover:shadow-xl transition-shadow duration-50"
             >
