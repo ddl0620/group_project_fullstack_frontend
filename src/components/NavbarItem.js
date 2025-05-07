@@ -2,14 +2,17 @@ export const navbarItems = [
   {
     path: '/',
     title: 'Home',
+    roles: ['user', 'admin', 'unauthenticated'],
   },
   {
     path: '/event',
     title: 'Events',
+    roles: ['user', 'admin'],
   },
   {
     path: '/dashboard',
     title: 'Dashboard',
+    roles: ['user', 'admin'],
   },
   // {
   //   path: '/sign-in',
@@ -22,5 +25,6 @@ export const navbarItems = [
   {
     path: '/management',
     title: 'Admin',
+    roles: ['admin'],
   },
 ];
