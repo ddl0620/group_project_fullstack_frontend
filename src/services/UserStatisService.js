@@ -41,12 +41,9 @@ export const getRsvpDistributionAPI = async (params = {}) => {
   return response.data;
 };
 
-export const getRecipientsAPI = async (params = {}) => {
-  const response = await APIServices.get(
-    '/api/v1/userstatis/statis/recipients',
-    {
-      params,
-    }
-  );
-  return response.data;
-};
+export const getRecipientsAPI = async ({ page = 1, limit = 10 }) => {
+  const response = await APIServices.get('/api/v1/userstatis/statis/recipients', {
+    params: { page, limit },
+  })
+  return response.data
+}

@@ -30,6 +30,7 @@ const userStatisSlice = createSlice({
       state.rsvpDistribution = action.payload;
     },
     setRecipients(state, action) {
+      console.log("Setting Recipients in Redux:", action.payload) // Kiểm tra dữ liệu được lưu vào Redux
       state.recipients = action.payload.recipients;
       state.totalRecipients = action.payload.total;
     },

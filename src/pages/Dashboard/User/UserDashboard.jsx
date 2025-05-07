@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { subDays } from "date-fns"
 import { Mail, MessageSquare, Search, User, Users } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, Input } from "./components/ui/index"
@@ -12,15 +11,20 @@ import { Overview } from "./components/Overview"
 import { RsvpDistribution } from "./components/RsvpDistribution"
 import { RecentRecipients } from "./components/RecentRecipents"
 import { motion } from "framer-motion"
-import { getEngagementStatsAPI, getInvitationsOverTimeAPI, getRsvpDistributionAPI } from "@/services/UserStatisService"
-import { setEngagementStats, setInvitationsOverTime, setRsvpDistribution } from "@/store/slices/userStatisSlice"
 import { InvitationOvertime } from "./components/InvitationOverTime"
+import { useUserStatis } from "@/hooks/useUserStatis"
 
 export default function UserDashboard() {
-  const dispatch = useDispatch()
-  const engagementStats = useSelector((state) => state.userStatis.engagementStats)
-  const invitationsOverTime = useSelector((state) => state.userStatis.invitationsOverTime)
-  const rsvpDistribution = useSelector((state) => state.userStatis.rsvpDistribution)
+  const {
+    engagementStats,
+    invitationsOverTime,
+    rsvpDistribution,
+    recipients,
+    fetchEngagementStats,
+    fetchInvitationsOverTime,
+    fetchRsvpDistribution,
+    fetchRecipients,
+  } = useUserStatis()
 
   const [date, setDate] = useState({
     from: subDays(new Date(), 30),
@@ -31,46 +35,25 @@ export default function UserDashboard() {
 
   // Fetch engagement stats on mount
   useEffect(() => {
-    const fetchEngagementStats = async () => {
-      try {
-        const data = await getEngagementStatsAPI()
-        dispatch(setEngagementStats(data.content))
-      } catch (error) {
-        console.error("Failed to fetch engagement stats:", error)
-      }
-    }
     fetchEngagementStats()
-  }, [dispatch])
+  }, [fetchEngagementStats])
 
   // Fetch invitations over time on date change
   useEffect(() => {
-    const fetchInvitationsOverTime = async () => {
-      try {
-        const startDate = date.from.toISOString().split("T")[0] // Chuyển đổi sang định dạng YYYY-MM-DD
-        const endDate = date.to.toISOString().split("T")[0]
-        console.log("Fetching invitations over time with dates:", { startDate, endDate }) // Kiểm tra tham số ngày
-        const data = await getInvitationsOverTimeAPI({ startDate, endDate })
-        console.log("Invitations Over Time Data:", data.content) // Kiểm tra dữ liệu trả về
-        dispatch(setInvitationsOverTime(data.content))
-      } catch (error) {
-        console.error("Failed to fetch invitations over time:", error)
-      }
-    }
-    fetchInvitationsOverTime()
-  }, [date, dispatch]) // Thêm `date` vào dependency để gọi lại API khi ngày thay đổi
+    const startDate = date.from.toISOString().split("T")[0]
+    const endDate = date.to.toISOString().split("T")[0]
+    fetchInvitationsOverTime(startDate, endDate)
+  }, [date, fetchInvitationsOverTime])
 
+  // Fetch RSVP distribution on mount
   useEffect(() => {
-    const fetchRsvpDistribution = async () => {
-      try {
-        const data = await getRsvpDistributionAPI()
-        console.log("RSVP Distribution Data:", data.content) // Kiểm tra dữ liệu trả về
-        dispatch(setRsvpDistribution(data.content))
-      } catch (error) {
-        console.error("Failed to fetch RSVP distribution:", error)
-      }
-    }
     fetchRsvpDistribution()
-  }, [dispatch])
+  }, [fetchRsvpDistribution])
+
+  // Fetch recipients on mount
+  useEffect(() => {
+    fetchRecipients(1, 10) // Chỉ gọi API khi component được mount
+  }, []) // Dependency array rỗng để đảm bảo chỉ chạy một lần
 
   // Map engagement stats to numeric data
   const numericData = engagementStats
@@ -117,6 +100,8 @@ export default function UserDashboard() {
       ]
     : []
 
+  console.log("Recipients Data from Redux:", recipients) // Kiểm tra dữ liệu từ Redux
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* First Section */}
@@ -130,7 +115,8 @@ export default function UserDashboard() {
           </div>
         </div>
       </div>
-
+      <motion>
+      </motion>
       {/* Main Section */}
       <div className="flex-1 space-y-4 p-8 pt-6">
         {/* Date Picking and interval select section */}
@@ -216,11 +202,6 @@ export default function UserDashboard() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pl-2">
-                    {/* <Overview data={invitationsOverTime.map(item => ({
-                      date: item.date,
-                      invitations: item.invitations,
-                    }))} /> */}
-                    {/* <Overview data={invitationsOverTime isRSVPTrend={true}}/> */}
                     <InvitationOvertime data={invitationsOverTime} />
                   </CardContent>
                 </Card>
@@ -266,7 +247,7 @@ export default function UserDashboard() {
                   <CardDescription>Recently invited recipients and their RSVP status</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <RecentRecipients />
+                  <RecentRecipients data={recipients} />
                 </CardContent>
               </Card>
             </motion.div>
@@ -290,7 +271,7 @@ export default function UserDashboard() {
                   <CardDescription>Manage all your event recipients</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <RecentRecipients fullTable={true} />
+                  <RecentRecipients data={recipients} fullTable={true} />
                 </CardContent>
               </Card>
             </motion.div>
@@ -314,7 +295,7 @@ export default function UserDashboard() {
                   <CardDescription>RSVP responses over time</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Overview interval={interval} isRsvpTrend={true} />
+                  <InvitationOvertime data={invitationsOverTime} />
                 </CardContent>
               </Card>
             </motion.div>
@@ -335,7 +316,7 @@ export default function UserDashboard() {
                   <CardDescription>Distribution of RSVP responses</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <RsvpDistribution />
+                  <RsvpDistribution data={rsvpDistribution} />
                 </CardContent>
               </Card>
             </motion.div>

@@ -21,118 +21,33 @@ import {
   DropdownMenuCheckboxItem,
 } from "./ui/dropdown-menu"
 
-export function RecentRecipients({ fullTable = false }) {
+export function RecentRecipients({ fullTable = false, data = [] }) {
+  console.log("Recipients Data in Component:", data)
+
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
-  // Sample data for recipients
-  const data = [
-    {
-      id: "1",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "+1 (555) 123-4567",
-      rsvpStatus: "ACCEPTED",
-      invitedAt: "2023-05-10T14:30:00Z",
-      respondedAt: "2023-05-11T09:15:00Z",
-    },
-    {
-      id: "2",
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      phone: "+1 (555) 987-6543",
-      rsvpStatus: "PENDING",
-      invitedAt: "2023-05-10T14:35:00Z",
-      respondedAt: null,
-    },
-    {
-      id: "3",
-      name: "Robert Johnson",
-      email: "robert.johnson@example.com",
-      phone: "+1 (555) 456-7890",
-      rsvpStatus: "DENIED",
-      invitedAt: "2023-05-10T14:40:00Z",
-      respondedAt: "2023-05-12T16:20:00Z",
-    },
-    {
-      id: "4",
-      name: "Emily Davis",
-      email: "emily.davis@example.com",
-      phone: "+1 (555) 234-5678",
-      rsvpStatus: "ACCEPTED",
-      invitedAt: "2023-05-11T09:30:00Z",
-      respondedAt: "2023-05-11T14:45:00Z",
-    },
-    {
-      id: "5",
-      name: "Michael Wilson",
-      email: "michael.wilson@example.com",
-      phone: "+1 (555) 876-5432",
-      rsvpStatus: "PENDING",
-      invitedAt: "2023-05-11T09:35:00Z",
-      respondedAt: null,
-    },
-    {
-      id: "6",
-      name: "Sarah Brown",
-      email: "sarah.brown@example.com",
-      phone: "+1 (555) 345-6789",
-      rsvpStatus: "ACCEPTED",
-      invitedAt: "2023-05-11T09:40:00Z",
-      respondedAt: "2023-05-12T11:10:00Z",
-    },
-    {
-      id: "7",
-      name: "David Miller",
-      email: "david.miller@example.com",
-      phone: "+1 (555) 654-3210",
-      rsvpStatus: "DENIED",
-      invitedAt: "2023-05-12T10:30:00Z",
-      respondedAt: "2023-05-13T08:25:00Z",
-    },
-    {
-      id: "8",
-      name: "Jennifer Taylor",
-      email: "jennifer.taylor@example.com",
-      phone: "+1 (555) 789-0123",
-      rsvpStatus: "PENDING",
-      invitedAt: "2023-05-12T10:35:00Z",
-      respondedAt: null,
-    },
-    {
-      id: "9",
-      name: "Christopher Anderson",
-      email: "christopher.anderson@example.com",
-      phone: "+1 (555) 321-0987",
-      rsvpStatus: "ACCEPTED",
-      invitedAt: "2023-05-12T10:40:00Z",
-      respondedAt: "2023-05-12T15:30:00Z",
-    },
-    {
-      id: "10",
-      name: "Jessica Thomas",
-      email: "jessica.thomas@example.com",
-      phone: "+1 (555) 210-9876",
-      rsvpStatus: "PENDING",
-      invitedAt: "2023-05-13T11:30:00Z",
-      respondedAt: null,
-    },
-  ]
-
   const columns = [
     {
       accessorKey: "name",
-      header: ({ column }) => {
-        return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        )
-      },
-      cell: ({ row }) => <div>{row.getValue("name")}</div>,
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center">
+          <img
+            className="h-8 w-8 rounded-full"
+            src={row.original.avatar}
+            alt={row.getValue("name")}
+          />
+          <span className="ml-2">{row.getValue("name")}</span>
+        </div>
+      ),
     },
     {
       accessorKey: "email",
@@ -140,28 +55,15 @@ export function RecentRecipients({ fullTable = false }) {
       cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
     },
     {
-      accessorKey: "phone",
-      header: "Phone",
-      cell: ({ row }) => <div>{row.getValue("phone")}</div>,
-    },
-    {
-      accessorKey: "rsvpStatus",
+      accessorKey: "rsvp",
       header: "RSVP Status",
       cell: ({ row }) => {
-        const status = row.getValue("rsvpStatus")
+        const status = row.getValue("rsvp")
         return (
           <Badge variant={status === "ACCEPTED" ? "success" : status === "DENIED" ? "destructive" : "outline"}>
             {status.charAt(0) + status.slice(1).toLowerCase()}
           </Badge>
         )
-      },
-    },
-    {
-      accessorKey: "invitedAt",
-      header: "Invited At",
-      cell: ({ row }) => {
-        const date = new Date(row.getValue("invitedAt"))
-        return <div>{date.toLocaleDateString()}</div>
       },
     },
     {
@@ -172,33 +74,6 @@ export function RecentRecipients({ fullTable = false }) {
         if (!value) return <div>-</div>
         const date = new Date(value)
         return <div>{date.toLocaleDateString()}</div>
-      },
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const recipient = row.original
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(recipient.email)}>
-                Copy email
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View details</DropdownMenuItem>
-              <DropdownMenuItem>Send reminder</DropdownMenuItem>
-              <DropdownMenuItem>Edit recipient</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
       },
     },
   ]
@@ -285,7 +160,7 @@ export function RecentRecipients({ fullTable = false }) {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  No recipients found.
                 </TableCell>
               </TableRow>
             )}
