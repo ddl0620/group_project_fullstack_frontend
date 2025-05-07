@@ -19,7 +19,6 @@ export const store = configureStore({
     discussionPost: discussionPostReducer,
     discussionReply: discussionReplySlice,
     adminManagement: AdminManagementSlice,
-
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
