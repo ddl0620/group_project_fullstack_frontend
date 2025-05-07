@@ -46,10 +46,10 @@ export const useDiscussionPost = () => {
         Toast.success('Post created successfully');
         return response.content.post;
       } catch (error) {
-        dispatch(setError(error.message));
+        dispatch(setError(error.response?.data?.message));
         Toast.error(
           'Failed to create post: ' +
-            (error.response?.data?.message || error.message)
+            (error.response?.data?.message)
         );
         throw error;
       } finally {
@@ -163,16 +163,14 @@ export const useDiscussionPost = () => {
         if (!response.success) {
           throw new Error('Failed to update post');
         }
-
-        console.log('Updated post:', response.content.post);
         dispatch(updatePostAction(response.content.post));
         Toast.success('Post updated successfully');
         return response.content.post;
       } catch (error) {
-        dispatch(setError(error.message));
+        dispatch(setError(error.response?.data?.message));
         Toast.error(
           'Failed to update post: ' +
-            (error.response?.content?.message || error.message)
+            (error.response?.data?.message || error.message)
         );
         throw error;
       } finally {

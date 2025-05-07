@@ -65,9 +65,9 @@ export const useAuth = () => {
       Toast.info('Đang chuyển hướng đến trang đăng nhập...');
     } catch (e) {
       //need more specific error handling
-      Toast.error('Thông tin đăng ký không hợp lệ!');
+      Toast.error(e.response.data.message || 'Thông tin đăng ký không hợp lệ!');
       console.log('Fail to sign up', e);
-      setError?.('Thông tin đăng ký không hợp lệ!');
+      setError?.(e.response.data.message || 'Thông tin đăng ký không hợp lệ!');
     }
   };
 

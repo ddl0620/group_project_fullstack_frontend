@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { buttonVariants } from '@/components/ui/button';
 import { TrashIcon } from '@heroicons/react/24/outline';
-import { Info, MessageCircleWarningIcon } from 'lucide-react';
+import { Info, MessageCircleWarningIcon, Skull } from 'lucide-react';
 
 /**
  * Cấu hình mặc định theo từng loại Alert
@@ -41,7 +41,7 @@ const defaultConfigs = {
     confirmText: 'Delete',
     cancelText: 'Cancel',
     variant: 'destructive',
-    icon: <TrashIcon className="size-6 text-red-600 dark:text-red-200" />,
+    icon: <Skull className="size-6 text-red-600 dark:text-red-200" />,
   },
 };
 

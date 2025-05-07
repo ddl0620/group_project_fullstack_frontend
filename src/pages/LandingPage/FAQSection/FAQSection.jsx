@@ -1,69 +1,62 @@
-import React from 'react';
-import FAQItem from './FAQItem';
+import FAQItem from "./FAQItem"
 
 const FAQSection = () => {
   const faqs = [
     {
-      question: 'What is EventApp?',
+      question: "What is EventApp?",
       answer:
-        'EventApp is a platform that helps you discover, organize, and manage events effortlessly. Whether you are an attendee looking for exciting events to join or an organizer planning your next big event, EventApp provides all the tools you need in one place. From ticketing and attendee management to event promotion and analytics, EventApp simplifies the entire process, allowing you to focus on creating memorable experiences.',
+        "EventApp is a comprehensive platform that helps you discover, organize, and manage events effortlessly. Whether you're an attendee looking for exciting events or an organizer planning your next gathering, EventApp provides all the tools you need in one place.",
     },
     {
-      question: 'How much does it cost?',
+      question: "How much does it cost?",
       answer:
-        'EventApp offers flexible pricing plans to suit different needs:\n\n- **Free Plan**: Ideal for individuals who want to explore events or manage small gatherings. Includes basic features like event discovery and RSVP management.\n- **Pro Plan**: $9.99/month, designed for event organizers who need advanced tools such as ticketing, attendee analytics, and custom branding.\n- **Enterprise Plan**: Custom pricing tailored for large organizations and businesses that require additional features like API integrations, dedicated support, and advanced reporting. Contact our sales team for more details.',
+        "EventApp offers flexible pricing plans to suit different needs:\n\n- **Free Plan**: Ideal for individuals who want to explore events or manage small gatherings.\n- **Pro Plan**: $9.99/month, designed for event organizers who need advanced tools.\n- **Enterprise Plan**: Custom pricing tailored for large organizations and businesses.",
     },
     {
-      question: 'Can I cancel anytime?',
+      question: "What features are included?",
       answer:
-        'Yes, you can cancel your subscription at any time without any penalties. Once you cancel, you will retain access to your account and its features until the end of your current billing cycle. After that, your account will revert to the Free Plan, and you will no longer be charged. If you decide to return, you can easily reactivate your subscription and pick up where you left off.',
+        "EventApp includes a wide range of features such as event creation and management, attendee tracking, discussion boards, real-time chat, analytics, ticketing, custom branding, email notifications, and much more. Our platform is constantly evolving with new features based on user feedback.",
     },
     {
-      question: 'Is there customer support available?',
+      question: "Can I cancel anytime?",
       answer:
-        'Absolutely! EventApp provides 24/7 customer support to assist you with any issues or questions. Our support team is available via live chat, email, and phone to ensure you have the best experience possible. Whether you need help setting up your event, troubleshooting technical issues, or understanding analytics, our dedicated team is here to help. We also offer a comprehensive Help Center with guides, FAQs, and tutorials to help you get started.',
+        "Yes, you can cancel your subscription at any time without any penalties. Once you cancel, you will retain access to your account and its features until the end of your current billing cycle.",
     },
     {
-      question: 'How do I create an event?',
+      question: "Is there customer support available?",
       answer:
-        'Creating an event on EventApp is simple and intuitive:\n\n1. Log in to your EventApp account.\n2. Click on the "Create Event" button on your dashboard.\n3. Fill in the event details, such as the event name, date, time, location, and description.\n4. Add images, videos, or promotional materials to make your event stand out.\n5. Set up ticketing options, including free or paid tickets, and configure attendee limits.\n6. Publish your event and share it with your audience via social media, email, or a custom event page.\n7. Monitor registrations and manage attendees directly from your dashboard.',
+        "EventApp provides 24/7 customer support to assist you with any issues or questions. Our support team is available via live chat, email, and phone to ensure you have the best experience possible.",
     },
-    {
-      question: 'Can I track attendee registrations?',
-      answer:
-        'Yes, EventApp provides powerful tools to track attendee registrations in real-time. You can view detailed analytics, including the number of tickets sold, attendee demographics, and engagement metrics. This data helps you understand your audience better and optimize your event strategy. Additionally, you can export attendee lists, send reminders, and manage check-ins seamlessly using our platform.',
-    },
-    {
-      question: 'Is EventApp secure?',
-      answer:
-        'Yes, security is a top priority at EventApp. We use industry-standard encryption to protect your data and ensure that all transactions are secure. Our platform is compliant with GDPR and other data protection regulations, giving you peace of mind when managing sensitive information. We also conduct regular security audits and updates to safeguard against potential threats.',
-    },
-    {
-      question: 'Does EventApp support virtual events?',
-      answer:
-        'Yes, EventApp is designed to support both in-person and virtual events. You can host webinars, live streams, and hybrid events seamlessly using our platform. Features like live Q&A, polls, and chat rooms help you engage with your audience in real-time. EventApp also integrates with popular virtual event tools like Zoom, Microsoft Teams, and Google Meet to provide a smooth experience for both organizers and attendees.',
-    },
-    {
-      question: 'How do I get started with EventApp?',
-      answer:
-        'Getting started with EventApp is quick and easy:\n\n1. Sign up for a free account on our website.\n2. Explore the platform and familiarize yourself with its features.\n3. Start discovering events near you or create your own event using the intuitive dashboard.\n4. If you need help, our support team is available to guide you through the process. You can also check out our Help Center for step-by-step tutorials and FAQs.',
-    },
-  ];
+  ]
 
   return (
-    <section className="bg-white bg-gradient-to-br py-16">
-      <div className="mx-auto max-w-screen-xl px-6">
-        <h2 className="font-inter mb-12 text-center text-4xl font-bold md:text-5xl">
-          Frequently Asked Questions
-        </h2>
+    <section className="py-24">
+      <div className="mx-auto max-w-4xl px-6">
+        <div className="mb-16 text-center">
+          <h2 className="mb-4 text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">
+            Frequently Asked Questions
+          </h2>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600">Find answers to common questions about EventApp</p>
+        </div>
+
         <div className="space-y-4">
           {faqs.map((faq, index) => (
             <FAQItem key={index} question={faq.question} answer={faq.answer} />
           ))}
         </div>
+
+        <div className="mt-12 text-center">
+          <p className="mb-4 text-gray-600">Still have questions?</p>
+          <a
+            href="/contact"
+            className="inline-flex items-center rounded-full bg-[#0071e3]/10 px-6 py-2 text-sm font-medium text-[#0071e3] transition-colors hover:bg-[#0071e3]/20"
+          >
+            Contact our support team
+          </a>
+        </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default FAQSection;
+export default FAQSection

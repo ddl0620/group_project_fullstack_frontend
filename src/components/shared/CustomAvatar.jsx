@@ -15,10 +15,10 @@ export function CustomAvatar({
 }) {
   return (
     <Avatar
-      className={`border-border h-10 w-10 cursor-pointer border transition-opacity hover:opacity-80 ${_classname}`}
+      className={`border-border cursor-pointer border transition-opacity hover:opacity-80 ${_classname}`}
     >
       <AvatarImage src={src} alt={alt} />
-      <AvatarFallback>{getInitials(fallbackText)}</AvatarFallback>
+      <AvatarFallback className={"text-[12px] font-semibold"}>{getInitials(fallbackText)}</AvatarFallback>
     </Avatar>
   );
 }

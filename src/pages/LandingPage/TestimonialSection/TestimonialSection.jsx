@@ -1,91 +1,97 @@
-import { Marquee } from '@/components/magicui/marquee.js';
+import { Star } from "lucide-react"
 
 const TestimonialSection = () => {
   const testimonials = [
     {
-      image: '/images/dr_tri_dang.jpg',
-      name: 'Dr. Tri Dang',
-      role: 'Event Organizer',
+      image: "public/images/dr_tri_dang.jpg",
+      name: "Dr. Tri Dang",
+      role: "Event Organizer",
       feedback:
-        '"EventApp made organizing my event so much easier. Highly recommend!"',
+        "EventApp has completely transformed how I organize conferences. The intuitive interface and powerful features have saved me countless hours of work. The analytics dashboard provides insights I never had access to before.",
+      rating: 5,
     },
     {
-      image: '/images/Dr_Tuan_Tran.jpg',
-      name: 'Dr. Tuan Tran',
-      role: 'Event Enthusiast',
-      feedback: '"I found so many amazing events near me. Love this app!"',
+      image: "public/images/Dr_Tuan_Tran.jpg",
+      name: "Dr. Tuan Tran",
+      role: "Event Enthusiast",
+      feedback:
+        "I've discovered so many amazing events through EventApp. The personalized recommendations are spot-on, and the discussion boards have helped me connect with like-minded people before events even start.",
+      rating: 5,
     },
     {
-      image: '/images/dr_phong_ngo.jpg',
-      name: 'Dr. Phong Ngo',
-      role: 'Professional Speaker',
+      image: "public/images/dr_phong_ngo.jpg",
+      name: "Dr. Phong Ngo",
+      role: "Professional Speaker",
       feedback:
-        '"The best platform for staying connected with attendees. A game-changer!"',
+        "As a speaker, I love how EventApp helps me stay connected with my audience. The engagement tools are fantastic, and the analytics help me understand what resonates with attendees.",
+      rating: 5,
     },
-    {
-      image: '/images/dr_ushik.jpg',
-      name: 'Dr. Ushik Shrestha',
-      role: 'Lecturer',
-      feedback:
-        '"EventApp is the best tool for managing events. Highly efficient!"',
-    },
-  ];
-
-  // Duplicate testimonials to ensure enough content for continuous scrolling
-  const allTestimonials = [...testimonials, ...testimonials];
-
-  // Split testimonials into two rows for better visual effect
-  const firstRow = allTestimonials.slice(0, allTestimonials.length / 2);
-  const secondRow = allTestimonials.slice(allTestimonials.length / 2);
+  ]
 
   return (
-    <section className="relative bg-white py-20">
-      <div className="mx-auto max-w-screen-xl px-6">
-        <h2 className="mb-16 text-center text-4xl font-bold tracking-tight text-neutral-800 md:text-5xl">
-          What Our Users Say
-        </h2>
+    <section className="relative overflow-hidden bg-gradient-to-b from-white to-[#f5f5f7] py-24">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="mb-16 text-center">
+          <h2 className="mb-4 text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">
+            Loved by Event Professionals
+          </h2>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600">
+            Join thousands of satisfied users who trust EventApp
+          </p>
+        </div>
 
-        <div className="relative flex w-full flex-col items-center justify-center gap-8 overflow-hidden">
-          {/* First row of testimonials */}
-          <Marquee reverse={true} pauseOnHover className="[--duration:30s]">
-            {firstRow.map((testimonial, index) => (
-              <TestimonialCard key={index} testimonial={testimonial} />
+        <div className="grid gap-8 md:grid-cols-3">
+          {testimonials.map((testimonial, index) => (
+            <TestimonialCard key={index} testimonial={testimonial} />
+          ))}
+        </div>
+
+        <div className="mt-16 flex flex-col items-center justify-center">
+          <div className="mb-4 flex items-center space-x-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star key={star} className="h-5 w-5 fill-amber-400 text-amber-400" />
             ))}
-          </Marquee>
-
-          {/* Second row of testimonials (reverse direction) */}
-
-          {/* Gradient overlays for smooth edges */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-white"></div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-white"></div>
+          </div>
+          <p className="text-center text-lg font-medium text-gray-900">
+            <span className="text-[#0071e3]">4.9/5</span> from over 10,000 reviews
+          </p>
         </div>
       </div>
+
+      {/* Apple-style decorative elements */}
+      <div className="absolute -bottom-32 right-32 h-64 w-64 rounded-full bg-gradient-to-r from-blue-100/30 to-purple-100/30 blur-3xl"></div>
     </section>
-  );
-};
+  )
+}
 
 // Separate testimonial card component for cleaner code
 const TestimonialCard = ({ testimonial }) => {
   return (
-    <div className="mx-4 my-4 w-72 flex-shrink-0">
-      <div className="flex h-full flex-col rounded-xl border border-neutral-100 bg-white p-6 shadow-lg transition-shadow duration-300 hover:shadow-xl">
-        <img
-          src={testimonial.image || '/placeholder.svg'}
-          alt={testimonial.name}
-          className="mx-auto mb-4 h-16 w-16 rounded-full border-2 border-blue-500 object-cover"
-        />
-        <h3 className="mb-2 text-center text-lg font-semibold text-neutral-900">
-          {testimonial.name}
-        </h3>
-        <p className="mb-4 text-center text-sm text-neutral-600">
-          {testimonial.role}
-        </p>
-        <p className="flex-grow text-center text-sm text-neutral-800 italic">
-          {testimonial.feedback}
-        </p>
+    <div className="group overflow-hidden rounded-2xl bg-white/80 p-8 shadow-md backdrop-blur-sm transition-all hover:-translate-y-1 hover:shadow-lg">
+      <div className="mb-4 flex items-center space-x-1">
+        {[...Array(testimonial.rating)].map((_, i) => (
+          <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+        ))}
       </div>
-    </div>
-  );
-};
+      <p className="mb-6 text-gray-600 italic">"{testimonial.feedback}"</p>
+      <div className="flex items-center">
+        <div className="mr-4 h-12 w-12 overflow-hidden rounded-full border-2 border-[#0071e3]/20">
+          <img
+            src={testimonial.image || "/placeholder.svg"}
+            alt={testimonial.name}
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <div>
+          <h3 className="text-lg font-medium text-gray-900">{testimonial.name}</h3>
+          <p className="text-sm text-gray-500">{testimonial.role}</p>
+        </div>
+      </div>
 
-export default TestimonialSection;
+      {/* Apple-style hover effect */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+    </div>
+  )
+}
+
+export default TestimonialSection
