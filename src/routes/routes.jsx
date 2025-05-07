@@ -27,6 +27,7 @@ import NotificationsPage from '@/pages/Notification/NotificationPage.jsx';
 import UpdatePasswordPage from '@/pages/ProfilePage/UpdatePasswordPage.jsx';
 import UpdateEmailPage from '@/pages/ProfilePage/UpdateEmailPage.jsx';
 import ProfilePage from '@/pages/ProfilePage/ProfilePage.jsx';
+import AdminDashboard from '../pages/Dashboard/Admin/AdminDashBoard.jsx';
 import UserManagement from '@/pages/Admin/UserManagement/UserManagement.jsx';
 import adminManagementItems from '@/components/SidebarItems/AdminManagement.js';
 import EventManagement from '@/pages/Admin/EventManagement/EventManagement.jsx';
@@ -128,6 +129,7 @@ const routes = [
       {
         element: <SidebarLayout title={'Dashboard'} items={userItems} />,
         children: [
+          {path: '/dashboard/admin', element: <AdminDashboard/>},
           { path: '/dashboard', element: <UserDashboard /> },
           { path: '/discussions', element: <DiscussionPage /> },
           { path: '/discussions/:eventId', element: <DiscussionPage /> },
