@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import { navbarItems } from "./NavbarItem.js"
 import { useAuth } from "../hooks/useAuth.js"
-import { Link, useLocation, useNavigate } from "react-router-dom" // Commented out as requested
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { ChevronDown, Menu, X, Search } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button.js"
@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/dropdown-menu.js"
 import { NotificationDropdown } from "@/components/NotificationDropdown.jsx"
 import { CustomAvatar } from "@/components/shared/CustomAvatar.jsx"
-// import { useLocation, useNavigate } from 'react-router-dom';
 
 function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -52,9 +51,15 @@ function NavBar() {
   }, [])
 
   const NavItems = ({ isMobile = false }) => {
-    const filteredItems = isAuthenticated
-      ? navbarItems.filter((item) => item.path !== "/sign-in" && item.path !== "/sign-up")
-      : navbarItems
+    // Filter navbar items based on authentication status and user role
+    const filteredItems = navbarItems.filter((item) => {
+      // If unauthenticated, only show items with 'unauthenticated' role
+      if (!isAuthenticated) {
+        return item.roles.includes('unauthenticated')
+      }
+      // If authenticated, show items that match the user's role
+      return item.roles.includes(role)
+    })
 
     const ITEMS = filteredItems.map((item, index) => ({
       ...item,
