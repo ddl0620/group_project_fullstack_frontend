@@ -1,410 +1,18 @@
-// "use client";
-// import { useState, useEffect } from "react";
-// import { useAdminStatistics } from "@/hooks/useAdminStatistics";
-// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import { Progress } from "@/components/ui/progress";
-// import { BarChart, BarList, LineChart } from "@tremor/react";
-// import { Users, UserPlus, Calendar, MessageSquare, AlertTriangle, Eye, EyeOff } from "lucide-react";
+"use client"
 
-// export default function AdminDashboard() {
-//   const {
-//     overview,
-//     eventsByDate,
-//     usersByDate,
-//     deletedUsersByDate,
-//     publicAndPrivateEvents,
-//     fetchOverview,
-//     fetchEventsByDate,
-//     fetchUsersByDate,
-//     fetchDeletedUsersByDate,
-//     fetchPublicAndPrivateEvents,
-//     loading,
-//     error,
-//   } = useAdminStatistics();
+import { useState, useEffect } from "react"
+import { useAdminStatistics } from "@/hooks/useAdminStatistics"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Progress } from "@/components/ui/progress"
+import { Users, UserPlus, Calendar, MessageSquare, AlertTriangle, Eye, EyeOff } from "lucide-react"
+import { BarChart, LineChart, PieChart } from '@/pages/Dashboard/Admin/components/dashboard/charts/index.js';
+import {
+  DiscussionsTable,
+  EventsTable,
+  UsersTable,
+} from '@/pages/Dashboard/Admin/components/dashboard/tables/index.js';
 
-//   useEffect(() => {
-//     const startDate = "2025-01-01";
-//     const endDate = "2025-05-08";
-
-//     fetchOverview();
-//     fetchEventsByDate({ startDate, endDate });
-//     fetchUsersByDate({ startDate, endDate });
-//     fetchDeletedUsersByDate({ startDate, endDate });
-//     fetchPublicAndPrivateEvents();
-//   }, [fetchOverview, fetchEventsByDate, fetchUsersByDate, fetchDeletedUsersByDate, fetchPublicAndPrivateEvents]);
-
-//   if (loading) return <div>Loading...</div>;
-//   if (error) return <div>Error: {error}</div>;
-
-//   // Sample data (in a real app, this would come from API calls)
-//   const [overviewData] = useState({
-//     success: true,
-//     message: "Overview statistics fetched successfully",
-//     content: {
-//       totalUsers: 49,
-//       activeUsers: 16,
-//       totalDiscussionPosts: 118,
-//       activeDiscussionPosts: 24,
-//       totalEvents: 32,
-//       deletedEvents: 14,
-//       lastWeek: {
-//         totalUsers: 11,
-//         activeUsers: 6,
-//         totalDiscussionPosts: 9,
-//         activeDiscussionPosts: 2,
-//         totalEvents: 11,
-//         deletedEvents: 8,
-//       },
-//     },
-//   });
-
-//   const [eventsByDateData] = useState({
-//     success: true,
-//     message: "Events by date fetched successfully",
-//     content: [
-//       { count: 7, date: "2025-04-16" },
-//       { count: 3, date: "2025-04-18" },
-//       { count: 1, date: "2025-04-22" },
-//       { count: 1, date: "2025-04-23" },
-//       { count: 2, date: "2025-04-28" },
-//       { count: 5, date: "2025-04-29" },
-//       { count: 2, date: "2025-04-30" },
-//       { count: 1, date: "2025-05-01" },
-//       { count: 8, date: "2025-05-03" },
-//       { count: 2, date: "2025-05-07" },
-//     ],
-//   });
-
-//   const [rsvpTrendData] = useState({
-//     success: true,
-//     message: "RSVP trend fetched successfully",
-//     content: [
-//       { date: "2025-04-22", accepted: 0, denied: 0, pending: 0 },
-//       { date: "2025-04-23", accepted: 0, denied: 0, pending: 0 },
-//       { date: "2025-04-30", accepted: 0, denied: 0, pending: 0 },
-//     ],
-//   });
-
-//   const [deletedUsersData] = useState({
-//     success: true,
-//     message: "Deleted users by date fetched successfully",
-//     content: [{ count: 8, date: "2025-05-02" }],
-//   });
-
-//   // Sample data for public vs private events
-//   const [eventVisibilityData] = useState({
-//     publicEvents: 22,
-//     privateEvents: 10,
-//   });
-
-//   // Format data for charts
-//   const eventsByDateChartData = eventsByDate?.map((item) => ({
-//     date: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-//     Events: item.count,
-//   })) || [];
-
-//   const rsvpChartData = rsvpTrendData.content.map((item) => ({
-//     date: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-//     Accepted: item.accepted,
-//     Denied: item.denied,
-//     Pending: item.pending,
-//   }));
-
-//   const eventVisibilityChartData = [
-//     { category: "Public Events", value: publicAndPrivateEvents?.publicEvents || 0 },
-//     { category: "Private Events", value: publicAndPrivateEvents?.privateEvents || 0 },
-//   ];
-
-//   const deletedUsersChartData = deletedUsersData.content.map((item) => ({
-//     name: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-//     value: item.count,
-//   }));
-
-//   return (
-//     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 bg-gray-50 min-h-screen">
-//       <div className="flex items-center justify-between">
-//         <h2 className="text-3xl font-bold tracking-tight">Admin Dashboard</h2>
-//         <div className="flex items-center space-x-2">
-//           <span className="text-sm text-muted-foreground">Last updated: {new Date().toLocaleString()}</span>
-//         </div>
-//       </div>
-
-//       <Tabs defaultValue="overview" className="space-y-4">
-//         <TabsList className="bg-white border">
-//           <TabsTrigger value="overview">Overview</TabsTrigger>
-//           <TabsTrigger value="users">Users</TabsTrigger>
-//           <TabsTrigger value="events">Events</TabsTrigger>
-//           <TabsTrigger value="discussions">Discussions</TabsTrigger>
-//         </TabsList>
-
-//         <TabsContent value="overview" className="space-y-4">
-//           {/* Stats Cards */}
-//           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-//             {/* Users Card */}
-//             <Card className="bg-white">
-//               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//                 <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-//                 <Users className="h-4 w-4 text-muted-foreground" />
-//               </CardHeader>
-//               <CardContent>
-//                 <div className="text-2xl font-bold">{overview?.totalUsers || 0}</div>
-//                 <p className="text-xs text-muted-foreground">
-//                   {overview?.activeUsers || 0} active users (
-//                   {overview?.totalUsers
-//                     ? Math.round((overview.activeUsers / overview.totalUsers) * 100)
-//                     : 0}
-//                   %)
-//                 </p>
-//                 <div className="mt-3">
-//                   <Progress
-//                     value={(overviewData.content.activeUsers / overviewData.content.totalUsers) * 100}
-//                     className="h-2"
-//                   />
-//                 </div>
-//               </CardContent>
-//             </Card>
-
-//             {/* Discussion Posts Card */}
-//             <Card className="bg-white">
-//               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//                 <CardTitle className="text-sm font-medium">Discussion Posts</CardTitle>
-//                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
-//               </CardHeader>
-//               <CardContent>
-//                 <div className="text-2xl font-bold">{overviewData.content.totalDiscussionPosts}</div>
-//                 <p className="text-xs text-muted-foreground">
-//                   {overviewData.content.activeDiscussionPosts} active posts (
-//                   {Math.round(
-//                     (overviewData.content.activeDiscussionPosts / overviewData.content.totalDiscussionPosts) * 100,
-//                   )}
-//                   %)
-//                 </p>
-//                 <div className="mt-3">
-//                   <Progress
-//                     value={
-//                       (overviewData.content.activeDiscussionPosts / overviewData.content.totalDiscussionPosts) * 100
-//                     }
-//                     className="h-2"
-//                   />
-//                 </div>
-//               </CardContent>
-//             </Card>
-
-//             {/* Events Card */}
-//             <Card className="bg-white">
-//               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//                 <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-//                 <Calendar className="h-4 w-4 text-muted-foreground" />
-//               </CardHeader>
-//               <CardContent>
-//                 <div className="text-2xl font-bold">{overviewData.content.totalEvents}</div>
-//                 <p className="text-xs text-muted-foreground">
-//                   {overviewData.content.deletedEvents} deleted events (
-//                   {Math.round((overviewData.content.deletedEvents / overviewData.content.totalEvents) * 100)}%)
-//                 </p>
-//                 <div className="mt-3">
-//                   <Progress
-//                     value={
-//                       ((overviewData.content.totalEvents - overviewData.content.deletedEvents) /
-//                         overviewData.content.totalEvents) *
-//                       100
-//                     }
-//                     className="h-2"
-//                   />
-//                 </div>
-//               </CardContent>
-//             </Card>
-
-//             {/* New Users Card */}
-//             <Card className="bg-white">
-//               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//                 <CardTitle className="text-sm font-medium">New Users (Last Week)</CardTitle>
-//                 <UserPlus className="h-4 w-4 text-muted-foreground" />
-//               </CardHeader>
-//               <CardContent>
-//                 <div className="text-2xl font-bold">{overviewData.content.lastWeek.totalUsers}</div>
-//                 <p className="text-xs text-muted-foreground">
-//                   {overviewData.content.lastWeek.activeUsers} active new users (
-//                   {Math.round(
-//                     (overviewData.content.lastWeek.activeUsers / overviewData.content.lastWeek.totalUsers) * 100,
-//                   )}
-//                   %)
-//                 </p>
-//                 <div className="mt-3">
-//                   <Progress
-//                     value={(overviewData.content.lastWeek.activeUsers / overviewData.content.lastWeek.totalUsers) * 100}
-//                     className="h-2"
-//                   />
-//                 </div>
-//               </CardContent>
-//             </Card>
-//           </div>
-
-//           {/* Charts Row 1 */}
-//           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-//             {/* Events by Date Chart */}
-//             <Card className="lg:col-span-4 bg-white">
-//               <CardHeader>
-//                 <CardTitle>Events by Date</CardTitle>
-//                 <CardDescription>Number of events created per day</CardDescription>
-//               </CardHeader>
-//               <CardContent>
-//                 <BarChart
-//                   className="h-72"
-//                   data={eventsByDateChartData}
-//                   index="date"
-//                   categories={["Events"]}
-//                   colors={["blue"]}
-//                   valueFormatter={(number) => `${number} events`}
-//                   yAxisWidth={40}
-//                 />
-//               </CardContent>
-//             </Card>
-
-//             {/* Public vs Private Events */}
-//             <Card className="lg:col-span-3 bg-white">
-//               <CardHeader>
-//                 <CardTitle>Event Visibility</CardTitle>
-//                 <CardDescription>Distribution of public vs private events</CardDescription>
-//               </CardHeader>
-//               <CardContent>
-//                 <BarChart
-//                   className="h-72"
-//                   data={eventVisibilityChartData}
-//                   index="category"
-//                   categories={["value"]}
-//                   colors={["blue"]}
-//                   valueFormatter={(number) => `${number} events`}
-//                   yAxisWidth={40}
-//                   layout="vertical"
-//                 />
-//                 <div className="flex justify-center mt-2 space-x-8">
-//                   <div className="flex items-center">
-//                     <Eye className="h-4 w-4 text-blue-500 mr-2" />
-//                     <span className="text-sm">Public: {eventVisibilityData.publicEvents}</span>
-//                   </div>
-//                   <div className="flex items-center">
-//                     <EyeOff className="h-4 w-4 text-indigo-500 mr-2" />
-//                     <span className="text-sm">Private: {eventVisibilityData.privateEvents}</span>
-//                   </div>
-//                 </div>
-//               </CardContent>
-//             </Card>
-//           </div>
-
-//           {/* Charts Row 2 */}
-//           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-//             {/* RSVP Trends */}
-//             <Card className="lg:col-span-4 bg-white">
-//               <CardHeader>
-//                 <CardTitle>RSVP Trends</CardTitle>
-//                 <CardDescription>User responses to event invitations</CardDescription>
-//               </CardHeader>
-//               <CardContent>
-//                 <LineChart
-//                   className="h-72"
-//                   data={rsvpChartData}
-//                   index="date"
-//                   categories={["Accepted", "Denied", "Pending"]}
-//                   colors={["green", "red", "amber"]}
-//                   valueFormatter={(number) => `${number} responses`}
-//                   yAxisWidth={40}
-//                 />
-//               </CardContent>
-//             </Card>
-
-//             {/* Deleted Users */}
-//             <Card className="lg:col-span-3 bg-white">
-//               <CardHeader>
-//                 <CardTitle>Deleted Users</CardTitle>
-//                 <CardDescription>Users who have deleted their accounts</CardDescription>
-//               </CardHeader>
-//               <CardContent>
-//                 {deletedUsersData.content.length > 0 ? (
-//                   <div className="space-y-4">
-//                     <BarList
-//                       data={deletedUsersChartData}
-//                       valueFormatter={(number) => `${number} users`}
-//                       color="amber"
-//                     />
-//                     <div className="pt-2 space-y-2">
-//                       {deletedUsersData.content.map((item, index) => (
-//                         <div key={index} className="flex items-center">
-//                           <AlertTriangle className="h-5 w-5 text-amber-500 mr-2" />
-//                           <div>
-//                             <p className="text-sm font-medium">
-//                               {item.count} users deleted on {new Date(item.date).toLocaleDateString()}
-//                             </p>
-//                           </div>
-//                         </div>
-//                       ))}
-//                     </div>
-//                   </div>
-//                 ) : (
-//                   <div className="h-72 flex items-center justify-center">
-//                     <p className="text-sm text-muted-foreground">No deleted users in this period</p>
-//                   </div>
-//                 )}
-//               </CardContent>
-//             </Card>
-//           </div>
-//         </TabsContent>
-
-//         <TabsContent value="users" className="space-y-4">
-//           <Card className="bg-white">
-//             <CardHeader>
-//               <CardTitle>User Management</CardTitle>
-//               <CardDescription>View and manage all users in the system</CardDescription>
-//             </CardHeader>
-//             <CardContent>
-//               <div className="h-[400px] flex items-center justify-center border rounded-md">
-//                 <p className="text-muted-foreground">User management interface would go here</p>
-//               </div>
-//             </CardContent>
-//           </Card>
-//         </TabsContent>
-
-//         <TabsContent value="events" className="space-y-4">
-//           <Card className="bg-white">
-//             <CardHeader>
-//               <CardTitle>Event Management</CardTitle>
-//               <CardDescription>View and manage all events in the system</CardDescription>
-//             </CardHeader>
-//             <CardContent>
-//               <div className="h-[400px] flex items-center justify-center border rounded-md">
-//                 <p className="text-muted-foreground">Event management interface would go here</p>
-//               </div>
-//             </CardContent>
-//           </Card>
-//         </TabsContent>
-
-//         <TabsContent value="discussions" className="space-y-4">
-//           <Card className="bg-white">
-//             <CardHeader>
-//               <CardTitle>Discussion Management</CardTitle>
-//               <CardDescription>View and manage all discussion posts</CardDescription>
-//             </CardHeader>
-//             <CardContent>
-//               <div className="h-[400px] flex items-center justify-center border rounded-md">
-//                 <p className="text-muted-foreground">Discussion management interface would go here</p>
-//               </div>
-//             </CardContent>
-//           </Card>
-//         </TabsContent>
-//       </Tabs>
-//     </div>
-//   );
-// }
-
-"use client";
-import { useState, useEffect } from "react";
-import { useAdminStatistics } from "@/hooks/useAdminStatistics";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { BarChart, BarList, LineChart } from "@tremor/react";
-import { Users, UserPlus, Calendar, MessageSquare, AlertTriangle, Eye, EyeOff } from "lucide-react";
 
 export default function AdminDashboard() {
   const {
@@ -418,389 +26,352 @@ export default function AdminDashboard() {
     fetchPublicAndPrivateEvents,
     loading,
     error,
-  } = useAdminStatistics();
+  } = useAdminStatistics()
+
+  const [screenSize, setScreenSize] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 1024,
+    isMobile: false,
+    isExtraSmall: false,
+  })
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth
+      setScreenSize({
+        width,
+        isMobile: width < 640,
+        isExtraSmall: width < 375,
+      })
+    }
+
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   useEffect(() => {
     // Dynamic date range: last 30 days
-    const endDate = new Date().toISOString().split("T")[0]; // Today
-    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]; // 30 days ago
+    const endDate = new Date().toISOString().split("T")[0] // Today
+    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0] // 30 days ago
 
-    fetchOverview();
-    fetchEventsByDate({ startDate, endDate });
-    fetchDeletedUsersByDate({ startDate, endDate });
-    fetchPublicAndPrivateEvents();
-  }, [fetchOverview, fetchEventsByDate, fetchDeletedUsersByDate, fetchPublicAndPrivateEvents]);
+    fetchOverview()
+    fetchEventsByDate({ startDate, endDate })
+    fetchDeletedUsersByDate({ startDate, endDate })
+    fetchPublicAndPrivateEvents()
+  }, [fetchOverview, fetchEventsByDate, fetchDeletedUsersByDate, fetchPublicAndPrivateEvents])
 
   // Sample data as fallback
   const [overviewData] = useState({
     success: true,
     message: "Overview statistics fetched successfully",
     content: {
-      totalUsers: 49,
-      activeUsers: 16,
-      totalDiscussionPosts: 118,
-      activeDiscussionPosts: 24,
-      totalEvents: 32,
-      deletedEvents: 14,
+      totalUsers: 0,
+      activeUsers: 0,
+      totalDiscussionPosts: 0,
+      activeDiscussionPosts: 0,
+      totalEvents: 0,
+      deletedEvents: 0,
       lastWeek: {
-        totalUsers: 11,
-        activeUsers: 6,
-        totalDiscussionPosts: 9,
-        activeDiscussionPosts: 2,
-        totalEvents: 11,
-        deletedEvents: 8,
+        totalUsers: 0,
+        activeUsers: 0,
+        totalDiscussionPosts: 0,
+        activeDiscussionPosts: 0,
+        totalEvents: 0,
+        deletedEvents: 0,
       },
     },
-  });
+  })
 
   const [eventsByDateData] = useState({
     success: true,
     message: "Events by date fetched successfully",
-    content: [
-      { count: 7, date: "2025-04-16" },
-      { count: 3, date: "2025-04-18" },
-      { count: 1, date: "2025-04-22" },
-      { count: 1, date: "2025-04-23" },
-      { count: 2, date: "2025-04-28" },
-      { count: 5, date: "2025-04-29" },
-      { count: 2, date: "2025-04-30" },
-      { count: 1, date: "2025-05-01" },
-      { count: 8, date: "2025-05-03" },
-      { count: 2, date: "2025-05-07" },
-    ],
-  });
+    content: [],
+  })
 
-  // TODO: Replace with API call for RSVP trends
+  // Sample RSVP trend data
   const [rsvpTrendData] = useState({
     success: true,
     message: "RSVP trend fetched successfully",
-    content: [
-      { date: "2025-04-22", accepted: 0, denied: 0, pending: 0 },
-      { date: "2025-04-23", accepted: 0, denied: 0, pending: 0 },
-      { date: "2025-04-30", accepted: 0, denied: 0, pending: 0 },
-    ],
-  });
+    content: [],
+  })
 
   const [deletedUsersData] = useState({
     success: true,
     message: "Deleted users by date fetched successfully",
-    content: [{ count: 8, date: "2025-05-02" }],
-  });
+    content: [],
+  })
 
   const [eventVisibilityData] = useState({
-    publicEvents: 22,
-    privateEvents: 10,
-  });
+    publicEvents: 0,
+    privateEvents: 0,
+  })
+
 
   // Use sample data if API fails
-  const finalOverview = error ? overviewData.content : overview;
-  const finalEventsByDate = error ? eventsByDateData.content : eventsByDate;
-  const finalDeletedUsersByDate = error ? deletedUsersData.content : deletedUsersByDate;
-  const finalPublicAndPrivateEvents = error ? eventVisibilityData : publicAndPrivateEvents;
+  const finalOverview = error ? overviewData.content : overview
+  const finalEventsByDate = error ? eventsByDateData.content : eventsByDate
+  const finalDeletedUsersByDate = error ? deletedUsersData.content : deletedUsersByDate
+  const finalPublicAndPrivateEvents = error ? eventVisibilityData : publicAndPrivateEvents
 
-  // Format data for charts
-  const eventsByDateChartData = finalEventsByDate?.map((item) => ({
-    date: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-    Events: item.count,
-  })) || [];
+  // Format data for charts - ensure proper formatting for small screens
+  const eventsByDateChartData =
+    finalEventsByDate?.map((item) => {
+      // For small screens, use shorter date format
+      const dateFormat = screenSize.isExtraSmall
+        ? { month: "short", day: "numeric" }
+        : { month: "short", day: "numeric" }
 
-  const rsvpChartData = rsvpTrendData.content.map((item) => ({
-    date: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-    Accepted: item.accepted,
-    Denied: item.denied,
-    Pending: item.pending,
-  }));
+      return {
+        name: new Date(item.date).toLocaleDateString("en-US", dateFormat),
+        total: item.count,
+      }
+    }) || []
+
+  // Limit the number of data points for small screens
+  const limitedEventsByDateChartData = screenSize.isExtraSmall
+    ? eventsByDateChartData.slice(-6) // Show only the last 6 data points on very small screens
+    : eventsByDateChartData
+
+  const rsvpChartData = rsvpTrendData.content.map((item) => {
+    const dateFormat = screenSize.isExtraSmall ? { month: "short", day: "numeric" } : { month: "short", day: "numeric" }
+
+    return {
+      name: new Date(item.date).toLocaleDateString("en-US", dateFormat),
+      accepted: item.accepted,
+      denied: item.denied,
+      pending: item.pending,
+    }
+  })
 
   const eventVisibilityChartData = [
-    { category: "Public Events", value: finalPublicAndPrivateEvents?.publicEvents || 0 },
-    { category: "Private Events", value: finalPublicAndPrivateEvents?.privateEvents || 0 },
-  ];
-
-  const deletedUsersChartData = finalDeletedUsersByDate.map((item) => ({
-    name: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-    value: item.count,
-  }));
+    { name: "Public", value: finalPublicAndPrivateEvents?.publicEvents || 0 },
+    { name: "Private", value: finalPublicAndPrivateEvents?.privateEvents || 0 },
+  ]
 
   // Helper to avoid division by zero
   const safePercentage = (numerator, denominator) => {
-    return denominator > 0 ? Math.round((numerator / denominator) * 100) : 0;
-  };
+    return denominator > 0 ? Math.round((numerator / denominator) * 100) : 0
+  }
 
-  if (loading) return <div>Loading...</div>;
-  if (error) console.warn("API error, using sample data:", error);
+  if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>
+  if (error) console.warn("API error, using sample data:", error)
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 bg-gray-50 min-h-screen">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Admin Dashboard</h2>
+    <div className="flex-1 space-y-4 p-2 sm:p-4 md:p-8 pt-6 bg-gray-50 min-h-screen overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Admin Dashboard</h2>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-muted-foreground">Last updated: {new Date().toLocaleString()}</span>
+          <span className="text-xs sm:text-sm text-muted-foreground">
+            Last updated:{" "}
+            {new Date().toLocaleString(undefined, {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
         </div>
       </div>
-
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="bg-white border">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="events">Events</TabsTrigger>
-          <TabsTrigger value="discussions">Discussions</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          {/* Stats Cards */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {/* Users Card */}
-            <Card className="bg-white">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{finalOverview?.totalUsers || 0}</div>
-                <p className="text-xs text-muted-foreground">
-                  {finalOverview?.activeUsers || 0} active users (
-                  {safePercentage(finalOverview?.activeUsers, finalOverview?.totalUsers)}%)
-                </p>
-                <div className="mt-3">
-                  <Progress
-                    value={safePercentage(finalOverview?.activeUsers, finalOverview?.totalUsers)}
-                    className="h-2"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Discussion Posts Card */}
-            <Card className="bg-white">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Discussion Posts</CardTitle>
-                <MessageSquare className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{finalOverview?.totalDiscussionPosts || 0}</div>
-                <p className="text-xs text-muted-foreground">
-                  {finalOverview?.activeDiscussionPosts || 0} active posts (
-                  {safePercentage(
-                    finalOverview?.activeDiscussionPosts,
-                    finalOverview?.totalDiscussionPosts
-                  )}%)
-                </p>
-                <div className="mt-3">
-                  <Progress
-                    value={safePercentage(
-                      finalOverview?.activeDiscussionPosts,
-                      finalOverview?.totalDiscussionPosts
-                    )}
-                    className="h-2"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Events Card */}
-            <Card className="bg-white">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{finalOverview?.totalEvents || 0}</div>
-                <p className="text-xs text-muted-foreground">
-                  {finalOverview?.deletedEvents || 0} deleted events (
-                  {safePercentage(finalOverview?.deletedEvents, finalOverview?.totalEvents)}%)
-                </p>
-                <div className="mt-3">
-                  <Progress
-                    value={safePercentage(
-                      finalOverview?.totalEvents - (finalOverview?.deletedEvents || 0),
-                      finalOverview?.totalEvents
-                    )}
-                    className="h-2"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* New Users Card */}
-            <Card className="bg-white">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">New Users (Last Week)</CardTitle>
-                <UserPlus className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{finalOverview?.lastWeek.totalUsers || 0}</div>
-                <p className="text-xs text-muted-foreground">
-                  {finalOverview?.lastWeek.activeUsers || 0} active new users (
-                  {safePercentage(
-                    finalOverview?.lastWeek.activeUsers,
-                    finalOverview?.lastWeek.totalUsers
-                  )}%)
-                </p>
-                <div className="mt-3">
-                  <Progress
-                    value={safePercentage(
-                      finalOverview?.lastWeek.activeUsers,
-                      finalOverview?.lastWeek.totalUsers
-                    )}
-                    className="h-2"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Charts Row 1 */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            {/* Events by Date Chart */}
-            <Card className="lg:col-span-4 bg-white">
-              <CardHeader>
-                <CardTitle>Events by Date</CardTitle>
-                <CardDescription>Number of events created per day</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <BarChart
-                  className="h-72"
-                  data={eventsByDateChartData}
-                  index="date"
-                  categories={["Events"]}
-                  colors={["blue"]}
-                  valueFormatter={(number) => `${number} events`}
-                  yAxisWidth={40}
+      <div className={"space-y-4"}>
+        <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
+          {/* Users Card */}
+          <Card className="bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className="text-xs sm:text-sm font-medium truncate">Total Users</CardTitle>
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold">{finalOverview?.totalUsers || 0}</div>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                {finalOverview?.activeUsers || 0} active users (
+                {safePercentage(finalOverview?.activeUsers, finalOverview?.totalUsers)}%)
+              </p>
+              <div className="mt-2 sm:mt-3">
+                <Progress
+                  value={safePercentage(finalOverview?.activeUsers, finalOverview?.totalUsers)}
+                  className="h-1 sm:h-2"
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Public vs Private Events */}
-            <Card className="lg:col-span-3 bg-white">
-              <CardHeader>
-                <CardTitle>Event Visibility</CardTitle>
-                <CardDescription>Distribution of public vs private events</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <BarChart
-                  className="h-72"
-                  data={eventVisibilityChartData}
-                  index="category"
-                  categories={["value"]}
-                  colors={["blue"]}
-                  valueFormatter={(number) => `${number} events`}
-                  yAxisWidth={40}
-                  layout="vertical"
+          {/* Discussion Posts Card */}
+          <Card className="bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className="text-xs sm:text-sm font-medium truncate">Discussion Posts</CardTitle>
+              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold">
+                {finalOverview?.totalDiscussionPosts || 0}
+              </div>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                {finalOverview?.activeDiscussionPosts || 0} active posts (
+                {safePercentage(finalOverview?.activeDiscussionPosts, finalOverview?.totalDiscussionPosts)}%)
+              </p>
+              <div className="mt-2 sm:mt-3">
+                <Progress
+                  value={safePercentage(finalOverview?.activeDiscussionPosts, finalOverview?.totalDiscussionPosts)}
+                  className="h-1 sm:h-2"
                 />
-                <div className="flex justify-center mt-2 space-x-8">
-                  <div className="flex items-center">
-                    <Eye className="h-4 w-4 text-blue-500 mr-2" />
-                    <span className="text-sm">Public: {finalPublicAndPrivateEvents?.publicEvents || 0}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <EyeOff className="h-4 w-4 text-indigo-500 mr-2" />
-                    <span className="text-sm">Private: {finalPublicAndPrivateEvents?.privateEvents || 0}</span>
-                  </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Events Card */}
+          <Card className="bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className="text-xs sm:text-sm font-medium truncate">Total Events</CardTitle>
+              <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold">{finalOverview?.totalEvents || 0}</div>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                {finalOverview?.deletedEvents || 0} deleted events (
+                {safePercentage(finalOverview?.deletedEvents, finalOverview?.totalEvents)}%)
+              </p>
+              <div className="mt-2 sm:mt-3">
+                <Progress
+                  value={safePercentage(
+                    finalOverview?.totalEvents - (finalOverview?.deletedEvents || 0),
+                    finalOverview?.totalEvents,
+                  )}
+                  className="h-1 sm:h-2"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* New Users Card */}
+          <Card className="bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className="text-xs sm:text-sm font-medium truncate">New Users (Last Week)</CardTitle>
+              <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold">
+                {finalOverview?.lastWeek?.totalUsers || 0}
+              </div>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                {finalOverview?.lastWeek?.activeUsers || 0} active new users (
+                {safePercentage(finalOverview?.lastWeek?.activeUsers, finalOverview?.lastWeek?.totalUsers)}%)
+              </p>
+              <div className="mt-2 sm:mt-3">
+                <Progress
+                  value={safePercentage(finalOverview?.lastWeek?.activeUsers, finalOverview?.lastWeek?.totalUsers)}
+                  className="h-1 sm:h-2"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Charts Row 1 */}
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+          {/* Events by Date Chart */}
+          <Card className="bg-white lg:col-span-4">
+            <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
+              <CardTitle className="text-sm sm:text-base md:text-lg">Events by Date</CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs">Number of events created per day</CardDescription>
+            </CardHeader>
+            <CardContent className="p-1 sm:p-2 md:p-4">
+              <BarChart
+                data={limitedEventsByDateChartData}
+                // height={screenSize.isExtraSmall ? 180 : screenSize.isMobile ? 200 : 300}
+                // valueFormatter={(value) => `${value} events`}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Public vs Private Events */}
+          <Card className="bg-white lg:col-span-3">
+            <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
+              <CardTitle className="text-sm sm:text-base md:text-lg">Event Visibility</CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs">
+                Distribution of public vs private events
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-1 sm:p-2 md:p-4">
+              <PieChart
+                data={eventVisibilityChartData}
+                // height={screenSize.isExtraSmall ? 180 : screenSize.isMobile ? 200 : 300}
+                // valueFormatter={(value) => `${value} events`}
+              />
+              <div className="flex flex-col xs:flex-row justify-center mt-2 space-y-2 xs:space-y-0 xs:space-x-8">
+                <div className="flex items-center justify-center">
+                  <Eye className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 mr-1 sm:mr-2" />
+                  <span className="text-[10px] sm:text-xs">
+                      Public: {finalPublicAndPrivateEvents?.publicEvents || 0}
+                    </span>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+                <div className="flex items-center justify-center">
+                  <EyeOff className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-500 mr-1 sm:mr-2" />
+                  <span className="text-[10px] sm:text-xs">
+                      Private: {finalPublicAndPrivateEvents?.privateEvents || 0}
+                    </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* Charts Row 2 */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            {/* RSVP Trends */}
-            <Card className="lg:col-span-4 bg-white">
-              <CardHeader>
-                <CardTitle>RSVP Trends</CardTitle>
-                <CardDescription>User responses to event invitations</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <LineChart
-                  className="h-72"
-                  data={rsvpChartData}
-                  index="date"
-                  categories={["Accepted", "Denied", "Pending"]}
-                  colors={["green", "red", "amber"]}
-                  valueFormatter={(number) => `${number} responses`}
-                  yAxisWidth={40}
-                />
-              </CardContent>
-            </Card>
+        {/* Charts Row 2 */}
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+          {/* RSVP Trends */}
+          <Card className="bg-white lg:col-span-4">
+            <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
+              <CardTitle className="text-sm sm:text-base md:text-lg">RSVP Trends</CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs">
+                User responses to event invitations
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-1 sm:p-2 md:p-4">
+              <LineChart
+                data={rsvpChartData}
+                height={screenSize.isExtraSmall ? 180 : screenSize.isMobile ? 200 : 300}
+                series={[
+                  { dataKey: "accepted", color: "#4ade80" },
+                  { dataKey: "denied", color: "#f87171" },
+                  { dataKey: "pending", color: "#facc15" },
+                ]}
+                valueFormatter={(value) => `${value} responses`}
+              />
+            </CardContent>
+          </Card>
 
-            {/* Deleted Users */}
-            <Card className="lg:col-span-3 bg-white">
-              <CardHeader>
-                <CardTitle>Deleted Users</CardTitle>
-                <CardDescription>Users who have deleted their accounts</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {finalDeletedUsersByDate.length > 0 ? (
-                  <div className="space-y-4">
-                    <BarList
-                      data={deletedUsersChartData}
-                      valueFormatter={(number) => `${number} users`}
-                      color="amber"
-                    />
-                    <div className="pt-2 space-y-2">
-                      {finalDeletedUsersByDate.map((item, index) => (
-                        <div key={index} className="flex items-center">
-                          <AlertTriangle className="h-5 w-5 text-amber-500 mr-2" />
-                          <div>
-                            <p className="text-sm font-medium">
-                              {item.count} users deleted on {new Date(item.date).toLocaleDateString()}
-                            </p>
-                          </div>
+          {/* Deleted Users */}
+          <Card className="bg-white lg:col-span-3">
+            <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
+              <CardTitle className="text-sm sm:text-base md:text-lg">Deleted Users</CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs">
+                Users who have deleted their accounts
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+              {finalDeletedUsersByDate.length > 0 ? (
+                <div className="space-y-2 sm:space-y-4">
+                  <div className="pt-1 sm:pt-2 space-y-1 sm:space-y-2">
+                    {finalDeletedUsersByDate.map((item, index) => (
+                      <div key={index} className="flex items-center">
+                        <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500 mr-1 sm:mr-2" />
+                        <div>
+                          <p className="text-[10px] sm:text-xs md:text-sm font-medium">
+                            {item.count} users deleted on {new Date(item.date).toLocaleDateString()}
+                          </p>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                ) : (
-                  <div className="h-72 flex items-center justify-center">
-                    <p className="text-sm text-muted-foreground">No deleted users in this period</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="users" className="space-y-4">
-          <Card className="bg-white">
-            <CardHeader>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>View and manage all users in the system</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[400px] flex items-center justify-center border rounded-md">
-                <p className="text-muted-foreground">User management interface would go here</p>
-              </div>
+                </div>
+              ) : (
+                <div className="h-[180px] sm:h-[200px] flex items-center justify-center">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">No deleted users in this period</p>
+                </div>
+              )}
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="events" className="space-y-4">
-          <Card className="bg-white">
-            <CardHeader>
-              <CardTitle>Event Management</CardTitle>
-              <CardDescription>View and manage all events in the system</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[400px] flex items-center justify-center border rounded-md">
-                <p className="text-muted-foreground">Event management interface would go here</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="discussions" className="space-y-4">
-          <Card className="bg-white">
-            <CardHeader>
-              <CardTitle>Discussion Management</CardTitle>
-              <CardDescription>View and manage all discussion posts</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[400px] flex items-center justify-center border rounded-md">
-                <p className="text-muted-foreground">Discussion management interface would go here</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
