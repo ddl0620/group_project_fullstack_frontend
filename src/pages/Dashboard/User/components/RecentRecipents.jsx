@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import {
   flexRender,
@@ -20,9 +20,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
 } from "./ui/dropdown-menu"
+import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 
-export function RecentRecipients({ fullTable = false, data = [] }) {
-  console.log("Recipients Data in Component:", data)
+function RecentRecipients({ fullTable = false, data = [] }) {
+  // Render counter for debugging
+  const renderCount = useRef(0)
+  useEffect(() => {
+    renderCount.current += 1
+    console.log(`RecentRecipients Render Count: ${renderCount.current}`)
+  })
+
+  // Log data changes
+  useEffect(() => {
+    console.log("Recipients Data in Component:", data)
+  }, [data])
 
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
@@ -40,11 +51,7 @@ export function RecentRecipients({ fullTable = false, data = [] }) {
       ),
       cell: ({ row }) => (
         <div className="flex items-center">
-          <img
-            className="h-8 w-8 rounded-full"
-            src={row.original.avatar}
-            alt={row.getValue("name")}
-          />
+          <CustomAvatar fallbackText={row.name} src={row.avatar} />
           <span className="ml-2">{row.getValue("name")}</span>
         </div>
       ),
@@ -107,30 +114,30 @@ export function RecentRecipients({ fullTable = false, data = [] }) {
             onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
             className="max-w-sm"
           />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns <MoreHorizontal className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  )
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/*<DropdownMenu>*/}
+          {/*  <DropdownMenuTrigger asChild>*/}
+          {/*    <Button variant="outline" className="ml-auto">*/}
+          {/*      Columns <MoreHorizontal className="ml-2 h-4 w-4" />*/}
+          {/*    </Button>*/}
+          {/*  </DropdownMenuTrigger>*/}
+          {/*  <DropdownMenuContent align="end">*/}
+          {/*    {table*/}
+          {/*      .getAllColumns()*/}
+          {/*      .filter((column) => column.getCanHide())*/}
+          {/*      .map((column) => {*/}
+          {/*        return (*/}
+          {/*          <DropdownMenuCheckboxItem*/}
+          {/*            key={column.id}*/}
+          {/*            className="capitalize"*/}
+          {/*            checked={column.getIsVisible()}*/}
+          {/*            onCheckedChange={(value) => column.toggleVisibility(!!value)}*/}
+          {/*          >*/}
+          {/*            {column.id}*/}
+          {/*          </DropdownMenuCheckboxItem>*/}
+          {/*        )*/}
+          {/*      })}*/}
+          {/*  </DropdownMenuContent>*/}
+          {/*</DropdownMenu>*/}
         </div>
       )}
       <div className="rounded-md border">
@@ -191,3 +198,5 @@ export function RecentRecipients({ fullTable = false, data = [] }) {
     </div>
   )
 }
+
+export default React.memo(RecentRecipients)

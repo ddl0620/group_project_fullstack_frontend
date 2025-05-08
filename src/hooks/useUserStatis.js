@@ -1,14 +1,4 @@
-// src/hooks/useUserStatis.js
-import { useDispatch, useSelector } from "react-redux"
-import { useCallback } from "react"
-import {
-  setEngagementStats,
-  setInvitationsOverTime,
-  setRsvpDistribution,
-  setRecipients,
-  setError,
-  setLoading,
-} from "@/store/slices/userStatisSlice"
+import { useState, useCallback } from "react"
 import {
   getEngagementStatsAPI,
   getInvitationsOverTimeAPI,
@@ -17,79 +7,94 @@ import {
 } from "@/services/UserStatisService"
 
 export const useUserStatis = () => {
-  const dispatch = useDispatch()
-  const engagementStats = useSelector((state) => state.userStatis.engagementStats)
-  const invitationsOverTime = useSelector((state) => state.userStatis.invitationsOverTime)
-  const rsvpDistribution = useSelector((state) => state.userStatis.rsvpDistribution)
-  const recipients = useSelector((state) => state.userStatis.recipients)
+  const [engagementStats, setEngagementStats] = useState(null)
+  const [invitationsOverTime, setInvitationsOverTime] = useState([])
+  const [rsvpDistribution, setRsvpDistribution] = useState([])
+  const [recipients, setRecipients] = useState([])
+  const [totalRecipients, setTotalRecipients] = useState(0)
+  const [loadingEngagementStats, setLoadingEngagementStats] = useState(false)
+  const [loadingInvitationsOverTime, setLoadingInvitationsOverTime] = useState(false)
+  const [loadingRsvpDistribution, setLoadingRsvpDistribution] = useState(false)
+  const [loadingRecipients, setLoadingRecipients] = useState(false)
+  const [error, setError] = useState(null)
 
   const fetchEngagementStats = useCallback(async () => {
     try {
-      dispatch(setLoading(true))
+      setLoadingEngagementStats(true)
       const response = await getEngagementStatsAPI()
       if (!response.success) throw new Error(response.message)
-      dispatch(setEngagementStats(response.content))
+      setEngagementStats(response.content)
     } catch (error) {
       console.error("Failed to fetch engagement stats:", error)
-      dispatch(setError(error.message))
+      setError(error.message)
     } finally {
-      dispatch(setLoading(false))
+      setLoadingEngagementStats(false)
     }
-  }, [dispatch])
+  }, [])
 
   const fetchInvitationsOverTime = useCallback(async (startDate, endDate) => {
     try {
-      dispatch(setLoading(true))
+      setLoadingInvitationsOverTime(true)
       const response = await getInvitationsOverTimeAPI({ startDate, endDate })
       if (!response.success) throw new Error(response.message)
-      dispatch(setInvitationsOverTime(response.content))
+      setInvitationsOverTime(response.content)
     } catch (error) {
       console.error("Failed to fetch invitations over time:", error)
-      dispatch(setError(error.message))
+      setError(error.message)
     } finally {
-      dispatch(setLoading(false))
+      setLoadingInvitationsOverTime(false)
     }
-  }, [dispatch])
+  }, [])
 
   const fetchRsvpDistribution = useCallback(async () => {
     try {
-      dispatch(setLoading(true))
+      setLoadingRsvpDistribution(true)
       const response = await getRsvpDistributionAPI()
       if (!response.success) throw new Error(response.message)
-      dispatch(setRsvpDistribution(response.content))
+      setRsvpDistribution(response.content)
     } catch (error) {
       console.error("Failed to fetch RSVP distribution:", error)
-      dispatch(setError(error.message))
+      setError(error.message)
     } finally {
-      dispatch(setLoading(false))
+      setLoadingRsvpDistribution(false)
     }
-  }, [dispatch])
+  }, [])
 
   const fetchRecipients = useCallback(async (page = 1, limit = 10) => {
     try {
-      dispatch(setLoading(true))
+      setLoadingRecipients(true)
       const response = await getRecipientsAPI({ page, limit })
-      console.log("Recipients API Response:", response) // Kiểm tra dữ liệu trả về từ API
+      console.log("Recipients API Response:", response)
+      console.log("Recipients Content:", response.content)
+      console.log("Recipients Array:", response.content?.recipients)
       if (!response.success) throw new Error(response.message)
-      const formattedData = {
-        recipients: response.content.recipients || [],
-        total: response.content.pagination?.total || 0,
-      }
-      console.log("Formatted Recipients Data:", formattedData) // Kiểm tra dữ liệu đã format
-      dispatch(setRecipients(formattedData))
+      setRecipients(response.content.recipients || [])
+      setTotalRecipients(response.content.pagination?.total || 0)
     } catch (error) {
       console.error("Failed to fetch recipients:", error)
-      dispatch(setError(error.message))
+      setError(error.message)
     } finally {
-      dispatch(setLoading(false))
+      setLoadingRecipients(false)
     }
-  }, [dispatch]) // Dependency chỉ chứa `dispatch`
+  }, [])
 
   return {
     engagementStats,
+    setEngagementStats,
     invitationsOverTime,
+    setInvitationsOverTime,
     rsvpDistribution,
+    setRsvpDistribution,
     recipients,
+    setRecipients,
+    totalRecipients,
+    setTotalRecipients,
+    loadingEngagementStats,
+    loadingInvitationsOverTime,
+    loadingRsvpDistribution,
+    loadingRecipients,
+    error,
+    setError,
     fetchEngagementStats,
     fetchInvitationsOverTime,
     fetchRsvpDistribution,
