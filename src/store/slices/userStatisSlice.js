@@ -26,9 +26,11 @@ const userStatisSlice = createSlice({
       state.rsvpTrend = action.payload;
     },
     setRsvpDistribution(state, action) {
+      console.log("Setting RSVP Distribution in Redux:", action.payload) // Kiểm tra dữ liệu được lưu vào Redux
       state.rsvpDistribution = action.payload;
     },
     setRecipients(state, action) {
+      console.log("Setting Recipients in Redux:", action.payload) // Kiểm tra dữ liệu được lưu vào Redux
       state.recipients = action.payload.recipients;
       state.totalRecipients = action.payload.total;
     },

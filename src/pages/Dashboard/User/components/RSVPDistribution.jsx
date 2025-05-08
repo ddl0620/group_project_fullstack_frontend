@@ -1,15 +1,9 @@
 "use client"
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Legend } from "recharts"
-import { ChartContainer, ChartTooltipContent } from "./ui/index"
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Legend, Tooltip } from "recharts"
+import { ChartContainer } from "./ui/index"
 
-export function RsvpDistribution() {
-  // Sample data for RSVP distribution
-  const data = [
-    { name: "Accepted", value: 842 },
-    { name: "Denied", value: 77 },
-    { name: "Pending", value: 329 },
-  ]
-
+export function RsvpDistribution({ data }) {
+  console.log("RSVP Distribution Data in Component:", data) // Kiểm tra dữ liệu được truyền vào component
   return (
     <ChartContainer
       config={{
@@ -31,9 +25,9 @@ export function RsvpDistribution() {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis dataKey="status" />
           <YAxis />
-          <ChartTooltipContent />
+          <Tooltip />
           <Legend />
           <Bar dataKey="value" fill="var(--color-value)" />
         </BarChart>

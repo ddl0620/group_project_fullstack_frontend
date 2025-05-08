@@ -11,15 +11,15 @@ export const getEngagementStatsAPI = async (params = {}) => {
   return response.data;
 };
 
-export const getInvitationsOverTimeAPI = async (params) => {
-  const response = await APIServices.get(
-    '/api/v1/userstatis/statis/invitations-over-time',
-    {
-      params,
-    }
-  );
-  return response.data;
-};
+export const getInvitationsOverTimeAPI = async ({ startDate, endDate }) => {
+  const response = await APIServices.get('/api/v1/userstatis/statis/invitations-over-time', {
+    params: {
+      startDate,
+      endDate,
+    },
+  })
+  return response.data
+}
 
 export const getRsvpTrendAPI = async (params) => {
   const response = await APIServices.get(
@@ -41,12 +41,9 @@ export const getRsvpDistributionAPI = async (params = {}) => {
   return response.data;
 };
 
-export const getRecipientsAPI = async (params = {}) => {
-  const response = await APIServices.get(
-    '/api/v1/userstatis/statis/recipients',
-    {
-      params,
-    }
-  );
-  return response.data;
-};
+export const getRecipientsAPI = async ({ page = 1, limit = 10 }) => {
+  const response = await APIServices.get('/api/v1/userstatis/statis/recipients', {
+    params: { page, limit },
+  })
+  return response.data
+}

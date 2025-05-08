@@ -21,6 +21,7 @@ import { ChevronDown, MoreHorizontal, Search, Plus, Trash } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.js';
 
 const RecipientsTable = ({ activeTab, setActiveTab, recipientsData }) => {
+  console.log("Recipients Data in Component:", recipientsData) // Kiểm tra dữ liệu được truyền vào component
   return (
     <Card className="mb-6">
       <CardHeader className="p-4 pb-0">
@@ -178,5 +179,9 @@ const RecipientsTable = ({ activeTab, setActiveTab, recipientsData }) => {
     </Card>
   );
 };
+
+export function RecentRecipients({ fullTable = false, data = [] }) {
+  console.log("Recipients Data in Component:", data); // Kiểm tra dữ liệu được truyền vào component
+}
 
 export default RecipientsTable;
