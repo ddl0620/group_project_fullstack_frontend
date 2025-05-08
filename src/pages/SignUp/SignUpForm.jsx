@@ -1,55 +1,100 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth.js';
-import AuthLink from '../../components/shared/AuthLink.jsx';
-import SubmitButton from '../../components/shared/SubmitButton.jsx';
-import TextInputField from '../../components/shared/TextInputField.jsx';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { useState } from "react"
+import { CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
 
 // Date picker components
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { cn } from "@/lib/utils"
+import TextInputField from '@/components/shared/TextInputField.jsx';
+import OtpVerificationModal from '@/pages/SignUp/OtpVerificationModal.jsx';
+import SubmitButton from '@/components/shared/SubmitButton.jsx';
+import AuthLink from '@/components/shared/AuthLink.jsx';
+
+// Local components
+
+// Mock auth hook
+const useAuth = () => {
+  const handleSignUp = async (userData, setError) => {
+    // Mock implementation
+    console.log("Sign up with:", userData)
+    return true
+  }
+
+  return { handleSignUp }
+}
 
 function SignUpForm() {
   const [userData, setUserData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: 'user',
-    dateOfBirth: undefined, // Add date of birth field
-  });
-  const [error, setError] = useState(null);
-  const { handleSignUp } = useAuth();
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "user",
+    dateOfBirth: undefined,
+  })
+  const [error, setError] = useState(null)
+  const { handleSignUp } = useAuth()
+
+  // OTP modal state
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData((prev) => ({ ...prev, [name]: value }));
-  };
+    const { name, value } = e.target
+    setUserData((prev) => ({ ...prev, [name]: value }))
+  }
 
   // Handle date of birth selection
   const handleDateChange = (date) => {
-    setUserData((prev) => ({ ...prev, dateOfBirth: date }));
-  };
+    setUserData((prev) => ({ ...prev, dateOfBirth: date }))
+  }
 
   const handleRegister = async (e) => {
-    e.preventDefault(); // Prevent default form behavior
-    await handleSignUp(userData, setError);
-  };
+    e.preventDefault() // Prevent default form behavior
+
+    // Basic validation
+    if (userData.password !== userData.confirmPassword) {
+      setError("Passwords don't match")
+      return
+    }
+
+    if (!userData.name || !userData.email || !userData.password) {
+      setError("Please fill in all required fields")
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      // Simulate API call to check if email is valid
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      // If everything is valid, open OTP modal
+      setError(null)
+      setIsOtpModalOpen(true)
+    } catch (err) {
+      setError("An error occurred. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Handle OTP verification
+  const handleOtpVerification = async (success) => {
+    setIsOtpModalOpen(false)
+
+    if (success) {
+      // If OTP verification was successful, create the account
+      await handleSignUp(userData, setError)
+    }
+  }
 
   return (
-    <form
-      className="mx-auto flex w-full max-w-sm flex-col justify-center p-6 md:p-10"
-      onSubmit={handleRegister}
-    >
+    <form className="mx-auto flex w-full max-w-sm flex-col justify-center p-6 md:p-10" onSubmit={handleRegister}>
       <div>
         <h2 className="mb-10 text-left text-3xl font-semibold tracking-tight text-neutral-800">
           Create an account. <br /> Join us today!
@@ -65,6 +110,7 @@ function SignUpForm() {
             value={userData.name}
             onChange={handleChange}
             placeholder="Enter your name"
+            required
           />
 
           <TextInputField
@@ -74,14 +120,12 @@ function SignUpForm() {
             value={userData.email}
             onChange={handleChange}
             placeholder="Enter your email"
+            required
           />
 
           {/* Date of Birth Field */}
           <div className="space-y-2">
-            <label
-              htmlFor="dateOfBirth"
-              className="block text-sm font-medium text-neutral-700"
-            >
+            <label htmlFor="dateOfBirth" className="block text-sm font-medium text-neutral-700">
               Date of Birth
             </label>
             <Popover>
@@ -90,16 +134,12 @@ function SignUpForm() {
                   id="dateOfBirth"
                   variant="outline"
                   className={cn(
-                    'w-full justify-start border border-neutral-300 bg-white text-left font-normal hover:bg-neutral-50',
-                    !userData.dateOfBirth && 'text-neutral-500'
+                    "w-full justify-start border border-neutral-300 bg-white text-left font-normal hover:bg-neutral-50",
+                    !userData.dateOfBirth && "text-neutral-500",
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {userData.dateOfBirth ? (
-                    format(userData.dateOfBirth, 'PPP')
-                  ) : (
-                    <span>Select your date of birth</span>
-                  )}
+                  {userData.dateOfBirth ? format(userData.dateOfBirth, "PPP") : <span>Select your date of birth</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -108,9 +148,7 @@ function SignUpForm() {
                   selected={userData.dateOfBirth}
                   onSelect={handleDateChange}
                   initialFocus
-                  disabled={(date) =>
-                    date > new Date() || date < new Date('1900-01-01')
-                  }
+                  disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                 />
               </PopoverContent>
             </Popover>
@@ -123,6 +161,7 @@ function SignUpForm() {
             value={userData.password}
             onChange={handleChange}
             placeholder="Enter your password"
+            required
           />
 
           <TextInputField
@@ -132,24 +171,25 @@ function SignUpForm() {
             value={userData.confirmPassword}
             onChange={handleChange}
             placeholder="Confirm your password"
+            required
           />
 
-          <SubmitButton
-            type="submit"
-            className="mt-5 bg-black p-2 text-white hover:bg-gray-800"
-          >
-            Register
+          <SubmitButton className="mt-5 bg-black p-2 text-white hover:bg-gray-800" disabled={isSubmitting}>
+            {isSubmitting ? "Processing..." : "Register"}
           </SubmitButton>
         </div>
 
-        <AuthLink
-          message={'Already have an account?'}
-          linkText={'Login'}
-          linkHref={'/sign-in'}
-        />
+        <AuthLink message={"Already have an account?"} linkText={"Login"} linkHref={"/sign-in"} />
       </div>
+
+      <OtpVerificationModal
+        isOpen={isOtpModalOpen}
+        onClose={() => setIsOtpModalOpen(false)}
+        onVerify={handleOtpVerification}
+        email={userData.email}
+      />
     </form>
-  );
+  )
 }
 
-export default SignUpForm;
+export default SignUpForm

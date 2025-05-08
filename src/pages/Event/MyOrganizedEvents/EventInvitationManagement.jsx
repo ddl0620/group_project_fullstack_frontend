@@ -61,8 +61,8 @@ const EventInvitationManagement = ({ event }) => {
       return;
     }
     const confirmed = await AlertDialogUtils.info({
-      title: 'Joined Event?',
-      description: 'Are you sure you want to join this event',
+      title: 'Sent Invitation to this user?',
+      description: 'Send to make sure they can join the event.',
       confirmText: 'Join now',
       cancelText: 'Cancel',
     });
@@ -126,17 +126,6 @@ const EventInvitationManagement = ({ event }) => {
           rows={4}
           className="flex-1 resize-none rounded-md border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
         />
-        <Button
-          onClick={handleSendAllInvitations}
-          disabled={!invitationMessage.trim() || participants.length === 0}
-          className={`rounded-md px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors ${
-            !invitationMessage.trim() || participants.length === 0
-              ? 'cursor-not-allowed bg-gray-300'
-              : 'bg-blue-500 hover:bg-blue-600'
-          }`}
-        >
-          Send All
-        </Button>
       </div>
 
       {/* Participant List */}

@@ -82,7 +82,7 @@ export const useInvitation = (callback, deps) => {
         );
 
         if (!response.success) {
-          throw new Error('Failed to fetch invitations');
+          return;
         }
 
         console.log('Fetched invitations:', response.content.invitations);
@@ -97,10 +97,10 @@ export const useInvitation = (callback, deps) => {
         return response;
       } catch (error) {
         dispatch(setError(error.message));
-        Toast.error(
-          'Failed to fetch invitations: ' +
-            (error.response?.data?.message || error.message)
-        );
+        // Toast.error(
+        //   'Failed to fetch invitations: ' +
+        //     (error.response?.data?.message || error.message)
+        // );
         throw error;
       } finally {
         dispatch(setLoading(false));
@@ -115,7 +115,6 @@ export const useInvitation = (callback, deps) => {
 
       // Kiểm tra cache hoặc nếu forceRefresh là true thì fetch lại
       if (!forceRefresh && receivedIntitationCache.current[cacheKey]) {
-        // console.log('Using cached invitations for:', cacheKey);
         dispatch(setInvitations(receivedIntitationCache.current[cacheKey]));
         return receivedIntitationCache.current[cacheKey];
       }
@@ -127,16 +126,12 @@ export const useInvitation = (callback, deps) => {
         checkToken();
 
         const response = await getReceivedInvitationByEventIdAPI(eventId);
-
-        if (!response.success) {
-          throw new Error('Failed to fetch invitations');
-        }
         return response;
       } catch (error) {
-        Toast.error(
-          'Failed to fetch invitations: ' +
-            (error.response?.data?.message || error.message)
-        );
+        // Toast.error(
+        //   'Failed to fetch invitations: ' +
+        //     (error.response?.data?.message || error.message)
+        // );
       }
     }
   );

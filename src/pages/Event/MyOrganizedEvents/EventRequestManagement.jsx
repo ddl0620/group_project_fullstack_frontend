@@ -223,14 +223,6 @@ const EventRequestManagement = React.memo(({ event }) => {
                       Deny
                     </Button>
                   </>
-                ) : participant.status === 'ACCEPTED' ? (
-                  <Button
-                    onClick={() => handleRemove(participant._id)}
-                    className="rounded-md bg-red-500 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600"
-                    aria-label={`Remove ${participant.name || 'participant'}`}
-                  >
-                    <TrashIcon className="h-5 w-5" />
-                  </Button>
                 ) : null}
               </div>
             </div>

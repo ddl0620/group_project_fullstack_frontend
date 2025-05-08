@@ -11,6 +11,7 @@ const ImageCarousel = ({ images }) => {
                                 src={image || '/placeholder.svg'}
                                 alt={`Post image ${index + 1}`}
                                 className="aspect-video w-full object-cover"
+                                loading="lazy"
                             />
                         </div>
                     </CarouselItem>

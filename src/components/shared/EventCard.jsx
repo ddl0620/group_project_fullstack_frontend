@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom" // Commented out as requested
 import { useSelector } from "react-redux"
 import { Calendar, MapPin, Globe, Clock, Unlock, LockIcon, Users, ChevronDown, ChevronUp } from 'lucide-react'
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -121,13 +121,13 @@ export function EventCard({ event, actions = [], className }) {
   return (
     <Card
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900",
+        "group relative overflow-hidden rounded-xl border border-gray-200  transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900",
         className,
       )}
       onClick={handleCardClick}
     >
       {/* Image section - full width with no padding */}
-      <div className="relative h-48 w-full overflow-hidden">
+      <div className="relative h-48 w-full">
         {/* Category badge */}
         {type && (
           <div
@@ -137,16 +137,11 @@ export function EventCard({ event, actions = [], className }) {
           </div>
         )}
 
-        {/* Type badge */}
-        {/*<div*/}
-        {/*  className={`absolute right-4 top-4 z-10 rounded-full ${getTypeBadgeColor()} px-3 py-1 text-xs font-medium text-white`}*/}
-        {/*>*/}
-        {/*  {type === "ONLINE" ? "Online" : "In-Person"}*/}
-        {/*</div>*/}
 
         <img
-          src={images[0] || "/placeholder.svg?height=192&width=384&query=event"}
+          src={images[0] || "public/backgroundImage.png"}
           alt={title}
+          loading={"lazy"}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
