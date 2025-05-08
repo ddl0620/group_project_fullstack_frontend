@@ -6,6 +6,7 @@ import userStatisReducer from './slices/userStatisSlice.js';
 import discussionPostReducer from './slices/discussionPostSlice.js';
 import discussionReplySlice from './slices/DiscussionReplySlice.js';
 import AdminManagementSlice from './slices/adminManagementSlice.js';
+import adminStatisticsReducer from './slices/adminStatisticsSlice.js';
 
 // Create a Redux store
 export const store = configureStore({
@@ -19,6 +20,7 @@ export const store = configureStore({
     discussionPost: discussionPostReducer,
     discussionReply: discussionReplySlice,
     adminManagement: AdminManagementSlice,
+    adminStatistics: adminStatisticsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

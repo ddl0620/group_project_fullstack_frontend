@@ -1,12 +1,42 @@
-"use client"
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
-import { BarChart, BarList, LineChart } from "@tremor/react"
-import { Users, UserPlus, Calendar, MessageSquare, AlertTriangle, Eye, EyeOff } from "lucide-react"
+"use client";
+import { useState, useEffect } from "react";
+import { useAdminStatistics } from "@/hooks/useAdminStatistics";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { BarChart, BarList, LineChart } from "@tremor/react";
+import { Users, UserPlus, Calendar, MessageSquare, AlertTriangle, Eye, EyeOff } from "lucide-react";
 
 export default function AdminDashboard() {
+  const {
+    overview,
+    eventsByDate,
+    usersByDate,
+    deletedUsersByDate,
+    publicAndPrivateEvents,
+    fetchOverview,
+    fetchEventsByDate,
+    fetchUsersByDate,
+    fetchDeletedUsersByDate,
+    fetchPublicAndPrivateEvents,
+    loading,
+    error,
+  } = useAdminStatistics();
+
+  useEffect(() => {
+    const startDate = "2025-01-01";
+    const endDate = "2025-05-08";
+
+    fetchOverview();
+    fetchEventsByDate({ startDate, endDate });
+    fetchUsersByDate({ startDate, endDate });
+    fetchDeletedUsersByDate({ startDate, endDate });
+    fetchPublicAndPrivateEvents();
+  }, [fetchOverview, fetchEventsByDate, fetchUsersByDate, fetchDeletedUsersByDate, fetchPublicAndPrivateEvents]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   // Sample data (in a real app, this would come from API calls)
   const [overviewData] = useState({
     success: true,
@@ -27,7 +57,7 @@ export default function AdminDashboard() {
         deletedEvents: 8,
       },
     },
-  })
+  });
 
   const [eventsByDateData] = useState({
     success: true,
@@ -44,7 +74,7 @@ export default function AdminDashboard() {
       { count: 8, date: "2025-05-03" },
       { count: 2, date: "2025-05-07" },
     ],
-  })
+  });
 
   const [rsvpTrendData] = useState({
     success: true,
@@ -54,42 +84,42 @@ export default function AdminDashboard() {
       { date: "2025-04-23", accepted: 0, denied: 0, pending: 0 },
       { date: "2025-04-30", accepted: 0, denied: 0, pending: 0 },
     ],
-  })
+  });
 
   const [deletedUsersData] = useState({
     success: true,
     message: "Deleted users by date fetched successfully",
     content: [{ count: 8, date: "2025-05-02" }],
-  })
+  });
 
   // Sample data for public vs private events
   const [eventVisibilityData] = useState({
     publicEvents: 22,
     privateEvents: 10,
-  })
+  });
 
   // Format data for charts
   const eventsByDateChartData = eventsByDateData.content.map((item) => ({
     date: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
     Events: item.count,
-  }))
+  }));
 
   const rsvpChartData = rsvpTrendData.content.map((item) => ({
     date: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
     Accepted: item.accepted,
     Denied: item.denied,
     Pending: item.pending,
-  }))
+  }));
 
   const eventVisibilityChartData = [
     { category: "Public Events", value: eventVisibilityData.publicEvents },
     { category: "Private Events", value: eventVisibilityData.privateEvents },
-  ]
+  ];
 
   const deletedUsersChartData = deletedUsersData.content.map((item) => ({
     name: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
     value: item.count,
-  }))
+  }));
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 bg-gray-50 min-h-screen">
@@ -361,5 +391,5 @@ export default function AdminDashboard() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
