@@ -1,20 +1,20 @@
-import { BellIcon, Calendar, Plus, UserIcon } from 'lucide-react';
+import { BellIcon, BellRing, Calendar, CircleUser, MessageSquare, Plus, UserIcon } from 'lucide-react';
 
 const userItems = [
   {
     title: 'Dashboard',
     url: '/dashboard',
-    icon: UserIcon,
+    icon: CircleUser,
   },
   {
     title: 'Discussions',
     url: '/discussions',
-    icon: Calendar,
+    icon: MessageSquare,
   },
   {
     title: 'Notifications',
     url: '/notifications',
-    icon: BellIcon,
+    icon: BellRing,
   },
 ];
 
