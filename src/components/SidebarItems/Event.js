@@ -1,15 +1,15 @@
-import { Calendar, Plus, UserIcon } from 'lucide-react';
+import { Calendar, Handshake, PartyPopper, Plus, TicketPlus, Tickets, UserIcon } from 'lucide-react';
 
 const eventItems = [
   {
     title: 'Create New Event',
     url: '/event/create',
-    icon: Plus,
+    icon: TicketPlus,
   },
   {
     title: 'All Events',
     url: '/event',
-    icon: UserIcon,
+    icon: PartyPopper ,
   },
   {
     title: 'My Organized Events',
@@ -19,7 +19,7 @@ const eventItems = [
   {
     title: 'My Joined Events',
     url: '/event/joined',
-    icon: Calendar,
+    icon: Tickets,
   },
 ];
 

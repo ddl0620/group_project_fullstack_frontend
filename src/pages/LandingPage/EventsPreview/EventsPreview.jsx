@@ -1,5 +1,5 @@
 import { Calendar, MapPin, Users, ArrowRight } from "lucide-react"
-
+import { Link } from "react-router-dom"
 const EventsPreview = () => {
   const events = [
     {
@@ -47,7 +47,7 @@ const EventsPreview = () => {
             </p>
           </div>
           <a
-            href="/events"
+            href="/sign-up"
             className="group flex items-center rounded-full border border-gray-300 bg-white px-6 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
           >
             View All Events
@@ -96,12 +96,12 @@ const EventCard = ({ event }) => {
             <span>{event.attendees} attendees</span>
           </div>
         </div>
-        <a
-          href={`/events/${event.id}`}
+        <Link
+          to={`/sign-in`}
           className="inline-flex w-full items-center justify-center rounded-full bg-[#0071e3]/10 px-4 py-2 text-sm font-medium text-[#0071e3] transition-colors hover:bg-[#0071e3]/20"
         >
           View Event Details
-        </a>
+        </Link>
       </div>
     </div>
   )

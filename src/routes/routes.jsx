@@ -32,8 +32,9 @@ import UserManagement from '@/pages/Admin/UserManagement/UserManagement.jsx';
 import adminManagementItems from '@/components/SidebarItems/AdminManagement.js';
 import EventManagement from '@/pages/Admin/EventManagement/EventManagement.jsx';
 
-const ProtectedRoute = ({ allowedRoles }) => {
+const ProtectedRoute = ({ allowedRoles, restrictedPaths = [] }) => {
   const { isAuthenticated, role } = useSelector((state) => state.user);
+  const currentPath = window.location.pathname;
 
   if (!isAuthenticated) {
     return <Navigate to="/sign-in" replace={true} />;
@@ -43,13 +44,17 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to="/" replace={true} />;
   }
 
+  if (restrictedPaths.includes(currentPath) && role !== 'admin') {
+    return <Navigate to="/" replace={true} />;
+  }
+
   return <Outlet />;
 };
 
 const AuthenticatedRoute = () => {
   const { isAuthenticated, role } = useSelector((state) => state.user);
 
-  if (isAuthenticated && role !== 'user' && role !== 'admin') {
+  if (isAuthenticated) {
     return <Navigate to="/" replace={true} />;
   }
 
@@ -129,11 +134,9 @@ const routes = [
       {
         element: <SidebarLayout title={'Dashboard'} items={userItems} />,
         children: [
-          {path: '/dashboard/admin', element: <AdminDashboard/>},
           { path: '/dashboard', element: <UserDashboard /> },
           { path: '/discussions', element: <DiscussionPage /> },
           { path: '/discussions/:eventId', element: <DiscussionPage /> },
-
           { path: '/notifications', element: <NotificationsPage /> },
         ],
       },
@@ -147,9 +150,12 @@ const routes = [
   },
   {
     path: '/',
-    element: <ProtectedRoute allowedRoles={['user', 'admin']} />,
+    element: <ProtectedRoute
+      allowedRoles={['admin']}
+      restrictedPaths={['/management', '/management/user', '/management/event', '/dashboard/admin']}
+    />,
     children: [
-      // Group using event sidebar
+      // Group using admin sidebar
       {
         element: (
           <SidebarLayout title={'Admin'} items={adminManagementItems} />
@@ -163,34 +169,12 @@ const routes = [
           { path: 'event/update/:eventId', element: <CreateEventPage /> },
         ],
       },
-      // Group using user sidebar
-      {
-        element: (
-          <SidebarLayout title={'Profile Setting'} items={settingItems} />
-        ),
-        children: [
-          { path: 'profile/', element: <ProfilePage /> },
-          { path: 'profile/edit', element: <EditProfilePage /> },
-          { path: 'profile/password', element: <UpdatePasswordPage /> },
-          { path: 'profile/email', element: <UpdateEmailPage /> },
-        ],
-      },
-      // Dashboard route (not using sidebar layout)
+      // Dashboard route for admin
       {
         element: <SidebarLayout title={'Dashboard'} items={userItems} />,
         children: [
-          { path: '/dashboard', element: <UserDashboard /> },
-          { path: '/discussions', element: <DiscussionPage /> },
-          { path: '/discussions/:eventId', element: <DiscussionPage /> },
-
-          { path: '/notifications', element: <NotificationsPage /> },
+          { path: 'dashboard/admin', element: <AdminDashboard /> },
         ],
-      },
-      // Home page with user layout
-      {
-        path: 'home',
-        element: <UserLayout />,
-        children: [{ path: '', element: <Home /> }],
       },
     ],
   },

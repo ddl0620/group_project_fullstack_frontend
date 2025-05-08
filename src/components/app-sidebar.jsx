@@ -1,24 +1,19 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Link, useLocation } from "react-router-dom" // Commented out as requested
+import { Link, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ChevronLeft, ChevronRight, Plus, Users, Calendar, User, PanelLeft } from "lucide-react"
-import { useSelector } from 'react-redux';
-import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
-
-// For demo purposes without react-router
-// const useLocation = () => {
-//   return { pathname: "/all-events" }
-// }
+import { useSelector } from "react-redux"
+import { CustomAvatar } from "@/components/shared/CustomAvatar"
 
 export function AppSidebar({ items = defaultItems, title = "Event Management" }) {
   const location = useLocation()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const user = useSelector(state => state.user.user)
+  const user = useSelector((state) => state.user.user)
 
   // Handle responsive behavior
   useEffect(() => {
@@ -42,9 +37,17 @@ export function AppSidebar({ items = defaultItems, title = "Event Management" })
     }
   }, [])
 
+  // Update main content margin when sidebar collapses/expands
+  useEffect(() => {
+    const mainContent = document.getElementById("main-content")
+    if (mainContent) {
+      mainContent.style.marginLeft = isCollapsed ? "5rem" : "16rem"
+    }
+  }, [isCollapsed])
+
   // Toggle sidebar collapsed state
   const toggleCollapsed = () => {
-    setIsCollapsed(!isCollapsed)
+    setIsCollapsed((prev) => !prev)
   }
 
   // Mobile sidebar toggle
@@ -59,7 +62,7 @@ export function AppSidebar({ items = defaultItems, title = "Event Management" })
         <Button
           variant="outline"
           size="icon"
-          className="fixed left-4 top-20 z-30 h-10 w-10 rounded-full bg-white/80 shadow-md backdrop-blur-sm"
+          className="fixed top-20 left-4 z-50 h-10 w-10 rounded-full bg-white/80 shadow-md backdrop-blur-sm"
           onClick={toggleMobileSidebar}
         >
           <PanelLeft className="h-5 w-5 text-gray-700" />
@@ -68,14 +71,14 @@ export function AppSidebar({ items = defaultItems, title = "Event Management" })
 
       {/* Mobile Overlay */}
       {isMobile && sidebarOpen && (
-        <div className="fixed inset-0 z-20 bg-black/20 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
       <div
         className={`flex h-full flex-col border-r border-gray-200 bg-white transition-all duration-300 dark:border-gray-800 dark:bg-gray-900 ${
           isCollapsed ? "w-[5rem]" : "w-[16rem]"
-        } ${isMobile ? "fixed inset-y-0 left-0 z-30 shadow-lg" : "relative"} ${
+        } ${isMobile ? "fixed inset-y-0 left-0 z-40 shadow-lg" : "relative"} ${
           isMobile && !sidebarOpen ? "-translate-x-full" : "translate-x-0"
         }`}
       >
@@ -137,25 +140,20 @@ export function AppSidebar({ items = defaultItems, title = "Event Management" })
           </TooltipProvider>
         </div>
 
-        {/* Footer - Fixed at the bottom */}
         <div className="mt-auto border-t border-gray-200 dark:border-gray-800">
           <div className="flex items-center justify-between p-4">
             {!isCollapsed && (
               <div className="flex items-center">
-                {/*<div className="h-10 w-10 overflow-hidden rounded-full bg-[#0071e3]">*/}
-                {/*  <img*/}
-                {/*    src={user?.avatar || "/placeholder.svg"}*/}
-                {/*    alt="User"*/}
-                {/*    className="h-full w-full object-cover"*/}
-                {/*    onError={(e) => {*/}
-                {/*      e.target.src = "/placeholder.svg"*/}
-                {/*    }}*/}
-                {/*  />*/}
-                {/*</div>*/}
-                <CustomAvatar _classname={"h-10 w-10"} src={user?.avatar || "/placeholder.svg"} alt="User" fallbackText={user.name} className="h-10 w-10" />
+                <CustomAvatar
+                  _classname={"h-10 w-10"}
+                  src={user?.avatar || "/placeholder.svg"}
+                  alt="User"
+                  fallbackText={user?.name}
+                  className="h-10 w-10"
+                />
                 <div className="ml-2">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{user.emaill}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
                 </div>
               </div>
             )}
@@ -166,6 +164,7 @@ export function AppSidebar({ items = defaultItems, title = "Event Management" })
               size="icon"
               className={`${isCollapsed ? "mx-auto" : "ml-auto"} h-8 w-8 rounded-full`}
               onClick={toggleCollapsed}
+              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {isCollapsed ? (
                 <ChevronRight className="h-4 w-4 text-gray-500" />

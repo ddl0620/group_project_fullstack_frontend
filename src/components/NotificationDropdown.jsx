@@ -110,8 +110,8 @@ export function NotificationDropdown() {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/10 hover:text-white">
-          <Bell className="h-5 w-5" />
+        <Button variant={"outline"} size="icon" className="relative text-white hover:bg-white/10 hover:text-white">
+          <Bell className="h-5 w-5 text-black" />
           {unreadCount > 0 && (
             <Badge
               variant="destructive"
