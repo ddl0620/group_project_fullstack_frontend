@@ -18,7 +18,7 @@ import {
   Info,
   CheckCircle,
   XCircle,
-  User,
+  User, Ticket,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -63,7 +63,6 @@ export default function EventDetailPage() {
         }
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load event');
-        toast.error(err.response?.data?.message || 'Failed to load event');
       } finally {
         setLoading(false);
       }
@@ -79,7 +78,7 @@ export default function EventDetailPage() {
         }
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load user');
-        toast.error(err.response?.data?.message || 'Failed to load user');
+        // toast.error(err.response?.data?.message || 'Failed to load user');
       }
     };
     const getRSVPByInvitationId = async (invitationId) => {
@@ -92,7 +91,7 @@ export default function EventDetailPage() {
         }
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load RSVP');
-        toast.error(err.response?.data?.message || 'Failed to load RSVP');
+        // toast.error(err.response?.data?.message || 'Failed to load RSVP');
       }
     };
 
@@ -266,12 +265,8 @@ export default function EventDetailPage() {
           </Button>
         </div>
 
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-          <XCircle className="mx-auto h-12 w-12 text-red-500" />
-          <h2 className="mt-4 text-xl font-semibold text-red-700">
-            Unable to load event
-          </h2>
-          <p className="mt-2 text-red-600">{error}</p>
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-6 text-center">
+          <Ticket className="mx-auto h-12 w-12 text-blue-500" />
           <p className="mt-4 text-gray-700">
             This is a private event. Please request to join first
           </p>
@@ -361,7 +356,7 @@ export default function EventDetailPage() {
             Request Denied
           </h2>
           <p className="mt-2 text-red-600">
-            You are denied to join this event. Please contact the organizer for
+            Your request have been denied. Please contact the organizer for
             more information.
           </p>
           <div className="mt-6">

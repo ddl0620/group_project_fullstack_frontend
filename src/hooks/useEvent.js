@@ -113,7 +113,7 @@ export const useEvent = () => {
       return response;
     } catch (error) {
       dispatch(setError(error.message));
-      Toast.error('Failed to fetch event: ' + error.message);
+      // Toast.error('Failed to fetch event: ' + error.message);
       throw error;
     } finally {
       dispatch(setLoading(false));

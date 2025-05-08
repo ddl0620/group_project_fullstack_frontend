@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/pagination';
 import { useInvitation } from '@/hooks/useInvitation.js';
 import { Loader2 } from 'lucide-react';
+import { formatDateTime } from '@/helpers/format.js';
 
 const EventRSVP = ({ event }) => {
   const {
@@ -60,7 +61,7 @@ const EventRSVP = ({ event }) => {
               rsvpStatus: rsvp.response || 'PENDING',
               invitee: invitation.inviteeId || {
                 _id: invitation.inviteeId,
-                name: 'Không xác định',
+                name: 'Unknown User',
                 avatar: '',
               },
             };
@@ -89,33 +90,21 @@ const EventRSVP = ({ event }) => {
     switch (status) {
       case 'ACCEPTED':
         return (
-          <Badge className="bg-green-100 text-green-800">Đã chấp nhận</Badge>
+          <Badge className="bg-green-100 text-green-800">Accepted</Badge>
         );
       case 'DENIED':
-        return <Badge className="bg-red-100 text-red-800">Đã từ chối</Badge>;
+        return <Badge className="bg-red-100 text-red-800">Denied</Badge>;
       case 'PENDING':
         return (
-          <Badge className="bg-yellow-100 text-yellow-800">Đang chờ</Badge>
+          <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
         );
       default:
         return (
-          <Badge className="bg-gray-100 text-gray-800">Không xác định</Badge>
+          <Badge className="bg-gray-100 text-gray-800">Undefined</Badge>
         );
     }
   };
 
-  const formatDateTime = (date) => {
-    if (!date || isNaN(new Date(date))) {
-      return 'Không xác định';
-    }
-    return new Date(date).toLocaleString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   const totalPages =
     Math.ceil(Number(totalInvitations) / Number(itemsPerPage)) || 1;
@@ -133,10 +122,10 @@ const EventRSVP = ({ event }) => {
           <Table className="min-w-full">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[200px]">Người được mời</TableHead>
-                <TableHead>Nội dung lời mời</TableHead>
-                <TableHead className="w-[150px]">Trạng thái RSVP</TableHead>
-                <TableHead className="w-[150px]">Thời gian gửi</TableHead>
+                <TableHead className="w-[200px]">Participant</TableHead>
+                <TableHead>Message</TableHead>
+                <TableHead className="w-[150px]">RSVP Status</TableHead>
+                <TableHead className="w-[150px]">Time sent</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -152,7 +141,7 @@ const EventRSVP = ({ event }) => {
                     <span className="truncate">{invitation.invitee.name}</span>
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate sm:max-w-[300px]">
-                    {invitation.content || 'Không có nội dung'}
+                    {invitation.content || 'No message provided'}
                   </TableCell>
                   <TableCell>{getStatusBadge(invitation.rsvpStatus)}</TableCell>
                   <TableCell>{formatDateTime(invitation.sentAt)}</TableCell>
@@ -208,7 +197,7 @@ const EventRSVP = ({ event }) => {
         !loading &&
         !fetchingRSVPs && (
           <p className="py-4 text-center text-gray-500">
-            Chưa có lời mời nào được gửi.
+            No RSVPs found for this event.
           </p>
         )
       )}

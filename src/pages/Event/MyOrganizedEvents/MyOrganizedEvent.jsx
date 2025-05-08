@@ -8,7 +8,7 @@ import {
   TrashIcon,
   EyeIcon,
 } from '@heroicons/react/24/outline';
-import { EditIcon } from 'lucide-react';
+import { EditIcon, SettingsIcon } from 'lucide-react';
 import {
   Pagination,
   PaginationContent,
@@ -21,6 +21,7 @@ import {
 import { useEvent } from '@/hooks/useEvent.js';
 import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
 import { EventCard } from '@/components/shared/EventCard.jsx';
+import Setting from '@/components/SidebarItems/Setting.js';
 
 const itemPerPage = 9;
 
@@ -96,14 +97,23 @@ function MyOrganizedEvents() {
 
   // Calculate display information
   const startIndex = (pagination.page - 1) * pagination.limit + 1;
-  const endIndex = Math.min(pagination.page * pagination.limit, pagination.totalEvents);
+  const endIndex = Math.min(
+    pagination.page * pagination.limit,
+    pagination.totalEvents
+  );
 
   // Generate page numbers for display (limit the number of page buttons shown)
   const getPageNumbers = () => {
     const maxPagesToShow = 5;
     const pages = [];
-    let startPage = Math.max(1, pagination.page - Math.floor(maxPagesToShow / 2));
-    let endPage = Math.min(pagination.totalPages, startPage + maxPagesToShow - 1);
+    let startPage = Math.max(
+      1,
+      pagination.page - Math.floor(maxPagesToShow / 2)
+    );
+    let endPage = Math.min(
+      pagination.totalPages,
+      startPage + maxPagesToShow - 1
+    );
 
     if (endPage - startPage + 1 < maxPagesToShow) {
       startPage = Math.max(1, endPage - maxPagesToShow + 1);
@@ -168,32 +178,32 @@ function MyOrganizedEvents() {
               key={event._id}
               event={event}
               actions={[
-                {
-                  button: (
-                    <Button className="flex items-center gap-2 border border-red-300 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white">
-                      <TrashIcon className="h-5 w-5 text-red-400" />
-                      Delete
-                    </Button>
-                  ),
-                  onClick: () => handleRemoveEvent(event._id),
-                },
-                {
-                  button: (
-                    <Button className="flex items-center gap-2 border border-blue-500 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white">
-                      <EditIcon className="h-5 w-5 text-blue-500" />
-                      Edit
-                    </Button>
-                  ),
-                  onClick: () => handleEditButton(event._id),
-                },
+                // {
+                //   button: (
+                //     <Button className="flex items-center gap-2 border border-red-300 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white">
+                //       <TrashIcon className="h-5 w-5 text-red-400" />
+                //       Delete
+                //     </Button>
+                //   ),
+                //   onClick: () => handleRemoveEvent(event._id),
+                // },
+                // {
+                //   button: (
+                //     <Button className="flex items-center gap-2 border border-blue-500 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white">
+                //       <EditIcon className="h-5 w-5 text-blue-500" />
+                //       Edit
+                //     </Button>
+                //   ),
+                //   onClick: () => handleEditButton(event._id),
+                // },
                 {
                   button: (
                     <Button className="flex items-center gap-2 border border-green-500 bg-white/80 text-gray-800 backdrop-blur-sm hover:bg-white">
-                      <EyeIcon className="h-5 w-5 text-green-700" />
-                      View Details
+                      <SettingsIcon className="h-5 w-5 text-green-700" />
+                      Manage
                     </Button>
                   ),
-                  onClick: () => handleEditButton(event._id),
+                  onClick: () => navigate("/event/" + event._id),
                 },
               ]}
             />
