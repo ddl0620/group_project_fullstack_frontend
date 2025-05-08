@@ -2,7 +2,7 @@ import { Calendar, Globe, Plus, Tickets, UserIcon, Users } from 'lucide-react';
 
 const adminManagementItems = [
   {
-    title: 'Overview',
+    title: 'Statistics Dashboard',
     url: '/management',
     icon: Globe,
   },

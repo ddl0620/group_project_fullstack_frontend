@@ -155,7 +155,7 @@ const routes = [
           <SidebarLayout title={'Admin'} items={adminManagementItems} />
         ),
         children: [
-          { path: 'management', element: <BrowseEvent /> },
+          { path: 'management', element: <AdminDashboard/> },
           { path: 'management/user', element: <UserManagement /> },
           { path: 'management/event', element: <EventManagement /> },
           { path: 'event/:eventId', element: <EventDetailPage /> },
