@@ -1,40 +1,42 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useEvent } from "@/hooks/useEvent"
 import { toast } from "sonner"
 import { PlusCircle, Eye, Calendar, Loader2 } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { EventCard } from '@/components/shared/EventCard.jsx';
+import Pagination from "@/components/shared/Pagination.jsx"
+import { EventCard } from "@/components/shared/EventCard.jsx"
+import EventFilters from "@/components/shared/EventFilters.jsx"
+import useEventFiltering from "@/hooks/useEventFiltering.js"
 
-const itemPerPage = 9
+const ITEMS_PER_PAGE = 9
 
 export default function MyJoinedEvents() {
-  const [events, setEvents] = useState([])
+  const [allEvents, setAllEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: itemPerPage,
-    totalPages: 1,
-    totalEvents: 0,
-  })
 
   const { getAllJoinedEvents } = useEvent()
   const location = useLocation()
   const navigate = useNavigate()
+
+  // Use the custom hook for filtering
+  const {
+    searchTerm,
+    setSearchTerm,
+    visibilityFilter,
+    setVisibilityFilter,
+    selectedTypes,
+    setSelectedTypes,
+    sortBy,
+    setSortBy,
+    currentPage,
+    setCurrentPage,
+    filteredEvents,
+    clearFilters,
+  } = useEventFiltering(allEvents)
 
   // Fetch events from backend
   useEffect(() => {
@@ -43,17 +45,11 @@ export default function MyJoinedEvents() {
         setLoading(true)
         setError(null)
         const response = await getAllJoinedEvents({
-          page: currentPage,
-          limit: itemPerPage,
-          isAcs: true,
+          page: 1,
+          limit: 1000,
+          isAcs: sortBy === "oldest",
         })
-        setEvents(response.content.events || [])
-        setPagination({
-          page: response.content.pagination.page || 1,
-          limit: response.content.pagination.limit || itemPerPage,
-          totalPages: response.content.pagination.totalPages || 1,
-          totalEvents: response.content.pagination.totalEvents || 0,
-        })
+        setAllEvents(response.content.events || [])
       } catch (err) {
         toast.error("Error fetching events: " + err.message)
         setError(err.message)
@@ -62,10 +58,9 @@ export default function MyJoinedEvents() {
       }
     }
     fetchEvents()
-  }, [currentPage])
+  }, [])
 
-  const handleChangeCurrentPage = (page) => {
-    if (page < 1 || page > pagination.totalPages) return
+  const handlePageChange = (page) => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
@@ -80,42 +75,17 @@ export default function MyJoinedEvents() {
     }
   }
 
-  // Calculate pagination display values
-  const startIndex = (pagination.page - 1) * pagination.limit + 1
-  const endIndex = Math.min(pagination.page * pagination.limit, pagination.totalEvents)
+  // Calculate pagination
+  const paginatedEvents = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+    return filteredEvents.slice(startIndex, endIndex)
+  }, [filteredEvents, currentPage])
 
-  // Generate page numbers for display
-  const getPageNumbers = () => {
-    const maxPagesToShow = 5
-    const pages = []
-    let startPage = Math.max(1, pagination.page - Math.floor(maxPagesToShow / 2))
-    const endPage = Math.min(pagination.totalPages, startPage + maxPagesToShow - 1)
-
-    if (endPage - startPage + 1 < maxPagesToShow) {
-      startPage = Math.max(1, endPage - maxPagesToShow + 1)
-    }
-
-    // Add pages and ellipsis if needed
-    if (startPage > 1) {
-      pages.push({ type: "page", value: 1 })
-      if (startPage > 2) {
-        pages.push({ type: "ellipsis", value: "left" })
-      }
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push({ type: "page", value: i })
-    }
-
-    if (endPage < pagination.totalPages) {
-      if (endPage < pagination.totalPages - 1) {
-        pages.push({ type: "ellipsis", value: "right" })
-      }
-      pages.push({ type: "page", value: pagination.totalPages })
-    }
-
-    return pages
-  }
+  // Calculate total pages
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredEvents.length / ITEMS_PER_PAGE)
+  }, [filteredEvents])
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -133,6 +103,20 @@ export default function MyJoinedEvents() {
             </Button>
           </Link>
         </div>
+
+        {/* Event Filters Component */}
+        <EventFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          visibilityFilter={visibilityFilter}
+          setVisibilityFilter={setVisibilityFilter}
+          selectedTypes={selectedTypes}
+          setSelectedTypes={setSelectedTypes}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          clearFilters={clearFilters}
+          showVisibilityFilter={false} // Hide visibility filter for joined events
+        />
 
         {/* Loading State */}
         {loading && (
@@ -153,9 +137,9 @@ export default function MyJoinedEvents() {
         )}
 
         {/* Events Grid */}
-        {!loading && !error && events.length > 0 && (
+        {!loading && !error && paginatedEvents.length > 0 && (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {events.map((event) => (
+            {paginatedEvents.map((event) => (
               <EventCard
                 key={event._id}
                 event={event}
@@ -176,11 +160,15 @@ export default function MyJoinedEvents() {
         )}
 
         {/* Empty State */}
-        {!loading && !error && events.length === 0 && (
+        {!loading && !error && filteredEvents.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16">
             <Calendar className="h-12 w-12 text-gray-300" />
             <h3 className="mt-4 text-lg font-medium">No joined events found</h3>
-            <p className="mt-1 text-center text-gray-500">You haven't joined any events yet</p>
+            <p className="mt-1 text-center text-gray-500">
+              {searchTerm || selectedTypes.length > 0
+                ? "No events found matching your filters"
+                : "You haven't joined any events yet"}
+            </p>
             <Link to="/browse-events" className="mt-4">
               <Button>Browse Events</Button>
             </Link>
@@ -188,46 +176,16 @@ export default function MyJoinedEvents() {
         )}
 
         {/* Pagination */}
-        {!loading && !error && events.length > 0 && (
-          <div className="mt-8 flex flex-col items-center gap-4">
-            <p className="text-sm text-gray-600">
-              Showing {startIndex}-{endIndex} of {pagination.totalEvents} events
-            </p>
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => handleChangeCurrentPage(pagination.page - 1)}
-                    className={pagination.page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                  />
-                </PaginationItem>
-                {getPageNumbers().map((item, index) =>
-                  item.type === "page" ? (
-                    <PaginationItem key={item.value}>
-                      <PaginationLink
-                        onClick={() => handleChangeCurrentPage(item.value)}
-                        isActive={pagination.page === item.value}
-                        className={pagination.page === item.value ? "bg-primary text-white" : "cursor-pointer"}
-                      >
-                        {item.value}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ) : (
-                    <PaginationItem key={`ellipsis-${item.value}-${index}`}>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  ),
-                )}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => handleChangeCurrentPage(pagination.page + 1)}
-                    className={
-                      pagination.page === pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+        {!loading && !error && filteredEvents.length > 0 && (
+          <div className="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              totalItems={filteredEvents.length}
+              itemsPerPage={ITEMS_PER_PAGE}
+              itemName="events"
+            />
           </div>
         )}
       </div>
