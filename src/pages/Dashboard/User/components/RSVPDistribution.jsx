@@ -3,7 +3,7 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Legend
 import { ChartContainer } from "./ui/index"
 
 export function RsvpDistribution({ data }) {
-  console.log("RSVP Distribution Data in Component:", data) // Kiểm tra dữ liệu được truyền vào component
+  console.log("RSVP Distribution Data in Component:", data)
   return (
     <ChartContainer
       config={{
@@ -12,21 +12,21 @@ export function RsvpDistribution({ data }) {
           color: "hsl(var(--chart-1))",
         },
       }}
-      className="h-[300px]"
+      className="h-[250px] sm:h-[300px]"
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
           margin={{
             top: 5,
-            right: 30,
-            left: 20,
+            right: 20,
+            left: 10,
             bottom: 5,
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="status" />
-          <YAxis />
+          <XAxis dataKey="status" fontSize={12} />
+          <YAxis fontSize={12} />
           <Tooltip />
           <Legend />
           <Bar dataKey="value" fill="var(--color-value)" />
