@@ -62,8 +62,6 @@ export default function AdminDashboard() {
 
   // Sample data as fallback
   const [overviewData] = useState({
-    success: true,
-    message: "Overview statistics fetched successfully",
     content: {
       totalUsers: 0,
       activeUsers: 0,
@@ -83,21 +81,15 @@ export default function AdminDashboard() {
   })
 
   const [eventsByDateData] = useState({
-    success: true,
-    message: "Events by date fetched successfully",
     content: [],
   })
 
   // Sample RSVP trend data
   const [rsvpTrendData] = useState({
-    success: true,
-    message: "RSVP trend fetched successfully",
     content: [],
   })
 
   const [deletedUsersData] = useState({
-    success: true,
-    message: "Deleted users by date fetched successfully",
     content: [],
   })
 
