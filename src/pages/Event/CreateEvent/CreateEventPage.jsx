@@ -9,15 +9,14 @@ import { Card, CardContent } from "@/components/ui/card.js"
 import { addDays } from "date-fns"
 import { useImageUploader } from "@/components/ImageUploader.jsx"
 import { AlertDialogUtils } from "@/helpers/AlertDialogUtils.jsx"
-import EventBasicInfoForm from '@/pages/Event/CreateEvent/EventBasicInforForm.jsx';
-import EventDateForm from '@/pages/Event/CreateEvent/EventDateForm.jsx';
-import EventLocationForm from '@/pages/Event/CreateEvent/EventLocationForm.jsx';
-import EventImagesForm from '@/pages/Event/CreateEvent/EventImagesForm.jsx';
-import EventSummary from '@/pages/Event/CreateEvent/EventSummary.jsx';
-import EventProgressIndicator from '@/pages/Event/CreateEvent/EventProcessIndicator.jsx';
+import EventBasicInfoForm from "@/pages/Event/CreateEvent/EventBasicInforForm.jsx"
+import EventDateForm from "@/pages/Event/CreateEvent/EventDateForm.jsx"
+import EventLocationForm from "@/pages/Event/CreateEvent/EventLocationForm.jsx"
+import EventImagesForm from "@/pages/Event/CreateEvent/EventImagesForm.jsx"
+import EventSummary from "@/pages/Event/CreateEvent/EventSummary.jsx"
+import EventProgressIndicator from "@/pages/Event/CreateEvent/EventProcessIndicator.jsx"
 
 // Import form components
-
 
 export default function CreateEventPage() {
   const navigate = useNavigate()
@@ -52,6 +51,9 @@ export default function CreateEventPage() {
       from: new Date(),
       to: addDays(new Date(), 1),
     },
+    startTime: "09:00",
+    endTime: "17:00",
+    notifyWhen: "NONE",
     isPublic: true,
   })
   const [loading, setLoading] = useState(isUpdateMode)
@@ -76,6 +78,9 @@ export default function CreateEventPage() {
                 from: new Date(event.startDate),
                 to: new Date(event.endDate),
               },
+              startTime: event.startTime || "09:00",
+              endTime: event.endTime || "17:00",
+              notifyWhen: event.notifyWhen || "NONE",
               isPublic: event.isPublic !== undefined ? event.isPublic : true,
             })
             // Populate existing images if any
@@ -164,17 +169,35 @@ export default function CreateEventPage() {
       // Create FormData
       const postData = new FormData()
 
+      // Append time fields separately
+      postData.append("startTime", formData.startTime)
+      postData.append("endTime", formData.endTime)
+
       // Append fields
       postData.append("title", String(formData.title))
       postData.append("description", String(formData.description))
-      postData.append("startDate", formData.dateRange.from.toISOString())
-      postData.append("endDate", formData.dateRange.to.toISOString())
+
+      // Combine date and time for start and end dates
+      const startDate = new Date(formData.dateRange.from)
+      const endDate = new Date(formData.dateRange.to)
+
+      // Parse time strings in HH:mm format
+      const [startHours, startMinutes] = formData.startTime.split(":").map(Number)
+      const [endHours, endMinutes] = formData.endTime.split(":").map(Number)
+
+      // Set hours and minutes to the date objects
+      startDate.setHours(startHours, startMinutes, 0, 0)
+      endDate.setHours(endHours, endMinutes, 0, 0)
+
+      // Append the ISO string dates
+      postData.append("startDate", startDate.toISOString())
+      postData.append("endDate", endDate.toISOString())
       postData.append("isPublic", String(formData.isPublic))
       postData.append("location", String(formData.location))
       postData.append("type", String(formData.category))
+      postData.append("notifyWhen", String(formData.notifyWhen))
 
       // Append existing image URLs as a JSON string
-      // const imageUrls = uploadedImages.filter((image) => image.type === "url").map((image) => image.url)
       if (existingImageUrls.length > 0) {
         postData.append("existingImages", JSON.stringify(existingImageUrls.map((image) => image.url)))
       }
@@ -223,6 +246,9 @@ export default function CreateEventPage() {
             from: new Date(),
             to: addDays(new Date(), 1),
           },
+          startTime: "09:00",
+          endTime: "17:00",
+          notifyWhen: "NONE",
           isPublic: true,
         })
         setUploadedImages([])
@@ -242,7 +268,7 @@ export default function CreateEventPage() {
         "Đã xảy ra lỗi khi " +
         (isUpdateMode ? "cập nhật" : "tạo") +
         " sự kiện: " +
-        ( error.response.data.message || "Lỗi không xác định"),
+        (error.response.data.message || "Lỗi không xác định"),
       )
     }
   }

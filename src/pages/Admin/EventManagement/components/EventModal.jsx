@@ -55,6 +55,9 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
       from: new Date(),
       to: addDays(new Date(), 1),
     },
+    startTime: "09:00",
+    endTime: "17:00",
+    notifyWhen: "NONE",
     isPublic: true,
     organizer: null,
   })
@@ -62,6 +65,20 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
   // Populate form data if in update mode
   useEffect(() => {
     if (isUpdateMode && event) {
+      // Extract time from dates if available
+      let startTime = "09:00"
+      let endTime = "17:00"
+
+      if (event.startDate) {
+        const startDate = new Date(event.startDate)
+        startTime = `${startDate.getHours().toString().padStart(2, "0")}:${startDate.getMinutes().toString().padStart(2, "0")}`
+      }
+
+      if (event.endDate) {
+        const endDate = new Date(event.endDate)
+        endTime = `${endDate.getHours().toString().padStart(2, "0")}:${endDate.getMinutes().toString().padStart(2, "0")}`
+      }
+
       setForm({
         title: event.title || "",
         description: event.description || "",
@@ -71,6 +88,9 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
           from: new Date(event.startDate),
           to: new Date(event.endDate),
         },
+        startTime,
+        endTime,
+        notifyWhen: event.notifyWhen || "NONE",
         isPublic: event.isPublic !== undefined ? event.isPublic : true,
         organizer: event.organizer || null,
       })
@@ -96,6 +116,9 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
             from: new Date(),
             to: addDays(new Date(), 1),
           },
+          startTime: "09:00",
+          endTime: "17:00",
+          notifyWhen: "NONE",
           isPublic: true,
           organizer: null,
         })
@@ -167,14 +190,32 @@ export default function EventModal({ isOpen, setIsOpen, event = null, onSubmit, 
     // Create FormData
     const postData = new FormData()
 
+    // Append time fields separately
+    postData.append("startTime", form.startTime)
+    postData.append("endTime", form.endTime)
+
     // Append fields
     postData.append("title", String(form.title))
     postData.append("description", String(form.description))
-    postData.append("startDate", form.dateRange.from.toISOString())
-    postData.append("endDate", form.dateRange.to.toISOString())
+
+    // Combine date and time for start and end dates
+    const startDate = new Date(form.dateRange.from)
+    const endDate = new Date(form.dateRange.to)
+
+    // Parse time strings in HH:mm format
+    const [startHours, startMinutes] = form.startTime.split(":").map(Number)
+    const [endHours, endMinutes] = form.endTime.split(":").map(Number)
+
+    // Set hours and minutes to the date objects
+    startDate.setHours(startHours, startMinutes, 0, 0)
+    endDate.setHours(endHours, endMinutes, 0, 0)
+
+    postData.append("startDate", startDate.toISOString())
+    postData.append("endDate", endDate.toISOString())
     postData.append("isPublic", String(form.isPublic))
     postData.append("location", String(form.location))
     postData.append("type", String(form.category))
+    postData.append("notifyWhen", String(form.notifyWhen))
 
     // Append organizer if selected
     if (form.organizer) {
