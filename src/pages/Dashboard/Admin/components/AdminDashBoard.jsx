@@ -13,15 +13,16 @@ import {
   UsersTable,
 } from '@/pages/Dashboard/Admin/components/dashboard/tables/index.js';
 
-
 export default function AdminDashboard() {
   const {
     overview,
     eventsByDate,
+    usersByDate,
     deletedUsersByDate,
     publicAndPrivateEvents,
     fetchOverview,
     fetchEventsByDate,
+    fetchUsersByDate,
     fetchDeletedUsersByDate,
     fetchPublicAndPrivateEvents,
     loading,
@@ -56,9 +57,10 @@ export default function AdminDashboard() {
 
     fetchOverview()
     fetchEventsByDate({ startDate, endDate })
+    fetchUsersByDate({ startDate, endDate })
     fetchDeletedUsersByDate({ startDate, endDate })
     fetchPublicAndPrivateEvents()
-  }, [fetchOverview, fetchEventsByDate, fetchDeletedUsersByDate, fetchPublicAndPrivateEvents])
+  }, [fetchOverview, fetchEventsByDate, fetchUsersByDate, fetchDeletedUsersByDate, fetchPublicAndPrivateEvents])
 
   // Sample data as fallback
   const [overviewData] = useState({
@@ -98,10 +100,10 @@ export default function AdminDashboard() {
     privateEvents: 0,
   })
 
-
   // Use sample data if API fails
   const finalOverview = error ? overviewData.content : overview
   const finalEventsByDate = error ? eventsByDateData.content : eventsByDate
+  const finalUsersByDate = error ? [] : usersByDate
   const finalDeletedUsersByDate = error ? deletedUsersData.content : deletedUsersByDate
   const finalPublicAndPrivateEvents = error ? eventVisibilityData : publicAndPrivateEvents
 
@@ -119,10 +121,27 @@ export default function AdminDashboard() {
       }
     }) || []
 
+  // Format users by date chart data
+  const usersByDateChartData =
+    finalUsersByDate?.map((item) => {
+      const dateFormat = screenSize.isExtraSmall
+        ? { month: "short", day: "numeric" }
+        : { month: "short", day: "numeric" }
+
+      return {
+        name: new Date(item.date).toLocaleDateString("en-US", dateFormat),
+        total: item.count,
+      }
+    }) || []
+
   // Limit the number of data points for small screens
   const limitedEventsByDateChartData = screenSize.isExtraSmall
     ? eventsByDateChartData.slice(-6) // Show only the last 6 data points on very small screens
     : eventsByDateChartData
+
+  const limitedUsersByDateChartData = screenSize.isExtraSmall
+    ? usersByDateChartData.slice(-6) // Show only the last 6 data points on very small screens
+    : usersByDateChartData
 
   const rsvpChartData = rsvpTrendData.content.map((item) => {
     const dateFormat = screenSize.isExtraSmall ? { month: "short", day: "numeric" } : { month: "short", day: "numeric" }
@@ -136,8 +155,8 @@ export default function AdminDashboard() {
   })
 
   const eventVisibilityChartData = [
-    { name: "Public", value: finalPublicAndPrivateEvents?.publicEvents || 0 },
-    { name: "Private", value: finalPublicAndPrivateEvents?.privateEvents || 0 },
+    { name: "Public", total: finalPublicAndPrivateEvents?.publicEvents || 0 },
+    { name: "Private", total: finalPublicAndPrivateEvents?.privateEvents || 0 },
   ]
 
   // Helper to avoid division by zero
@@ -284,7 +303,7 @@ export default function AdminDashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-1 sm:p-2 md:p-4">
-              <PieChart
+              <BarChart
                 data={eventVisibilityChartData}
                 // height={screenSize.isExtraSmall ? 180 : screenSize.isMobile ? 200 : 300}
                 // valueFormatter={(value) => `${value} events`}
@@ -293,14 +312,14 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-center">
                   <Eye className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 mr-1 sm:mr-2" />
                   <span className="text-[10px] sm:text-xs">
-                      Public: {finalPublicAndPrivateEvents?.publicEvents || 0}
-                    </span>
+                    Public: {finalPublicAndPrivateEvents?.publicEvents || 0}
+                  </span>
                 </div>
                 <div className="flex items-center justify-center">
                   <EyeOff className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-500 mr-1 sm:mr-2" />
                   <span className="text-[10px] sm:text-xs">
-                      Private: {finalPublicAndPrivateEvents?.privateEvents || 0}
-                    </span>
+                    Private: {finalPublicAndPrivateEvents?.privateEvents || 0}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -309,8 +328,23 @@ export default function AdminDashboard() {
 
         {/* Charts Row 2 */}
         <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
-          {/* RSVP Trends */}
+          {/* Users by Date Chart */}
           <Card className="bg-white lg:col-span-4">
+            <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
+              <CardTitle className="text-sm sm:text-base md:text-lg">Users by Date</CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs">Number of users created per day</CardDescription>
+            </CardHeader>
+            <CardContent className="p-1 sm:p-2 md:p-4">
+              <BarChart
+                data={limitedUsersByDateChartData}
+                // height={screenSize.isExtraSmall ? 180 : screenSize.isMobile ? 200 : 300}
+                // valueFormatter={(value) => `${value} users`}
+              />
+            </CardContent>
+          </Card>
+
+          {/* RSVP Trends */}
+          {/* <Card className="bg-white lg:col-span-4">
             <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
               <CardTitle className="text-sm sm:text-base md:text-lg">RSVP Trends</CardTitle>
               <CardDescription className="text-[10px] sm:text-xs">
@@ -329,7 +363,7 @@ export default function AdminDashboard() {
                 valueFormatter={(value) => `${value} responses`}
               />
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* Deleted Users */}
           <Card className="bg-white lg:col-span-3">
