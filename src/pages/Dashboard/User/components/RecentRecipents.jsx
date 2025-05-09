@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from "react"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown } from "lucide-react"
 import {
   flexRender,
   getCoreRowModel,
@@ -40,6 +40,25 @@ function RecentRecipients({ fullTable = false, data = [] }) {
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
+  // Responsive column visibility
+  useEffect(() => {
+    const updateColumnVisibility = () => {
+      const isSmallScreen = window.matchMedia("(max-width: 640px)").matches
+      const isMediumScreen = window.matchMedia("(max-width: 768px)").matches
+
+      setColumnVisibility({
+        name: true,
+        email: !isMediumScreen, // Hide email on screens < 768px
+        rsvp: true,
+        respondedAt: !isSmallScreen, // Hide respondedAt on screens < 640px
+      })
+    }
+
+    updateColumnVisibility() // Initial check
+    window.addEventListener("resize", updateColumnVisibility)
+    return () => window.removeEventListener("resize", updateColumnVisibility)
+  }, [])
+
   const columns = [
     {
       accessorKey: "name",
@@ -51,7 +70,7 @@ function RecentRecipients({ fullTable = false, data = [] }) {
       ),
       cell: ({ row }) => (
         <div className="flex items-center">
-          <CustomAvatar fallbackText={row.name} src={row.avatar} />
+          <CustomAvatar fallbackText={row.getValue("name")} src={row.original.avatar} />
           <span className="ml-2">{row.getValue("name")}</span>
         </div>
       ),
@@ -59,7 +78,7 @@ function RecentRecipients({ fullTable = false, data = [] }) {
     {
       accessorKey: "email",
       header: "Email",
-      cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+      cell: ({ row }) => <div className="lowercase text-sm">{row.getValue("email")}</div>,
     },
     {
       accessorKey: "rsvp",
@@ -67,7 +86,15 @@ function RecentRecipients({ fullTable = false, data = [] }) {
       cell: ({ row }) => {
         const status = row.getValue("rsvp")
         return (
-          <Badge variant={status === "ACCEPTED" ? "success" : status === "DENIED" ? "destructive" : "outline"}>
+          <Badge variant={status === "ACCEPTED" ? "success" : status === "DENIED" ? "destructive" : "outline"}
+                 className={
+                  status === "DENIED"
+                    ? "text-white bg-red-600 !h-8 !px-3 !text-sm !leading-4"
+                    : status === "ACCEPTED"
+                      ? "text-white bg-green-600 !h-8 !px-1.5 !text-sm !leading-4"
+                      : "text-gray-800 bg-gray-200 !h-8 !px-3 !text-sm !leading-4"
+            }
+          >
             {status.charAt(0) + status.slice(1).toLowerCase()}
           </Badge>
         )
@@ -107,51 +134,25 @@ function RecentRecipients({ fullTable = false, data = [] }) {
   return (
     <div className="w-full">
       {fullTable && (
-        <div className="flex items-center py-4">
+        <div className="flex items-center py-4 flex-col sm:flex-row">
           <Input
             placeholder="Filter by name..."
             value={table.getColumn("name")?.getFilterValue() ?? ""}
             onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
-            className="max-w-sm"
+            className="max-w-full sm:max-w-sm mb-2 sm:mb-0"
           />
-          {/*<DropdownMenu>*/}
-          {/*  <DropdownMenuTrigger asChild>*/}
-          {/*    <Button variant="outline" className="ml-auto">*/}
-          {/*      Columns <MoreHorizontal className="ml-2 h-4 w-4" />*/}
-          {/*    </Button>*/}
-          {/*  </DropdownMenuTrigger>*/}
-          {/*  <DropdownMenuContent align="end">*/}
-          {/*    {table*/}
-          {/*      .getAllColumns()*/}
-          {/*      .filter((column) => column.getCanHide())*/}
-          {/*      .map((column) => {*/}
-          {/*        return (*/}
-          {/*          <DropdownMenuCheckboxItem*/}
-          {/*            key={column.id}*/}
-          {/*            className="capitalize"*/}
-          {/*            checked={column.getIsVisible()}*/}
-          {/*            onCheckedChange={(value) => column.toggleVisibility(!!value)}*/}
-          {/*          >*/}
-          {/*            {column.id}*/}
-          {/*          </DropdownMenuCheckboxItem>*/}
-          {/*        )*/}
-          {/*      })}*/}
-          {/*  </DropdownMenuContent>*/}
-          {/*</DropdownMenu>*/}
         </div>
       )}
       <div className="rounded-md border">
-        <Table>
+        <Table className="w-full table-auto">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  )
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -175,8 +176,8 @@ function RecentRecipients({ fullTable = false, data = [] }) {
         </Table>
       </div>
       {fullTable && (
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
+        <div className="flex items-center justify-end space-x-2 py-4 flex-col sm:flex-row">
+          <div className="flex-1 text-sm text-muted-foreground mb-2 sm:mb-0">
             {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
             selected.
           </div>
@@ -189,7 +190,12 @@ function RecentRecipients({ fullTable = false, data = [] }) {
             >
               Previous
             </Button>
-            <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
               Next
             </Button>
           </div>

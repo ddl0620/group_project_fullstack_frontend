@@ -1,3 +1,4 @@
+"use client"
 // src/pages/components/RecipientsTable.jsx
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -107,7 +108,7 @@ const RecipientsTable = ({ activeTab, setActiveTab, recipientsData }) => {
                   })
                   .map((recipient) => (
                     <TableRow key={recipient.id}>
-                      <TableCell>
+                      <TableCell className="py-2">
                         <div className="flex items-center">
                           <Avatar className="mr-3 h-8 w-8">
                             <AvatarImage
@@ -122,12 +123,12 @@ const RecipientsTable = ({ activeTab, setActiveTab, recipientsData }) => {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium">{recipient.name}</p>
+                            <p className="font-medium text-sm">{recipient.name}</p>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{recipient.email}</TableCell>
-                      <TableCell>
+                      <TableCell className="py-2 text-sm">{recipient.email}</TableCell>
+                      <TableCell className="py-2">
                         <Badge
                           variant={
                             recipient.rsvp === 'Accepted'
@@ -136,12 +137,19 @@ const RecipientsTable = ({ activeTab, setActiveTab, recipientsData }) => {
                                 ? 'destructive'
                                 : 'warning'
                           }
+                          className={
+                            recipient.rsvp === 'Declined'
+                              ? 'text-white bg-red-600 !h-8 !px-3 !text-sm !leading-8'
+                              : recipient.rsvp === 'Accepted'
+                                ? 'text-white bg-green-600 !h-8 !px-3 !text-sm !leading-8'
+                                : 'text-gray-800 bg-yellow-300 !h-8 !px-3 !text-sm !leading-8'
+                          }
                         >
                           {recipient.rsvp}
                         </Badge>
                       </TableCell>
-                      <TableCell>{recipient.respondedAt}</TableCell>
-                      <TableCell>
+                      <TableCell className="py-2 text-sm">{recipient.respondedAt}</TableCell>
+                      <TableCell className="py-2">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button

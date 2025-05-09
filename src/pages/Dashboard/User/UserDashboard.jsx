@@ -125,52 +125,18 @@ export default function UserDashboard() {
     ]
     : []
 
-  return (
+ return (
     <div className="flex min-h-screen flex-col">
-      {/* First Section */}
-      {/*<div className="border-b">*/}
-      {/*  <div className="flex h-16 items-center px-4">*/}
-      {/*    <div className="ml-auto flex items-center space-x-4">*/}
-      {/*      <div className="relative w-64">*/}
-      {/*        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />*/}
-      {/*        <Input placeholder="Search recipients..." className="pl-8" />*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
-
-      {/* Main Section */}
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        {/* Date Picking and interval select section */}
-        {/*<div className="flex items-center justify-between space-y-2">*/}
-        {/*  <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>*/}
-        {/*  <div className="flex items-center space-x-2">*/}
-        {/*    <DatePickerWithRange date={date} setDate={setDate} />*/}
-        {/*    <Select value={interval} onValueChange={(value) => setInterval(value)}>*/}
-        {/*      <SelectTrigger className="w-[180px]">*/}
-        {/*        <SelectValue placeholder="Select interval" />*/}
-        {/*      </SelectTrigger>*/}
-        {/*      <SelectContent>*/}
-        {/*        <SelectItem value="daily">Daily</SelectItem>*/}
-        {/*        <SelectItem value="weekly">Weekly</SelectItem>*/}
-        {/*      </SelectContent>*/}
-        {/*    </Select>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-
-        {/* Tabs */}
+      <div className="flex-1 space-y-4 p-4 sm:p-6 md:p-8 pt-6">
         <Tabs defaultValue="overview" className="space-y-4">
-          {/* Tabs List selection Menu */}
-          <TabsList>
+          <TabsList className="flex flex-wrap justify-start">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="recipients">Recipients</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
-          {/* OVERVIEW TAB */}
           <TabsContent value="overview" className="space-y-4">
-            {/* Cards for numeric information */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {numericData.map((data, index) => (
                 <motion.div
                   key={index}
@@ -188,7 +154,7 @@ export default function UserDashboard() {
                       {data.icon}
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">{data.value}</div>
+                      <div className="text-xl sm:text-2xl font-bold">{data.value}</div>
                       <p
                         className={`text-xs font-medium ${
                           data.percentage >= 0 ? "text-green-500" : "text-red-500"
@@ -203,9 +169,7 @@ export default function UserDashboard() {
               ))}
             </div>
 
-            {/* Tabs for graph information */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              {/* Invitation overtime chart */}
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -214,7 +178,7 @@ export default function UserDashboard() {
                   hidden: { opacity: 0, y: 50 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
                 }}
-                className="col-span-4"
+                className="col-span-1 lg:col-span-4"
               >
                 <Card className="hover:shadow-xl transition-shadow duration-50">
                   <CardHeader>
@@ -229,7 +193,6 @@ export default function UserDashboard() {
                 </Card>
               </motion.div>
 
-              {/* RSVP overtime chart */}
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -238,7 +201,7 @@ export default function UserDashboard() {
                   hidden: { opacity: 0, y: 50 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
                 }}
-                className="col-span-3"
+                className="col-span-1 lg:col-span-3"
               >
                 <Card className="hover:shadow-xl transition-shadow duration-50">
                   <CardHeader>
@@ -252,7 +215,6 @@ export default function UserDashboard() {
               </motion.div>
             </div>
 
-            {/* Recipient table section */}
             {loadingRecipients ? (
               <div>Loading recipients...</div>
             ) : (
@@ -264,9 +226,9 @@ export default function UserDashboard() {
                   hidden: { opacity: 0, y: 50 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
                 }}
-                className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 hover:shadow-xl transition-shadow duration-50"
+                className="grid gap-4 grid-cols-1 lg:grid-cols-7 hover:shadow-xl transition-shadow duration-50"
               >
-                <Card className="col-span-7">
+                <Card className="col-span-1 lg:col-span-7">
                   <CardHeader>
                     <CardTitle>Recent Recipients</CardTitle>
                     <CardDescription>Recently invited recipients and their RSVP status</CardDescription>
@@ -279,7 +241,6 @@ export default function UserDashboard() {
             )}
           </TabsContent>
 
-          {/* RECIPIENTS TAB */}
           <TabsContent value="recipients" className="space-y-4">
             {loadingRecipients ? (
               <div>Loading recipients...</div>
@@ -294,20 +255,19 @@ export default function UserDashboard() {
                 }}
                 className="hover:shadow-xl transition-shadow duration-50"
               >
-                <Card>
+                <Card >
                   <CardHeader>
                     <CardTitle>All Recipients</CardTitle>
                     <CardDescription>Manage all your event recipients</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <RecentRecipients data={recipients} fullTable={true} />
+                    <RecentRecipients data={recipients}/>
                   </CardContent>
                 </Card>
               </motion.div>
             )}
           </TabsContent>
 
-          {/* ANALYTICS TAB */}
           <TabsContent value="analytics" className="space-y-4">
             <motion.div
               initial="hidden"
@@ -329,7 +289,6 @@ export default function UserDashboard() {
                 </CardContent>
               </Card>
             </motion.div>
-            {/* RSVP overtime chart */}
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -338,7 +297,7 @@ export default function UserDashboard() {
                 hidden: { opacity: 0, y: 50 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
               }}
-              className="col-span-3 hover:shadow-xl transition-shadow duration-50"
+              className="col-span-1 lg:col-span-3 hover:shadow-xl transition-shadow duration-50"
             >
               <Card>
                 <CardHeader>
