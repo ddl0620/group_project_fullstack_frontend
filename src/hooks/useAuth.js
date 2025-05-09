@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { signInUser, SignUpUser, VerifyCodeAPI } from '../services/AuthService.js';
+import { signInUser, SignUpUser, VerifySignUpAPI } from '../services/AuthService.js';
 import { login, logout } from '../store/slices/userSlice.js';
 import { Toast } from '../helpers/toastService.js';
 
@@ -33,7 +33,7 @@ export const useAuth = () => {
 
       localStorage.setItem('token', content.token);
       dispatch(login({ user, role }));
-      Toast.success('Đăng nhập thành công');
+      Toast.success('Sign in successfully');
 
       navigate(role === 'admin' ? '/dashboard' : '/dashboard');
     } catch (e) {
@@ -45,42 +45,73 @@ export const useAuth = () => {
   };
 
   const handleSignUp = async (userData, setError) => {
+    const loading = Toast.loading('Sending OTP code...');
     try {
       if (!userData.name || !userData.email || !userData.password || !userData.confirmPassword || !userData.dateOfBirth) {
-        Toast.error('Vui lòng nhập đầy đủ thông tin đăng ký!');
-        setError('Vui lòng nhập đầy đủ thông tin đăng ký!');
+        Toast.error('Please enter all required fields!');
+        setError('Please enter all required fields!');
         return;
       }
 
       const response = await SignUpUser(userData);
       //need more specific error handling
-      if (response?.status === 400) {
-        Toast.error('Thông tin đăng ký không hợp lệ!');
-        setError('Thông tin đăng ký không hợp lệ!');
+      if (!response?.success) {
+        Toast.error('Cannot sent OTP to your email. Try again');
+        setError('Cannot sent OTP to your email. Try again');
+        return;
+      }
+
+      Toast.success('OTP code has been sent to your email. Please check your inbox');
+    } catch (e) {
+      //need more specific error handling
+      Toast.error(e.response.data.message || 'Invalid sign up information!');
+      console.log('Fail to sign up', e);
+      setError?.(e.response.data.message || 'Invalid sign up information!');
+    }
+    finally {
+      Toast.dismiss(loading);
+    }
+  };
+
+  const handleVerifyCodeSignUp = async (userData, setError) => {
+    try {
+      if(!userData.code || !userData.email) {
+        Toast.error('Please enter OTP code and email!');
+        setError('Please enter OTP code and email!');
+        return;
+      }
+
+      const response = await VerifySignUpAPI(userData);
+      //need more specific error handling
+      if (!response?.success) {
+        Toast.error('Verification failed. Try again');
+        setError('Verification failed. Try again');
         return;
       }
 
       navigate('/sign-in');
-      Toast.success('Bạn đã đăng ký thành công!');
-      Toast.info('Đang chuyển hướng đến trang đăng nhập...');
+      Toast.success('Verification successful. You can now sign in');
+      Toast.info('Directing to sign-in page...');
     } catch (e) {
       //need more specific error handling
-      Toast.error(e.response.data.message || 'Thông tin đăng ký không hợp lệ!');
+      Toast.error(e.response.data.message || 'Invalid verification code!');
       console.log('Fail to sign up', e);
-      setError?.(e.response.data.message || 'Thông tin đăng ký không hợp lệ!');
+      setError?.(e.response.data.message || 'Invalid verification code!');
     }
   };
+
 
   const handleSignOut = () => {
     const token = localStorage.getItem('token');
     if (token) localStorage.removeItem('token');
     dispatch(logout());
-    Toast.success('Bạn đang đăng xuất');
+    Toast.success('Sign out successfully');
   };
 
   return {
     handleSignIn,
     handleSignOut,
     handleSignUp,
+    handleVerifyCodeSignUp,
   };
 };

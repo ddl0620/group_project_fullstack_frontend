@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
+import { DEFAULT_IMAGE } from '@/components/DefaultImage.js';
 
 const formatDateTime = (dateString) => {
   if (!dateString) return "N/A"
@@ -52,7 +53,7 @@ export function EventCard({ event, actions = [], className }) {
     _id,
     title = "Untitled Event",
     description = "",
-    type = "ONLINE",
+    type = "Others",
     startDate,
     endDate,
     location = "N/A",
@@ -139,7 +140,7 @@ export function EventCard({ event, actions = [], className }) {
 
 
         <img
-          src={images[0] || "public/backgroundImage.png"}
+          src={images[0] || DEFAULT_IMAGE}
           alt={title}
           loading={"lazy"}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

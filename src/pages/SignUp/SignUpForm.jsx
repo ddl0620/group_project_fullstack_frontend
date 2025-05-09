@@ -9,23 +9,24 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
-import TextInputField from '@/components/shared/TextInputField.jsx';
-import OtpVerificationModal from '@/pages/SignUp/OtpVerificationModal.jsx';
-import SubmitButton from '@/components/shared/SubmitButton.jsx';
-import AuthLink from '@/components/shared/AuthLink.jsx';
+import TextInputField from "@/components/shared/TextInputField.jsx"
+import OtpVerificationModal from "@/pages/SignUp/OtpVerificationModal.jsx"
+import SubmitButton from "@/components/shared/SubmitButton.jsx"
+import AuthLink from "@/components/shared/AuthLink.jsx"
+import { useAuth } from "@/hooks/useAuth.js"
 
 // Local components
 
 // Mock auth hook
-const useAuth = () => {
-  const handleSignUp = async (userData, setError) => {
-    // Mock implementation
-    console.log("Sign up with:", userData)
-    return true
-  }
-
-  return { handleSignUp }
-}
+// const useAuth = () => {
+//   const handleSignUp = async (userData, setError) => {
+//     // Mock implementation
+//     console.log("Sign up with:", userData)
+//     return true
+//   }
+//
+//   return { handleSignUp }
+// }
 
 function SignUpForm() {
   const [userData, setUserData] = useState({
@@ -71,7 +72,7 @@ function SignUpForm() {
 
     try {
       // Simulate API call to check if email is valid
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await handleSignUp(userData, setError)
 
       // If everything is valid, open OTP modal
       setError(null)
@@ -88,7 +89,6 @@ function SignUpForm() {
     setIsOtpModalOpen(false)
 
     if (success) {
-      // If OTP verification was successful, create the account
       await handleSignUp(userData, setError)
     }
   }
@@ -147,7 +147,6 @@ function SignUpForm() {
                   mode="single"
                   selected={userData.dateOfBirth}
                   onSelect={handleDateChange}
-                  initialFocus
                   disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                 />
               </PopoverContent>
@@ -184,9 +183,18 @@ function SignUpForm() {
 
       <OtpVerificationModal
         isOpen={isOtpModalOpen}
-        onClose={() => setIsOtpModalOpen(false)}
+        onClose={(event) => {
+          // Only close the modal when explicitly triggered by the close button
+          // This prevents the modal from closing when clicking outside
+          if (event && event.type === "click") {
+            // If it's a direct click on the close button, close the modal
+            setIsOtpModalOpen(false)
+          }
+        }}
         onVerify={handleOtpVerification}
         email={userData.email}
+        onResendCode={handleRegister}
+        userData={userData}
       />
     </form>
   )

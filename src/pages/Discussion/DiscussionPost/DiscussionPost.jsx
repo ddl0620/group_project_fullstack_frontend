@@ -1,18 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import {
-  Heart,
-  MessageCircle,
-  Send,
-  MoreHorizontal,
-  X,
-  Pencil,
-} from 'lucide-react';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar.tsx';
+import { Heart, MessageCircle, Pencil, X } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import {
   Card,
@@ -20,44 +8,17 @@ import {
   CardFooter,
   CardHeader,
 } from '@/components/ui/card.tsx';
-import { Input } from '@/components/ui/input.tsx';
-import { Separator } from '@/components/ui/separator.tsx';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel.tsx';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.tsx';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 import { useUser } from '@/hooks/useUser.js';
 import { useSelector } from 'react-redux';
 import { CreateEditDiscussionPost } from '@/pages/Discussion/DiscussionPost/CreateEditDiscusisonPost.jsx';
-import {
-  AlertDialog,
-  AlertDialogDescription,
-  AlertDialogTitle,
-} from '@radix-ui/react-alert-dialog';
 import { AlertDialogUtils } from '@/helpers/AlertDialog.jsx';
 import { Toast } from '@/helpers/toastService.js';
-import {
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-} from '@/components/ui/alert-dialog.tsx';
 import useDiscussionPost from '@/hooks/useDiscussionPost.js';
 import { CommentSection } from '@/pages/Discussion/DiscussionReply/CommentSection.jsx';
 import useDiscussionReply from '@/hooks/useDiscussionReply.js';
 import { TrashIcon } from '@heroicons/react/24/outline';
-import ImageCarousel from "@/components/ImageCarousel.jsx";
+import ImageCarousel from '@/components/ImageCarousel.jsx';
 
 export function DiscussionPost({ postData }) {
   const { getUserById } = useUser();
@@ -100,14 +61,14 @@ export function DiscussionPost({ postData }) {
     console.log(`This is replies of ${postData._id}`, replies);
   }, [replies, postData._id]);
 
-  const handleLike = () => {
-    if (liked) {
-      setLikeCount(likeCount - 1);
-    } else {
-      setLikeCount(likeCount + 1);
-    }
-    setLiked(!liked);
-  };
+  // const handleLike = () => {
+  //   if (liked) {
+  //     setLikeCount(likeCount - 1);
+  //   } else {
+  //     setLikeCount(likeCount + 1);
+  //   }
+  //   setLiked(!liked);
+  // };
 
   const isMyPost = me._id === postData.creator_id._id;
 
@@ -179,7 +140,7 @@ export function DiscussionPost({ postData }) {
                 onClick={() => handleDeleteDiscussion()}
                 variant={'ghost'}
               >
-                <TrashIcon size={'sm'} />
+                <X size={'sm'} />
               </Button>
             </div>
           )}
@@ -187,23 +148,11 @@ export function DiscussionPost({ postData }) {
         <CardContent className="flex flex-col items-center justify-center p-4 pt-0">
           <p className="w-full">{postData.content}</p>
           {postData.images.length > 0 && (
-              <ImageCarousel images={postData.images} />
+            <ImageCarousel images={postData.images} />
           )}
         </CardContent>
         <CardFooter className="flex flex-col p-0">
           <div className="flex w-full items-center justify-start gap-x-4 p-4">
-            <div className="flex items-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleLike}
-                className={liked ? 'text-red-500' : ''}
-              >
-                <Heart className={`h-5 w-5 ${liked ? 'fill-current' : ''}`} />
-                <span className="sr-only">Like</span>
-              </Button>
-              <span className="text-sm">{likeCount}</span>
-            </div>
             <Button
               variant="ghost"
               size="sm"

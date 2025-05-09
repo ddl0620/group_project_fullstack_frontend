@@ -5,36 +5,23 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { CheckCircle, XCircle } from "lucide-react"
 import OtpInput from "./OtpInput"
+import { useAuth } from "@/hooks/useAuth.js"
+import { Toast } from "@/helpers/toastService.js"
 
-const OtpVerificationModal = ({ isOpen, onClose, onVerify, email }) => {
+const OtpVerificationModal = ({ isOpen, onClose, onVerify, email, onResendCode, userData }) => {
   const [otp, setOtp] = useState("")
   const [isVerifying, setIsVerifying] = useState(false)
   const [verificationStatus, setVerificationStatus] = useState(null) // null, 'success', 'error'
   const [countdown, setCountdown] = useState(30)
+  const { handleVerifyCodeSignUp, handleSignUp } = useAuth()
+  const [error, setError] = useState(null)
 
   // Mock verification - in a real app, this would call an API
   const verifyOtp = async () => {
     setIsVerifying(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // For demo purposes: OTP "123456" is considered valid
-      if (otp === "123456") {
-        setVerificationStatus("success")
-        // Wait a moment to show success state before closing
-        setTimeout(() => {
-          onVerify(true)
-        }, 1500)
-      } else {
-        setVerificationStatus("error")
-        // Reset after showing error
-        setTimeout(() => {
-          setVerificationStatus(null)
-          setOtp("")
-        }, 2000)
-      }
+      await handleVerifyCodeSignUp({ code: otp, email }, error)
     } finally {
       setIsVerifying(false)
     }
@@ -70,39 +57,48 @@ const OtpVerificationModal = ({ isOpen, onClose, onVerify, email }) => {
     setOtp(value)
   }
 
-  const handleResendCode = () => {
-    // In a real app, this would call an API to resend the code
+  const handleResendCode = async () => {
+    await handleSignUp(userData, setError)
     setCountdown(30)
-    // Mock notification that code was sent
-    alert("A new verification code has been sent to your email.")
+    setVerificationStatus(null)
+    Toast.success("Verification code sent! Please check your email for the verification code.")
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        // Only allow closing through the explicit close button
+        // This prevents closing on unfocus/clicking outside
+        if (!open) {
+          onClose()
+        }
+      }}
+    >
+      <DialogContent className="sm:max-w-md p-4 max-w-[95vw]">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold">Verify Your Account</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col items-center space-y-6 py-4">
+        <div className="flex flex-col items-center space-y-4 sm:space-y-6 py-3 sm:py-4">
           {verificationStatus === "success" ? (
-            <div className="flex flex-col items-center space-y-4">
-              <CheckCircle className="h-16 w-16 text-green-500" />
-              <p className="text-center text-lg font-medium">Verification successful!</p>
-              <p className="text-center text-sm text-neutral-500">Your account has been created.</p>
+            <div className="flex flex-col items-center space-y-2 sm:space-y-4">
+              <CheckCircle className="h-12 w-12 sm:h-16 sm:w-16 text-green-500" />
+              <p className="text-center text-base sm:text-lg font-medium">Verification successful!</p>
+              <p className="text-center text-xs sm:text-sm text-neutral-500">Your account has been created.</p>
             </div>
           ) : verificationStatus === "error" ? (
-            <div className="flex flex-col items-center space-y-4">
-              <XCircle className="h-16 w-16 text-red-500" />
-              <p className="text-center text-lg font-medium">Verification failed</p>
-              <p className="text-center text-sm text-neutral-500">The code you entered is incorrect.</p>
+            <div className="flex flex-col items-center space-y-2 sm:space-y-4">
+              <XCircle className="h-12 w-12 sm:h-16 sm:w-16 text-red-500" />
+              <p className="text-center text-base sm:text-lg font-medium">Verification failed</p>
+              <p className="text-center text-xs sm:text-sm text-neutral-500">The code you entered is incorrect.</p>
             </div>
           ) : (
             <>
-              <p className="text-center text-sm text-neutral-600">
+              <p className="text-center text-xs sm:text-sm text-neutral-600">
                 We've sent a 6-digit verification code to
                 <br />
-                <span className="font-medium">{email}</span>
+                <span className="font-medium break-all">{email}</span>
               </p>
 
               <OtpInput length={6} onComplete={handleComplete} />
