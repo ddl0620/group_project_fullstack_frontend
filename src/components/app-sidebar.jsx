@@ -4,15 +4,19 @@ import { useEffect, useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { ChevronLeft, ChevronRight, Plus, Users, Calendar, User, PanelLeft } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Users, Calendar, User } from "lucide-react"
 import { useSelector } from "react-redux"
 import { CustomAvatar } from "@/components/shared/CustomAvatar"
 
-export function AppSidebar({ items = defaultItems, title = "Event Management" }) {
+export function AppSidebar({
+                             items = defaultItems,
+                             title = "Event Management",
+                             isMobileOpen = false,
+                             setIsMobileOpen = () => {},
+                           }) {
   const location = useLocation()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const user = useSelector((state) => state.user.user)
 
   // Handle responsive behavior
@@ -40,38 +44,24 @@ export function AppSidebar({ items = defaultItems, title = "Event Management" })
   // Update main content margin when sidebar collapses/expands
   useEffect(() => {
     const mainContent = document.getElementById("main-content")
-    if (mainContent) {
+    if (mainContent && !isMobile) {
       mainContent.style.marginLeft = isCollapsed ? "5rem" : "16rem"
+    } else if (mainContent && isMobile) {
+      // On mobile, no margin regardless of sidebar state
+      mainContent.style.marginLeft = "0"
     }
-  }, [isCollapsed])
+  }, [isCollapsed, isMobile])
 
   // Toggle sidebar collapsed state
   const toggleCollapsed = () => {
     setIsCollapsed((prev) => !prev)
   }
 
-  // Mobile sidebar toggle
-  const toggleMobileSidebar = () => {
-    setSidebarOpen(!sidebarOpen)
-  }
-
   return (
     <>
-      {/* Mobile Toggle Button */}
-      {isMobile && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="fixed top-20 left-4 z-50 h-10 w-10 rounded-full bg-white/80 shadow-md backdrop-blur-sm"
-          onClick={toggleMobileSidebar}
-        >
-          <PanelLeft className="h-5 w-5 text-gray-700" />
-        </Button>
-      )}
-
       {/* Mobile Overlay */}
-      {isMobile && sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+      {isMobile && isMobileOpen && (
+        <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
       )}
 
       {/* Sidebar */}
@@ -79,7 +69,7 @@ export function AppSidebar({ items = defaultItems, title = "Event Management" })
         className={`flex h-full flex-col border-r border-gray-200 bg-white transition-all duration-300 dark:border-gray-800 dark:bg-gray-900 ${
           isCollapsed ? "w-[5rem]" : "w-[16rem]"
         } ${isMobile ? "fixed inset-y-0 left-0 z-40 shadow-lg" : "relative"} ${
-          isMobile && !sidebarOpen ? "-translate-x-full" : "translate-x-0"
+          isMobile && !isMobileOpen ? "-translate-x-full" : "translate-x-0"
         }`}
       >
         {/* Header */}
@@ -101,7 +91,7 @@ export function AppSidebar({ items = defaultItems, title = "Event Management" })
 
           {/* Mobile Close Button */}
           {isMobile && (
-            <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)}>
+            <Button variant="ghost" size="icon" onClick={() => setIsMobileOpen(false)}>
               <ChevronLeft className="h-5 w-5" />
             </Button>
           )}
