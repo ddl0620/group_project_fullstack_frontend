@@ -86,7 +86,15 @@ function RecentRecipients({ fullTable = false, data = [] }) {
       cell: ({ row }) => {
         const status = row.getValue("rsvp")
         return (
-          <Badge variant={status === "ACCEPTED" ? "success" : status === "DENIED" ? "destructive" : "outline"}>
+          <Badge variant={status === "ACCEPTED" ? "success" : status === "DENIED" ? "destructive" : "outline"}
+                 className={
+                  status === "DENIED"
+                    ? "text-white bg-red-600 !h-8 !px-3 !text-sm !leading-4"
+                    : status === "ACCEPTED"
+                      ? "text-white bg-green-600 !h-8 !px-1.5 !text-sm !leading-4"
+                      : "text-gray-800 bg-gray-200 !h-8 !px-3 !text-sm !leading-4"
+            }
+          >
             {status.charAt(0) + status.slice(1).toLowerCase()}
           </Badge>
         )
