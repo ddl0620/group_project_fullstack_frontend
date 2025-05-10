@@ -1,7 +1,8 @@
 import axios from 'axios';
+const api = import.meta.env.VITE_API_URL;
 
 const APIServices = axios.create({
-  baseURL: 'http://localhost:5001',
+  baseURL: api,
   timeout: 10000,
   withCredentials: true, // Bật gửi cookie trong mọi request
   headers: {
