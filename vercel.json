@@ -1,6 +1,4 @@
 {
-  "version": 2,
-  "framework": null,
   "builds": [
     {
       "src": "package.json",
@@ -10,10 +8,12 @@
       }
     }
   ],
+  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "vite build",
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/"
+      "dest": "/index.html"
     }
   ]
 }

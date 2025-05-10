@@ -40,25 +40,24 @@ function App() {
   const { handleGetMe } = useUser()
 
   // Kiểm tra trạng thái đăng nhập bằng API
-  useEffect(() => {
-    if (!isAuthenticated) {
-      handleGetMe(setIsLoading);
-    } else {
-      setIsLoading(false)
-    }
-  }, [dispatch, isAuthenticated, handleGetMe])
-
-  if (isLoading) {
-    return <LoadingScreen />
-  }
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     handleGetMe(setIsLoading);
+  //   } else {
+  //     setIsLoading(false)
+  //   }
+  // }, [dispatch, isAuthenticated, handleGetMe])
+  //
+  // if (isLoading) {
+  //   return <LoadingScreen />
+  // }
 
   return (
-    <HeroUIProvider>
+
       <BrowserRouter>
         <Routes>{renderRoutes(routes)}</Routes>
         <Toaster position="bottom-left" theme="light" richColors={true} closeButton={false} duration={3000} />
       </BrowserRouter>
-    </HeroUIProvider>
   )
 }
 

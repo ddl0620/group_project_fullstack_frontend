@@ -4,11 +4,13 @@ import './index.css';
 import App from './App.jsx';
 import { store } from './store/store.js';
 import { Provider } from 'react-redux';
+
+console.log("✅ React app mounted!");
 createRoot(document.getElementById('root')).render(
     // StrictMode is used to highlight potential problems in an application.
     // It activates additional checks and warnings for its descendants.
 
-    <>
+    <StrictMode>
         {/*Wrap the app inside the Redux,
       so allow App can access all content in redux*/}
         <Provider store={store}>
@@ -17,5 +19,5 @@ createRoot(document.getElementById('root')).render(
             <App />
             {/*<App2/>*/}
         </Provider>
-    </>
+    </StrictMode>
 );
