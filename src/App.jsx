@@ -53,12 +53,11 @@ function App() {
   }
 
   return (
-    <HeroUIProvider>
+
       <BrowserRouter>
         <Routes>{renderRoutes(routes)}</Routes>
         <Toaster position="bottom-left" theme="light" richColors={true} closeButton={false} duration={3000} />
       </BrowserRouter>
-    </HeroUIProvider>
   )
 }
 
