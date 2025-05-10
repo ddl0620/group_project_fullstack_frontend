@@ -72,6 +72,11 @@
     "tw-animate-css": "^1.2.5",
     "zod": "^3.24.2"
   },
+  "overrides": {
+    "@tremor/react": {
+      "react": "^19.1.0"
+    }
+  },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@types/node": "^22.14.0",

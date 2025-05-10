@@ -8,7 +8,7 @@
       }
     }
   ],
-  "installCommand": "npm install --force",
+  "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "vite build",
   "routes": [
     {
