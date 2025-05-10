@@ -18,7 +18,8 @@ import {
   Info,
   CheckCircle,
   XCircle,
-  User, Ticket,
+  User,
+  Ticket,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -34,14 +35,19 @@ import EventInvitationsList from '@/pages/Event/MyJoinedEvents/EventInvitationLi
 import useInvitation from '@/hooks/useInvitation.js';
 import { useUser } from '@/hooks/useUser.js';
 import { Toast } from '@/helpers/toastService.js';
+import { UpdateIcon } from '@radix-ui/react-icons';
+import { formatDay } from '@/helpers/format.js';
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const { getEventById, requestJoinEvent } = useEvent();
-  const { fetchReceivedInvitationsByEventId, fetchRSVPByInvitationId, replyInvitation } =
-    useInvitation();
+  const {
+    fetchReceivedInvitationsByEventId,
+    fetchRSVPByInvitationId,
+    replyInvitation,
+  } = useInvitation();
   const { getUserById } = useUser();
 
   const [event, setEvent] = useState(null);
@@ -175,7 +181,7 @@ export default function EventDetailPage() {
         }
       }
     } catch (err) {
-      toast.error('Failed to join event. Please try again.');
+      console.log('Failed to join event. Please try again.');
     }
   };
 
@@ -193,9 +199,9 @@ export default function EventDetailPage() {
           inv._id === invitationId ? { ...inv, status: 'ACCEPTED' } : inv
         )
       );
-      Toast.success('Invitation accepted!');
+      // Toast.success('Invitation accepted!');
     } catch (err) {
-      Toast.error('Failed to accept invitation');
+      console.log('Failed to accept invitation');
     }
   };
 
@@ -213,9 +219,9 @@ export default function EventDetailPage() {
         )
       );
 
-      toast.success('Invitation declined');
+      // toast.success('Invitation declined');
     } catch (err) {
-      toast.error('Failed to decline invitation');
+      console.log('Failed to decline invitation');
     }
   };
 
@@ -232,9 +238,9 @@ export default function EventDetailPage() {
         )
       );
 
-      toast.success(`Invitation status changed to ${newStatus.toLowerCase()}`);
+      // toast.success(`Invitation status changed to ${newStatus.toLowerCase()}`);
     } catch (err) {
-      toast.error('Failed to change invitation status');
+      console.log('Failed to change invitation status');
     }
   };
 
@@ -356,8 +362,8 @@ export default function EventDetailPage() {
             Request Denied
           </h2>
           <p className="mt-2 text-red-600">
-            Your request have been denied. Please contact the organizer for
-            more information.
+            Your request have been denied. Please contact the organizer for more
+            information.
           </p>
           <div className="mt-6">
             <Button
@@ -545,6 +551,16 @@ export default function EventDetailPage() {
                   </div>
                 </div>
 
+                <div className="mb-6 flex items-center gap-3 rounded-lg border bg-gray-50 p-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Notify user when:</p>
+                    <p className="font-medium">{event.notifyWhen}</p>
+                  </div>
+                </div>
+
+
+
+
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   {/* Date and Time */}
                   <div className="rounded-lg border bg-gray-50 p-4">
@@ -560,8 +576,7 @@ export default function EventDetailPage() {
                             {formatDay(event.endDate)}
                           </p>
                           <p className="text-sm text-gray-500">
-                            {formatTime(event.startDate)} -{' '}
-                            {formatTime(event.endDate)}
+                            {event.startTime} - {event.endTime}
                           </p>
                         </div>
                       </div>
@@ -571,7 +586,7 @@ export default function EventDetailPage() {
                         <div>
                           <p className="text-sm text-gray-500">
                             {new Date(event.endDate) -
-                              new Date(event.startDate) >
+                            new Date(event.startDate) >
                             86400000
                               ? `${Math.ceil((new Date(event.endDate) - new Date(event.startDate)) / (1000 * 60 * 60 * 24))} days`
                               : `${Math.ceil((new Date(event.endDate) - new Date(event.startDate)) / (1000 * 60 * 60))} hours`}
@@ -593,20 +608,32 @@ export default function EventDetailPage() {
                           <p className="font-medium">
                             {event.location || 'No location specified'}
                           </p>
-                          <p className="text-sm text-gray-500">
-                            {event.address ||
-                              (event.type === 'ONLINE'
-                                ? 'Online event'
-                                : 'No address provided')}
-                          </p>
                         </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {event.isPublic ? (
+                          <>
+                            <Unlock className="h-5 w-5 text-green-500" />
+                            <p className="text-sm">
+                              Public event - Anyone can join
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="h-5 w-5 text-amber-500" />
+                            <p className="text-sm">
+                              Private event - Requires approval to join
+                            </p>
+                          </>
+                        )}
                       </div>
 
                       {event.type === 'ONLINE' && (
                         <div className="flex items-center gap-3">
                           <Globe className="h-5 w-5 text-purple-500" />
                           <p className="text-sm">
-                            Online event - link will be provided
+                            Online event - link will be provided to participants
                           </p>
                         </div>
                       )}
@@ -667,37 +694,27 @@ export default function EventDetailPage() {
                     )}
                   </div>
 
-                  {/* Additional Info */}
+                  {/* Event Settings */}
                   <div className="rounded-lg border bg-gray-50 p-4">
                     <h3 className="mb-3 font-semibold text-gray-700">
-                      Additional Information
+                      Event Settings
                     </h3>
                     <div className="space-y-3">
-                      {event.requiresApproval && (
-                        <div className="flex items-center gap-3">
-                          <User className="h-5 w-5 text-amber-500" />
-                          <p className="text-sm">
-                            This event requires approval to join
-                          </p>
-                        </div>
-                      )}
-
                       <div className="flex items-center gap-3">
-                        <Info className="h-5 w-5 text-blue-500" />
+                        <UpdateIcon className="h-5 w-5 text-purple-500" />
                         <p className="text-sm">
-                          Created{' '}
-                          {format(new Date(event.createdAt), 'MMMM d, yyyy')}
+                          Update:{' '}
+                          {format(new Date(event.updatedAt), 'MMMM d, yyyy')}
                         </p>
                       </div>
 
-                      {event.category && (
-                        <div className="flex items-center gap-3">
-                          <Calendar className="h-5 w-5 text-green-500" />
-                          <p className="text-sm capitalize">
-                            {event.category} event
-                          </p>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-3">
+                        <Calendar className="h-5 w-5 text-purple-500" />
+                        <p className="text-sm">
+                          Created:{' '}
+                          {format(new Date(event.createdAt), 'MMMM d, yyyy')}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

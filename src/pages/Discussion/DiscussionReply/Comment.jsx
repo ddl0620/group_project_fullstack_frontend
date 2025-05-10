@@ -192,19 +192,22 @@ const Comment = ({
               {isOwnComment && (
                 <div>
                   <Button
+                    // className={"text-red-500 hover:text-red-600"}
                       size={'sm'}
                       onClick={() => handleDelete()}
                       variant={'ghost'}
                   >
-                    <TrashIcon size={'sm'} />
+                    <X size={'sm'} />
                   </Button>
                   <Button
-                      size={'sm'}
+
+                    size={'sm'}
                       onClick={() => setIsEditMode(true)}
                       variant={'ghost'}
                   >
-                    <PencilIcon size={'sm'} />
+                    <Pencil size={'sm'} />
                   </Button>
+                  
                 </div>
               )}
             </div>
@@ -232,13 +235,13 @@ const Comment = ({
           </div>
 
           <div className="flex items-center gap-4 text-xs">
-            <button
-              onClick={handleLike}
-              className={`flex items-center gap-1 ${liked ? 'text-red-500' : 'text-muted-foreground'}`}
-            >
-              <HeartIcon className={`h-4 w-4 ${liked ? 'fill-red-500' : ''}`} />
-              <span>{likeCount > 0 ? likeCount : ''} Like</span>
-            </button>
+            {/*<button*/}
+            {/*  onClick={handleLike}*/}
+            {/*  className={`flex items-center gap-1 ${liked ? 'text-red-500' : 'text-muted-foreground'}`}*/}
+            {/*>*/}
+            {/*  <HeartIcon className={`h-4 w-4 ${liked ? 'fill-red-500' : ''}`} />*/}
+            {/*  <span>{likeCount > 0 ? likeCount : ''} Like</span>*/}
+            {/*</button>*/}
 
             <button
               onClick={() => setShowReplyInput(!showReplyInput)}

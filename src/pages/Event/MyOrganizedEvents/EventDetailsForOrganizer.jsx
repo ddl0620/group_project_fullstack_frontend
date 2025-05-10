@@ -14,7 +14,7 @@ import {
   Timer,
   Edit,
   Trash2,
-  MessageSquare,
+  MessageSquare, Heart,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -29,13 +29,14 @@ import EventRSVP from '@/pages/Event/MyOrganizedEvents/EventRSVP';
 import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
 import { useEvent } from '@/hooks/useEvent.js';
 import { formatDay, formatTime } from '@/helpers/format.js';
+import { UpdateIcon } from '@radix-ui/react-icons';
 
 export default function EventDetailsForOrganizer({ event }) {
   const navigate = useNavigate();
   const { fetchInvitationsByEventId } = useInvitation();
   const [activeTab, setActiveTab] = useState('details');
   const [pendingRequests, setPendingRequests] = useState(0);
-  const {deleteEvent } = useEvent();
+  const { deleteEvent } = useEvent();
 
   useEffect(() => {
     if (event?._id) {
@@ -49,8 +50,6 @@ export default function EventDetailsForOrganizer({ event }) {
       setPendingRequests(pending);
     }
   }, [event, fetchInvitationsByEventId]);
-
-
 
   const handleEditEvent = () => {
     navigate(`/event/update/${event._id}`);
@@ -187,17 +186,17 @@ export default function EventDetailsForOrganizer({ event }) {
 
                     <Badge
                       variant="outline"
-                      className="flex items-center gap-1 bg-blue-50 text-blue-700"
+                      className="flex items-center gap-1 bg-red-50 text-red-700"
                     >
-                      {event.type === 'ONLINE' ? (
+                      {event.type === 'OTHERS' ? (
                         <>
                           <Globe className="h-3 w-3" />
                           Online
                         </>
                       ) : (
                         <>
-                          <MapPin className="h-3 w-3" />
-                          In-Person
+                          <Heart className="h-3 w-3" />
+                          {event.type}
                         </>
                       )}
                     </Badge>
@@ -223,6 +222,12 @@ export default function EventDetailsForOrganizer({ event }) {
                     <p className="font-medium">You (Event Organizer)</p>
                   </div>
                 </div>
+                <div className="mb-6 flex items-center gap-3 rounded-lg border bg-gray-50 p-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Notify user when:</p>
+                    <p className="font-medium">{event.notifyWhen}</p>
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   {/* Date and Time */}
@@ -237,6 +242,22 @@ export default function EventDetailsForOrganizer({ event }) {
                           <p className="font-medium">
                             {formatDay(event.startDate)} -{' '}
                             {formatDay(event.endDate)}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {event.startTime} - {event.endTime}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <Timer className="h-5 w-5 text-green-500" />
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            {new Date(event.endDate) -
+                              new Date(event.startDate) >
+                            86400000
+                              ? `${Math.ceil((new Date(event.endDate) - new Date(event.startDate)) / (1000 * 60 * 60 * 24))} days`
+                              : `${Math.ceil((new Date(event.endDate) - new Date(event.startDate)) / (1000 * 60 * 60))} hours`}
                           </p>
                         </div>
                       </div>
@@ -256,6 +277,24 @@ export default function EventDetailsForOrganizer({ event }) {
                             {event.location || 'No location specified'}
                           </p>
                         </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {event.isPublic ? (
+                          <>
+                            <Unlock className="h-5 w-5 text-green-500" />
+                            <p className="text-sm">
+                              Public event - Anyone can join
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="h-5 w-5 text-amber-500" />
+                            <p className="text-sm">
+                              Private event - Requires approval to join
+                            </p>
+                          </>
+                        )}
                       </div>
 
                       {event.type === 'ONLINE' && (
@@ -330,36 +369,17 @@ export default function EventDetailsForOrganizer({ event }) {
                     </h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
-                        {event.isPublic ? (
-                          <>
-                            <Unlock className="h-5 w-5 text-green-500" />
-                            <p className="text-sm">
-                              Public event - Anyone can join
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="h-5 w-5 text-amber-500" />
-                            <p className="text-sm">
-                              Private event - Requires approval to join
-                            </p>
-                          </>
-                        )}
+                        <UpdateIcon className="h-5 w-5 text-purple-500" />
+                        <p className="text-sm">
+                          Update:{' '}
+                          {format(new Date(event.updatedAt), 'MMMM d, yyyy')}
+                        </p>
                       </div>
-
-                      {event.requiresApproval && (
-                        <div className="flex items-center gap-3">
-                          <Users className="h-5 w-5 text-blue-500" />
-                          <p className="text-sm">
-                            Participant approval required
-                          </p>
-                        </div>
-                      )}
 
                       <div className="flex items-center gap-3">
                         <Calendar className="h-5 w-5 text-purple-500" />
                         <p className="text-sm">
-                          Created{' '}
+                          Created:{' '}
                           {format(new Date(event.createdAt), 'MMMM d, yyyy')}
                         </p>
                       </div>

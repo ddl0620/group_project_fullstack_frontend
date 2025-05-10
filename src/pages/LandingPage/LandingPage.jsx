@@ -28,7 +28,7 @@ function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#f5f5f7]">
+    <div className="min-h-screen w-full bg-white">
       {/* Hero Section */}
       <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeIn}>
         <HeroSection />

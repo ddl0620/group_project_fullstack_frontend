@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog"
+import { PureCalendar } from '@/components/ui/pure-calendar.js';
 
 export default function EditUserModal({ isOpen, setIsOpen, editUser, setEditUser, handleEditUser }) {
   // Separate state for date to avoid issues with the calendar component
@@ -115,7 +116,7 @@ export default function EditUserModal({ isOpen, setIsOpen, editUser, setEditUser
                       width: "100%",
                     }}
                   >
-                    <CalendarComponent
+                    <PureCalendar
                       mode="single"
                       selected={date}
                       onSelect={handleDateChange}

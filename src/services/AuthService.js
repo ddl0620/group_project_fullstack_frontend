@@ -10,7 +10,7 @@ export const SignUpUser = async (userData) => {
   return response.data;
 };
 
-export const VerifyCodeAPI = async (data) => {
-  const response = await APIServices.post('/api/v1/auth/verify-code', data);
+export const VerifySignUpAPI = async (data) => {
+  const response = await APIServices.post('/api/v1/auth/verify-sign-up', data);
   return response.data;
 };

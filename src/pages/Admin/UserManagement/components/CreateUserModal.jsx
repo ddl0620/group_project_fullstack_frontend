@@ -18,6 +18,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { useState, useEffect } from "react"
+import { PureCalendar } from '@/components/ui/pure-calendar.js';
 
 export default function CreateUserModal({ isOpen, setIsOpen, newUser, setNewUser, handleCreateUser }) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
@@ -120,7 +121,7 @@ export default function CreateUserModal({ isOpen, setIsOpen, newUser, setNewUser
                       left: 0,
                     }}
                   >
-                    <CalendarComponent
+                    <PureCalendar
                       mode="single"
                       selected={dateValue}
                       onSelect={handleDateSelect}

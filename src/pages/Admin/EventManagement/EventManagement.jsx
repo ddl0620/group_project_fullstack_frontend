@@ -11,7 +11,6 @@ import { useUser } from "@/hooks/useUser.js"
 
 import { AlertDialogUtils } from "@/helpers/AlertDialogUtils.jsx"
 import { Toast } from "@/helpers/toastService.js"
-import { getAllUsersAPI } from "@/services/AdminManagementService.js"
 import EventFilters from '@/pages/Admin/EventManagement/components/EventFilters.jsx';
 import EventTable from '@/pages/Admin/EventManagement/components/EventTable.jsx';
 import EventModal from '@/pages/Admin/EventManagement/components/EventModal.jsx';

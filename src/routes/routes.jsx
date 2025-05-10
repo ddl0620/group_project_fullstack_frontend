@@ -13,7 +13,6 @@ import LandingPage from '../pages/LandingPage/LandingPage.jsx';
 import EditProfilePage from '../pages/ProfilePage/EditProfilePage.jsx';
 import MyEvents from '../pages/Event/MyOrganizedEvents/MyOrganizedEvent.jsx';
 import CreateEventPage from '../pages/Event/CreateEvent/CreateEventPage.jsx';
-import UpdateEventPage from '../pages/Event/UpdateEventPage.jsx';
 import BrowseEvent from '@/pages/Event/BrowseEvent.jsx';
 import EventDetailPage from '@/pages/Event/EventDetails.jsx';
 import SidebarLayout from '@/components/Layout/SidebarLayout.jsx';

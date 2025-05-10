@@ -3,16 +3,16 @@ import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#f5f5f7] to-white py-24">
+    <section className="relative overflow-hidden">
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col items-center gap-16 md:flex-row md:justify-between">
           {/* Text Content */}
           <div className="w-full text-center md:w-1/2 md:text-left">
             <div className="mb-6 inline-flex items-center rounded-full bg-[#0071e3]/10 px-4 py-2 text-sm font-medium text-[#0071e3]">
-              Introducing EventApp 2.0
+              New version
             </div>
             <h1 className="mb-4 text-5xl font-semibold tracking-tight text-gray-900 md:text-6xl lg:text-7xl">
-              Events Made <span className="text-[#0071e3]">Simple</span>
+                <span className="text-[#0071e3] font-bold">Eventify</span>
             </h1>
             <p className="mb-8 text-lg leading-relaxed text-gray-600 md:pr-8">
               The all-in-one platform for creating, managing, and discovering events. Seamlessly organize, engage, and
@@ -20,14 +20,14 @@ const HeroSection = () => {
             </p>
             <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
               <Link
-                to="/sign-up"
+                to="/event/create"
                 className="group flex items-center justify-center rounded-full bg-[#0071e3] px-8 py-3 text-center text-sm font-medium text-white shadow-lg transition-all hover:bg-[#0077ed] focus:outline-none focus:ring-2 focus:ring-[#0071e3] focus:ring-offset-2"
               >
                 Start Creating Events
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                to="/events"
+                to="/event"
                 className="rounded-full border border-gray-300 bg-white px-8 py-3 text-center text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
               >
                 Explore Events

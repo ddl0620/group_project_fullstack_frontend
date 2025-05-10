@@ -23,6 +23,7 @@ import { Button as UIButton } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { PureCalendar } from '@/components/ui/pure-calendar.js';
 
 function EditProfilePage() {
   // Create refs object for all fields that need validation
@@ -228,7 +229,7 @@ function EditProfilePage() {
                       </UIButton>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
+                      <PureCalendar
                         mode="single"
                         selected={formData.dateOfBirth}
                         onSelect={handleDateChange}

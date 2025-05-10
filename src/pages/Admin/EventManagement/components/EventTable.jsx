@@ -1,19 +1,37 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Edit, Trash2, RefreshCw, Eye, Calendar, Users, MapPin, ChevronDown, ArrowUpDown, Clock } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
+import { useState } from 'react';
+import {
+  Edit,
+  Trash2,
+  RefreshCw,
+  Eye,
+  Calendar,
+  Users,
+  MapPin,
+  ChevronDown,
+  ArrowUpDown,
+  Clock,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { format } from "date-fns"
+} from '@/components/ui/dropdown-menu';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { format } from 'date-fns';
 import {
   flexRender,
   getCoreRowModel,
@@ -21,181 +39,225 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from '@tanstack/react-table';
+import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
 
 export default function EventTable({
-                                     events,
-                                     isLoading,
-                                     handleDeleteEvent,
-                                     handleRestoreEvent,
-                                     handleViewEvent,
-                                     handleEditEvent,
-                                   }) {
+  events,
+  isLoading,
+  handleDeleteEvent,
+  handleRestoreEvent,
+  handleViewEvent,
+  handleEditEvent,
+}) {
   // Format date for display
   const formatDate = (date) => {
-    if (!date) return "N/A"
-    return format(new Date(date), "MMM d, yyyy")
-  }
+    if (!date) return 'N/A';
+    return format(new Date(date), 'MMM d, yyyy');
+  };
 
   // Format date with time for display
   const formatDateTime = (date) => {
-    if (!date) return "N/A"
-    return format(new Date(date), "MMM d, yyyy h:mm a")
-  }
+    if (!date) return 'N/A';
+    return format(new Date(date), 'MMM d, yyyy h:mm a');
+  };
 
   // Get initials for avatar
   const getInitials = (name) => {
-    if (!name) return "U"
+    if (!name) return 'U';
     return name
-      .split(" ")
+      .split(' ')
       .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-  }
+      .join('')
+      .toUpperCase();
+  };
 
   // Get event type display name
   const getEventTypeDisplay = (type) => {
     const typeMap = {
-      SOCIAL: "Social",
-      EDUCATION: "Education",
-      BUSINESS: "Business",
-      ENTERTAINMENT: "Entertainment",
-      OTHER: "Other",
-    }
-    return typeMap[type] || type
-  }
+      SOCIAL: 'Social',
+      EDUCATION: 'Education',
+      BUSINESS: 'Business',
+      ENTERTAINMENT: 'Entertainment',
+      OTHER: 'Other',
+    };
+    return typeMap[type] || type;
+  };
 
   // Get event status
   const getEventStatus = (event) => {
-    if (event.isDeleted) return { label: "Deleted", className: "bg-red-100 text-red-800" }
-    if (new Date() > new Date(event.endDate)) return { label: "Ended", className: "bg-gray-100 text-gray-800" }
-    return { label: "Active", className: "bg-green-100 text-green-800" }
-  }
+    if (event.isDeleted)
+      return { label: 'Deleted', className: 'bg-red-100 text-red-800' };
+    if (new Date() > new Date(event.endDate))
+      return { label: 'Ended', className: 'bg-gray-100 text-gray-800' };
+    return { label: 'Active', className: 'bg-green-100 text-green-800' };
+  };
 
   // Table state
-  const [sorting, setSorting] = useState([])
-  const [columnFilters, setColumnFilters] = useState([])
-  const [columnVisibility, setColumnVisibility] = useState({})
-  const [rowSelection, setRowSelection] = useState({})
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [rowSelection, setRowSelection] = useState({});
 
   // Define columns
   const columns = [
     {
-      accessorKey: "title",
+      accessorKey: 'title',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="pl-0">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            className="pl-0"
+          >
             Event
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        )
+        );
       },
       cell: ({ row }) => {
-        const event = row.original
+        const event = row.original;
         return (
           <div className="flex items-center">
             <div className="h-10 w-10 flex-shrink-0">
               {event.images && event.images.length > 0 ? (
                 <img
-                  src={event.images[0] || "/placeholder.svg"}
+                  src={event.images[0] || '/placeholder.svg'}
                   alt={event.title}
                   className="h-10 w-10 rounded-full object-cover"
                 />
+                // <CustomAvatar
+                //   _classname={'h-10 w-10 rounded-full object-cover'}
+                //   src={event.images[0]}
+                //   fallbackText={getInitials(event.title)}
+                // />
               ) : (
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-                  <Calendar className="h-5 w-5 text-gray-500" />
+                  <img src="/rmit.png" alt="Eventify Logo" className="h-8 w-8" />
                 </div>
               )}
             </div>
             <div className="ml-4">
-              <div className="text-sm font-medium text-gray-900">{event.title}</div>
-              <div className="text-sm text-gray-500 truncate max-w-[200px]">{event.location}</div>
+              <div className="text-sm font-medium text-gray-900">
+                {event.title}
+              </div>
+              <div className="max-w-[200px] truncate text-sm text-gray-500">
+                {event.location}
+              </div>
             </div>
           </div>
-        )
+        );
       },
     },
     {
-      accessorKey: "type",
+      accessorKey: 'type',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Type
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        )
+        );
       },
       cell: ({ row }) => {
-        const type = row.getValue("type")
-        return <Badge variant="outline">{getEventTypeDisplay(type)}</Badge>
+        const type = row.getValue('type');
+        return <Badge variant="outline">{getEventTypeDisplay(type)}</Badge>;
       },
     },
     {
-      accessorKey: "startDate",
+      accessorKey: 'startDate',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Date
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        )
+        );
       },
       cell: ({ row }) => {
-        const event = row.original
+        const event = row.original;
         return (
           <div>
-            <div className="text-sm text-gray-500">{formatDate(event.startDate)}</div>
-            <div className="text-xs text-gray-400">to {formatDate(event.endDate)}</div>
+            <div className="text-sm text-gray-500">
+              {formatDate(event.startDate)}
+            </div>
+            <div className="text-xs text-gray-400">
+              to {formatDate(event.endDate)}
+            </div>
           </div>
-        )
+        );
       },
     },
     {
-      accessorKey: "isDeleted",
+      accessorKey: 'isDeleted',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Status
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        )
+        );
       },
       cell: ({ row }) => {
-        const event = row.original
-        const status = getEventStatus(event)
+        const event = row.original;
+        const status = getEventStatus(event);
         return (
-          <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${status.className}`}>
+          <span
+            className={`inline-flex rounded-full px-2 text-xs leading-5 font-semibold ${status.className}`}
+          >
             {status.label}
           </span>
-        )
+        );
       },
     },
     {
-      id: "participants",
+      id: 'participants',
       accessorFn: (row) => (row.participants ? row.participants.length : 0),
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Participants
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        )
+        );
       },
       cell: ({ row }) => {
-        const event = row.original
+        const event = row.original;
         return (
           <div className="flex items-center">
-            <div className="flex -space-x-2 mr-2">
+            <div className="mr-2 flex -space-x-2">
               {event.participants && event.participants.length > 0 ? (
                 <>
                   {event.participants.slice(0, 3).map((participant, index) => (
-                    <Avatar key={index} className="h-6 w-6 border-2 border-white">
-                      <AvatarImage
-                        src={participant.userId?.avatar || "/placeholder.svg"}
-                        alt={participant.userId?.name || ""}
-                      />
-                      <AvatarFallback>{getInitials(participant.userId?.name || "")}</AvatarFallback>
-                    </Avatar>
+                    // <Avatar
+                    //   key={index}
+                    //   className="h-6 w-6 border-2 border-white"
+                    // >
+                    //   <AvatarImage
+                    //     src={participant.userId?.avatar || '/placeholder.svg'}
+                    //     alt={participant.userId?.name || ''}
+                    //   />
+                    //   <AvatarFallback>
+                    //     {getInitials(participant.userId?.name || '')}
+                    //   </AvatarFallback>
+                    // </Avatar>
+                    <CustomAvatar
+                      _classname={'h-6 w-6 border-2 border-white'}
+                      s={participant.userId?.avatar}
+                      fallbackText={getInitials(participant.userId?.name || '')}
+                    />
                   ))}
                   {event.participants.length > 3 && (
                     <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs">
@@ -209,41 +271,52 @@ export default function EventTable({
             </div>
             {/*<span className="text-sm text-gray-500">({event.participants?.length || 0})</span>*/}
           </div>
-        )
+        );
       },
     },
     {
-      accessorKey: "updatedAt",
+      accessorKey: 'updatedAt',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Last Updated
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        )
+        );
       },
       cell: ({ row }) => {
-        const date = row.getValue("updatedAt")
+        const date = row.getValue('updatedAt');
         return (
           <div className="flex items-center">
             <Clock className="mr-2 h-4 w-4 text-gray-400" />
             <div className="text-sm text-gray-500">{formatDateTime(date)}</div>
           </div>
-        )
+        );
       },
     },
     {
-      id: "actions",
-      header: "Actions",
+      id: 'actions',
+      header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
-        const event = row.original
+        const event = row.original;
         return (
           <div className="flex space-x-2">
-            <Button variant="outline" size="sm" onClick={() => handleViewEvent(event)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleViewEvent(event)}
+            >
               <Eye className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="sm" onClick={() => handleEditEvent(event)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleEditEvent(event)}
+            >
               <Edit className="h-4 w-4" />
             </Button>
             {event.isDeleted ? (
@@ -266,10 +339,10 @@ export default function EventTable({
               </Button>
             )}
           </div>
-        )
+        );
       },
     },
-  ]
+  ];
 
   // Initialize table
   const table = useReactTable({
@@ -289,30 +362,33 @@ export default function EventTable({
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   // Render mobile card view for each event
   const renderMobileEventCard = (event) => (
-    <div key={event._id} className="mb-4 rounded-lg border bg-white p-4 shadow-sm">
+    <div
+      key={event._id}
+      className="mb-4 rounded-lg border bg-white p-4 shadow-sm"
+    >
       <div className="mb-2 flex items-center justify-between">
         <Badge>{getEventTypeDisplay(event.type)}</Badge>
         <div className={`flex items-center`}>
           {(() => {
-            const status = getEventStatus(event)
+            const status = getEventStatus(event);
             return (
               <>
                 <div
                   className={`mr-1 h-2 w-2 rounded-full ${
                     event.isDeleted
-                      ? "bg-red-500"
+                      ? 'bg-red-500'
                       : new Date() > new Date(event.endDate)
-                        ? "bg-gray-500"
-                        : "bg-green-500"
+                        ? 'bg-gray-500'
+                        : 'bg-green-500'
                   }`}
                 ></div>
                 <span className="text-xs">{status.label}</span>
               </>
-            )
+            );
           })()}
         </div>
       </div>
@@ -339,10 +415,18 @@ export default function EventTable({
       </div>
 
       <div className="flex justify-end space-x-2">
-        <Button variant="outline" size="sm" onClick={() => handleViewEvent(event)}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleViewEvent(event)}
+        >
           <Eye className="h-4 w-4" />
         </Button>
-        <Button variant="outline" size="sm" onClick={() => handleEditEvent(event)}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleEditEvent(event)}
+        >
           <Edit className="h-4 w-4" />
         </Button>
         {event.isDeleted ? (
@@ -366,7 +450,7 @@ export default function EventTable({
         )}
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="mb-6">
@@ -393,8 +477,10 @@ export default function EventTable({
         <div className="flex items-center py-4">
           <Input
             placeholder="Filter by title..."
-            value={table.getColumn("title")?.getFilterValue() ?? ""}
-            onChange={(event) => table.getColumn("title")?.setFilterValue(event.target.value)}
+            value={table.getColumn('title')?.getFilterValue() ?? ''}
+            onChange={(event) =>
+              table.getColumn('title')?.setFilterValue(event.target.value)
+            }
             className="max-w-sm"
           />
           <DropdownMenu>
@@ -413,17 +499,19 @@ export default function EventTable({
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
                     >
-                      {column.id === "title"
-                        ? "Event"
-                        : column.id === "isDeleted"
-                          ? "Status"
-                          : column.id === "updatedAt"
-                            ? "Last Updated"
+                      {column.id === 'title'
+                        ? 'Event'
+                        : column.id === 'isDeleted'
+                          ? 'Status'
+                          : column.id === 'updatedAt'
+                            ? 'Last Updated'
                             : column.id}
                     </DropdownMenuCheckboxItem>
-                  )
+                  );
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -435,7 +523,12 @@ export default function EventTable({
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <TableHead key={header.id} className="py-4">
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -444,11 +537,16 @@ export default function EventTable({
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={table.getAllColumns().length}
+                    className="h-24 text-center"
+                  >
                     <div className="flex h-full items-center justify-center">
                       <div className="text-center">
                         <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"></div>
-                        <p className="text-sm text-gray-500">Loading events...</p>
+                        <p className="text-sm text-gray-500">
+                          Loading events...
+                        </p>
                       </div>
                     </div>
                   </TableCell>
@@ -457,19 +555,25 @@ export default function EventTable({
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className={`${row.original.isDeleted ? "bg-gray-50" : ""} hover:bg-gray-50`}
+                    data-state={row.getIsSelected() && 'selected'}
+                    className={`${row.original.isDeleted ? 'bg-gray-50' : ''} hover:bg-gray-50`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="py-4">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={table.getAllColumns().length}
+                    className="h-24 text-center"
+                  >
                     No events found
                   </TableCell>
                 </TableRow>
@@ -479,5 +583,5 @@ export default function EventTable({
         </div>
       </div>
     </div>
-  )
+  );
 }
