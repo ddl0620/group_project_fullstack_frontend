@@ -20,14 +20,14 @@ const HeroSection = () => {
             </p>
             <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
               <Link
-                to="/sign-up"
+                to="/event/create"
                 className="group flex items-center justify-center rounded-full bg-[#0071e3] px-8 py-3 text-center text-sm font-medium text-white shadow-lg transition-all hover:bg-[#0077ed] focus:outline-none focus:ring-2 focus:ring-[#0071e3] focus:ring-offset-2"
               >
                 Start Creating Events
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                to="/events"
+                to="/event"
                 className="rounded-full border border-gray-300 bg-white px-8 py-3 text-center text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
               >
                 Explore Events

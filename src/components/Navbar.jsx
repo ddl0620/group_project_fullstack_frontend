@@ -109,11 +109,12 @@ function NavBar() {
             }}
             className="flex items-center space-x-2"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#0071e3] to-[#42a4ff]">
-              <span className="text-lg font-bold text-white">E</span>
-            </div>
-            <span className="text-lg font-semibold text-gray-900 dark:text-white">
-              Eventify
+            {/*<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#0071e3] to-[#42a4ff]">*/}
+            {/*  <span className="text-lg font-bold text-white">E</span>*/}
+            {/*</div>*/}
+            <img src="/rmit.png" alt="Eventify Logo" className="h-8 w-8" />
+            <span className="text-md font-semibold text-gray-900 dark:text-white">
+              RMIT × Eventify
             </span>
           </a>
 
@@ -183,12 +184,6 @@ function NavBar() {
                   >
                     Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="cursor-pointer rounded-md"
-                    onClick={() => navigate('/my-events')}
-                  >
-                    My Events
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer rounded-md text-red-500 focus:bg-red-50 focus:text-red-500 dark:focus:bg-red-950"
@@ -248,11 +243,13 @@ function NavBar() {
             >
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#0071e3] to-[#42a4ff]">
-                    <span className="text-lg font-bold text-white">E</span>
-                  </div>
+                  <img
+                    src="/rmit.png"
+                    alt="Eventify Logo"
+                    className="h-8 w-8"
+                  />
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Eventify
+                    RMIT × Eventify
                   </span>
                 </div>
                 <button

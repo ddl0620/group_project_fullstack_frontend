@@ -19,12 +19,12 @@ const CallToActionSection = ({ title, description, buttonText, buttonLink }) => 
                 >
                   {buttonText}
                 </Link>
-                <a
-                  href="/demo"
-                  className="inline-flex items-center justify-center rounded-full border border-white/30 bg-transparent px-8 py-3 text-sm font-medium text-white shadow-lg transition-all hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-[#0071e3]"
-                >
-                  Request a Demo
-                </a>
+                {/*<a*/}
+                {/*  href="/demo"*/}
+                {/*  className="inline-flex items-center justify-center rounded-full border border-white/30 bg-transparent px-8 py-3 text-sm font-medium text-white shadow-lg transition-all hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-[#0071e3]"*/}
+                {/*>*/}
+                {/*  Request a Demo*/}
+                {/*</a>*/}
               </div>
 
               <div className="mt-8 flex items-center justify-center space-x-4">
