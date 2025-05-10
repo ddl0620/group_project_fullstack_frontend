@@ -5,6 +5,11 @@ export const navbarItems = [
     roles: ['user', 'admin', 'unauthenticated'],
   },
   {
+    path: '/about-us',
+    title: 'About Us',
+    roles: ['user', 'admin', 'unauthenticated'],
+  },
+  {
     path: '/event',
     title: 'Events',
     roles: ['user', 'admin'],
