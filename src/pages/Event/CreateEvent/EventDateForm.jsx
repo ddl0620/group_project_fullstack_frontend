@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { CalendarIcon, Clock } from "lucide-react"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { PureDateRangePicker } from '@/components/ui/pure-date-range-picker.js';
 
 export default function EventDateForm({ formData, handleChange }) {
   // Initialize with values from formData or defaults
@@ -85,7 +86,7 @@ export default function EventDateForm({ formData, handleChange }) {
           <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
           <Label>Event Date Range</Label>
         </div>
-        <DateRangePicker date={formData.dateRange} onDateChange={(range) => handleChange("dateRange", range)} />
+        <PureDateRangePicker date={formData.dateRange} onDateChange={(range) => handleChange("dateRange", range)} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">

@@ -1,30 +1,63 @@
+'use client';
+
 import { useRef, useState } from 'react';
 import { Label } from '@/components/ui/label.js';
-import { FileIcon, ImageIcon, X } from 'lucide-react';
+import { FileIcon, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card.js';
 import { Input } from '@/components/ui/input.js';
+import { Toast } from '@/helpers/toastService.js';
 
 // Custom hook to manage image uploading logic
 export const useImageUploader = () => {
   const fileInputRef = useRef(null);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [existingImageUrls, setExistingImageUrls] = useState([]);
-
+  const [error, setError] = useState(null);
+  const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
+  const MAX_IMAGES = 10;
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
 
-    const newImages = files.map((file) => ({
-      file,
-      url: URL.createObjectURL(file),
-      name: file.name,
-      type: 'file',
-    }));
+    // Clear previous errors
+    setError(null);
+
+    // Check if adding these files would exceed the 10 image limit
+    if (uploadedImages.length + existingImageUrls.length + files.length > 10) {
+      setError(
+        `You can only upload a maximum of 10 images. You already have ${uploadedImages.length + existingImageUrls.length} images.`
+      );
+      Toast.info(
+        `You can only upload a maximum of 10 images. You already have ${uploadedImages.length + existingImageUrls.length} images.`
+      );
+      return;
+    }
+
+    const newImages = [];
+
+    for (const file of files) {
+      // Check file size (7MB = 7 * 1024 * 1024 bytes)
+      if (file.size > 7 * 1024 * 1024) {
+        setError(`File "${file.name}" exceeds the 7MB size limit.`);
+        Toast.info(`File "${file.name}" exceeds the 7MB size limit.`);
+        continue;
+      }
+
+      newImages.push({
+        file,
+        url: URL.createObjectURL(file),
+        name: file.name,
+        type: 'file',
+      });
+    }
 
     setUploadedImages([...uploadedImages, ...newImages]);
   };
 
   const handleRemoveImage = (index, type) => {
+    // Clear any errors when removing images
+    setError(null);
+
     if (type === 'file') {
       const newUploadedImages = [...uploadedImages];
       URL.revokeObjectURL(newUploadedImages[index].url);
@@ -45,6 +78,8 @@ export const useImageUploader = () => {
     setExistingImageUrls,
     handleFileChange,
     handleRemoveImage,
+    error,
+    setError,
   };
 };
 
@@ -54,7 +89,10 @@ export const ImageUploader = ({
   existingImageUrls,
   handleFileChange,
   handleRemoveImage,
+  error,
 }) => {
+  const totalImages = uploadedImages.length + existingImageUrls.length;
+
   return (
     <div className="space-y-2">
       <Label>Add Images</Label>
@@ -62,7 +100,7 @@ export const ImageUploader = ({
         <Card>
           <CardContent className="p-6">
             <div
-              className="flex cursor-pointer flex-col items-center gap-1 rounded-lg border-2 border-dashed border-gray-200 p-6 transition-colors hover:bg-gray-50"
+              className={`flex cursor-pointer flex-col items-center gap-1 rounded-lg border-2 border-dashed ${error ? 'border-red-300' : 'border-gray-200'} p-6 transition-colors hover:bg-gray-50`}
               onClick={() => fileInputRef.current?.click()}
             >
               <FileIcon className="h-12 w-12" />
@@ -70,7 +108,7 @@ export const ImageUploader = ({
                 Drag and drop images or click to browse
               </span>
               <span className="text-xs text-gray-500">
-                Select multiple images (up to 10)
+                Select multiple images ({totalImages}/10 - each under 7MB)
               </span>
               <Input
                 ref={fileInputRef}
@@ -82,6 +120,7 @@ export const ImageUploader = ({
                 onChange={handleFileChange}
               />
             </div>
+            {error && <div className="mt-2 text-sm text-red-500">{error}</div>}
           </CardContent>
         </Card>
 

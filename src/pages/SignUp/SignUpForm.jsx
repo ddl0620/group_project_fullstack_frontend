@@ -14,6 +14,7 @@ import OtpVerificationModal from "@/pages/SignUp/OtpVerificationModal.jsx"
 import SubmitButton from "@/components/shared/SubmitButton.jsx"
 import AuthLink from "@/components/shared/AuthLink.jsx"
 import { useAuth } from "@/hooks/useAuth.js"
+import { PureCalendar } from '@/components/ui/pure-calendar.js';
 
 // Local components
 
@@ -143,7 +144,7 @@ function SignUpForm() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
+                <PureCalendar
                   mode="single"
                   selected={userData.dateOfBirth}
                   onSelect={handleDateChange}

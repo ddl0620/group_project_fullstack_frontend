@@ -42,9 +42,6 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     fetchNotifications()
-    // const sortedNotifications = [...notifications].sort((a, b) =>
-    //   new Date(b.createdAt) - new Date(a.createdAt)
-    // );
   }, [])
 
   // Filter notifications based on active tab and type filter
@@ -112,7 +109,7 @@ export default function NotificationsPage() {
           <h1 className="text-2xl font-bold">Notifications</h1>
           {unreadCount > 0 && (
             <Badge variant="destructive" className="ml-2">
-              {unreadCount} new
+              {unreadCount} total
             </Badge>
           )}
         </div>
@@ -141,24 +138,26 @@ export default function NotificationsPage() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                Actions
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleMarkAllAsRead}>
-                <Check className="mr-2 h-4 w-4" />
-                Mark all as read
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleClearAll} className="text-red-600">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Clear all notifications
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/*Temorarily removed the dropdown menu for actions*/}
+
+          {/*<DropdownMenu>*/}
+          {/*  <DropdownMenuTrigger asChild>*/}
+          {/*    <Button variant="outline" size="sm">*/}
+          {/*      Actions*/}
+          {/*    </Button>*/}
+          {/*  </DropdownMenuTrigger>*/}
+          {/*  <DropdownMenuContent align="end">*/}
+          {/*    <DropdownMenuItem onClick={handleMarkAllAsRead}>*/}
+          {/*      <Check className="mr-2 h-4 w-4" />*/}
+          {/*      Mark all as read*/}
+          {/*    </DropdownMenuItem>*/}
+          {/*    <DropdownMenuSeparator />*/}
+          {/*    <DropdownMenuItem onClick={handleClearAll} className="text-red-600">*/}
+          {/*      <Trash2 className="mr-2 h-4 w-4" />*/}
+          {/*      Clear all notifications*/}
+          {/*    </DropdownMenuItem>*/}
+          {/*  </DropdownMenuContent>*/}
+          {/*</DropdownMenu>*/}
         </div>
       </div>
 
@@ -172,17 +171,17 @@ export default function NotificationsPage() {
               >
                 All
               </TabsTrigger>
-              <TabsTrigger
-                value="unread"
-                className="rounded-none border-b-2 border-transparent px-4 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
-              >
-                Unread
-                {unreadCount > 0 && (
-                  <Badge variant="secondary" className="ml-2">
-                    {unreadCount}
-                  </Badge>
-                )}
-              </TabsTrigger>
+              {/*<TabsTrigger*/}
+              {/*  value="unread"*/}
+              {/*  className="rounded-none border-b-2 border-transparent px-4 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"*/}
+              {/*>*/}
+              {/*  Unread*/}
+              {/*  {unreadCount > 0 && (*/}
+              {/*    <Badge variant="secondary" className="ml-2">*/}
+              {/*      {unreadCount}*/}
+              {/*    </Badge>*/}
+              {/*  )}*/}
+              {/*</TabsTrigger>*/}
             </TabsList>
           </div>
 
