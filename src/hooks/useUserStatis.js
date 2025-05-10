@@ -1,10 +1,11 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import {
   getEngagementStatsAPI,
   getInvitationsOverTimeAPI,
   getRsvpDistributionAPI,
   getRecipientsAPI,
 } from "@/services/UserStatisService"
+import debounce from "lodash/debounce"
 
 export const useUserStatis = () => {
   const [engagementStats, setEngagementStats] = useState(null)
@@ -16,85 +17,127 @@ export const useUserStatis = () => {
   const [loadingInvitationsOverTime, setLoadingInvitationsOverTime] = useState(false)
   const [loadingRsvpDistribution, setLoadingRsvpDistribution] = useState(false)
   const [loadingRecipients, setLoadingRecipients] = useState(false)
-  const [error, setError] = useState(null)
+  const [errorEngagementStats, setErrorEngagementStats] = useState(null)
+  const [errorInvitations, setErrorInvitations] = useState(null)
+  const [errorRsvpDistribution, setErrorRsvpDistribution] = useState(null)
+  const [errorRecipients, setErrorRecipients] = useState(null)
+
+  // Debounced state setters to limit rapid updates
+  const debouncedSetEngagementStats = useMemo(
+    () => debounce((value) => setEngagementStats(value), 100),
+    []
+  )
+  const debouncedSetInvitationsOverTime = useMemo(
+    () => debounce((value) => setInvitationsOverTime(value), 100),
+    []
+  )
+  const debouncedSetRsvpDistribution = useMemo(
+    () => debounce((value) => setRsvpDistribution(value), 100),
+    []
+  )
+  const debouncedSetRecipients = useMemo(
+    () => debounce((value) => setRecipients(value), 100),
+    []
+  )
+  const debouncedSetTotalRecipients = useMemo(
+    () => debounce((value) => setTotalRecipients(value), 100),
+    []
+  )
 
   const fetchEngagementStats = useCallback(async () => {
     try {
       setLoadingEngagementStats(true)
+      setErrorEngagementStats(null)
       const response = await getEngagementStatsAPI()
       if (!response.success) throw new Error(response.message)
-      setEngagementStats(response.content)
+      debouncedSetEngagementStats(response.content)
     } catch (error) {
-      console.error("Failed to fetch engagement stats:", error)
-      setError(error.message)
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to fetch engagement stats:", error)
+      }
+      setErrorEngagementStats(error.message)
     } finally {
       setLoadingEngagementStats(false)
     }
-  }, [])
+  }, [debouncedSetEngagementStats])
 
-  const fetchInvitationsOverTime = useCallback(async (startDate, endDate) => {
-    try {
-      setLoadingInvitationsOverTime(true)
-      const response = await getInvitationsOverTimeAPI({ startDate, endDate })
-      if (!response.success) throw new Error(response.message)
-      setInvitationsOverTime(response.content)
-    } catch (error) {
-      console.error("Failed to fetch invitations over time:", error)
-      setError(error.message)
-    } finally {
-      setLoadingInvitationsOverTime(false)
-    }
-  }, [])
+  const fetchInvitationsOverTime = useCallback(
+    async (startDate, endDate) => {
+      try {
+        setLoadingInvitationsOverTime(true)
+        setErrorInvitations(null)
+        const response = await getInvitationsOverTimeAPI({ startDate, endDate })
+        if (!response.success) throw new Error(response.message)
+        debouncedSetInvitationsOverTime(response.content)
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to fetch invitations over time:", error)
+        }
+        setErrorInvitations(error.message)
+      } finally {
+        setLoadingInvitationsOverTime(false)
+      }
+    },
+    [debouncedSetInvitationsOverTime]
+  )
 
   const fetchRsvpDistribution = useCallback(async () => {
     try {
       setLoadingRsvpDistribution(true)
+      setErrorRsvpDistribution(null)
       const response = await getRsvpDistributionAPI()
       if (!response.success) throw new Error(response.message)
-      setRsvpDistribution(response.content)
+      debouncedSetRsvpDistribution(response.content)
     } catch (error) {
-      console.error("Failed to fetch RSVP distribution:", error)
-      setError(error.message)
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to fetch RSVP distribution:", error)
+      }
+      setErrorRsvpDistribution(error.message)
     } finally {
       setLoadingRsvpDistribution(false)
     }
-  }, [])
+  }, [debouncedSetRsvpDistribution])
 
-  const fetchRecipients = useCallback(async (page = 1, limit = 10) => {
-    try {
-      setLoadingRecipients(true)
-      const response = await getRecipientsAPI({ page, limit })
-      console.log("Recipients API Response:", response)
-      console.log("Recipients Content:", response.content)
-      console.log("Recipients Array:", response.content?.recipients)
-      if (!response.success) throw new Error(response.message)
-      setRecipients(response.content.recipients || [])
-      setTotalRecipients(response.content.pagination?.total || 0)
-    } catch (error) {
-      console.error("Failed to fetch recipients:", error)
-      setError(error.message)
-    } finally {
-      setLoadingRecipients(false)
-    }
-  }, [])
+  const fetchRecipients = useCallback(
+    async (page = 1, limit = 10) => {
+      try {
+        setLoadingRecipients(true)
+        setErrorRecipients(null)
+        const response = await getRecipientsAPI({ page, limit })
+        if (!response.success) throw new Error(response.message)
+        debouncedSetRecipients(response.content.recipients || [])
+        debouncedSetTotalRecipients(response.content.pagination?.total || 0)
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to fetch recipients:", error)
+        }
+        setErrorRecipients(error.message)
+      } finally {
+        setLoadingRecipients(false)
+      }
+    },
+    [debouncedSetRecipients, debouncedSetTotalRecipients]
+  )
 
   return {
     engagementStats,
-    setEngagementStats,
+    setEngagementStats: debouncedSetEngagementStats,
     invitationsOverTime,
-    setInvitationsOverTime,
+    setInvitationsOverTime: debouncedSetInvitationsOverTime,
     rsvpDistribution,
-    setRsvpDistribution,
+    setRsvpDistribution: debouncedSetRsvpDistribution,
     recipients,
-    setRecipients,
+    setRecipients: debouncedSetRecipients,
     totalRecipients,
-    setTotalRecipients,
+    setTotalRecipients: debouncedSetTotalRecipients,
     loadingEngagementStats,
     loadingInvitationsOverTime,
     loadingRsvpDistribution,
     loadingRecipients,
-    error,
-    setError,
+    errorEngagementStats,
+    errorInvitations,
+    errorRsvpDistribution,
+    errorRecipients,
     fetchEngagementStats,
     fetchInvitationsOverTime,
     fetchRsvpDistribution,

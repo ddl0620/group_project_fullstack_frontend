@@ -1,7 +1,3 @@
 export const checkToken = () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    throw new Error('No token found');
-  }
-  return token;
+  console.log('checkToken: Token is managed by HttpOnly Cookie');
 };
