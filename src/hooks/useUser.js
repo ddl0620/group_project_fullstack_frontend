@@ -14,35 +14,7 @@ import { checkToken } from '@/helpers/checkToken.js';
 export const useUser = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
-  const handleGetMe = async (setIsLoading) => {
-    try {
-      const token = localStorage.getItem('token');
 
-      if (!token) {
-        Toast.info('Please login again');
-        dispatch(logout());
-        return;
-      }
-
-      const response = await getMe();
-
-      if (response.status !== 200) {
-        Toast.error('Login failed');
-        localStorage.removeItem('token');
-        dispatch(logout());
-        return;
-      }
-
-      const user = response.content.user;
-      const role = user.role;
-
-      dispatch(login({ user, role }));
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      throw error;
-    }
-  };
   const handleUpdateUser = async (userData, userId, setError) => {
     const loadingToast = Toast.loading('Updating user information...');
     try {
@@ -90,6 +62,29 @@ export const useUser = () => {
     }
     finally {
       Toast.dismiss(loadingToast);
+    }
+  };
+
+  const handleGetMe = async (setIsLoading) => {
+    try {
+      const response = await getMe();
+
+      if (!response.success) {
+        Toast.error(response.message || 'Failed to fetch user data');
+        dispatch(logout());
+        return;
+      }
+
+      const user = response.content.user;
+      const role = user.role;
+
+      dispatch(login({ user, role }));
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      Toast.error(error.response?.data?.message || 'Please login again');
+      dispatch(logout());
+    } finally {
+      if (setIsLoading) setIsLoading(false);
     }
   };
 

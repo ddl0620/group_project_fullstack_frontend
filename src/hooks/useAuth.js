@@ -25,13 +25,13 @@ export const useAuth = () => {
       console.log(user);
       console.log(role);
 
-      if (!content?.token) {
+      if (!response?.success) {
         Toast.error(response.message);
         setError(response.message);
         return;
       }
 
-      localStorage.setItem('token', content.token);
+      // localStorage.setItem('token', content.token);
       dispatch(login({ user, role }));
       Toast.success('Sign in successfully');
 
