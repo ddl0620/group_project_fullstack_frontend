@@ -69,7 +69,7 @@ export const useUser = () => {
     try {
       const response = await getMe();
 
-      if (!response.success) {
+      if (!response.success || !response.content?.user) {
         Toast.error(response.message || 'Failed to fetch user data');
         dispatch(logout());
         return;
@@ -79,14 +79,16 @@ export const useUser = () => {
       const role = user.role;
 
       dispatch(login({ user, role }));
+      console.log("✅ [GetMe] Logged in as:", user.name || user.email);
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error('❌ [GetMe] Error:', error.message || error);
       Toast.info('Please login again');
       dispatch(logout());
     } finally {
       if (setIsLoading) setIsLoading(false);
     }
   };
+
 
 
   const getUserById = async (userId) => {
