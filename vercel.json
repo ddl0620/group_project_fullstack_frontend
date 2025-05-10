@@ -1,6 +1,4 @@
 {
-  "version": 2,
-  "framework": null,
   "builds": [
     {
       "src": "package.json",
@@ -10,6 +8,8 @@
       }
     }
   ],
+  "installCommand": "npm install --force",
+  "buildCommand": "vite build",
   "routes": [
     {
       "src": "/(.*)",
