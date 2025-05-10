@@ -150,6 +150,7 @@ export const useEvent = () => {
   };
 
   const deleteEvent = async (id) => {
+    const toastId = Toast.loading("Deleting event...");
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
@@ -164,6 +165,7 @@ export const useEvent = () => {
       throw error;
     } finally {
       dispatch(setLoading(false));
+      Toast.dismiss(toastId);
     }
   };
 
@@ -209,6 +211,7 @@ export const useEvent = () => {
   };
 
   const respondJoinEvent = async (eventId, userData) => {
+    const toastId = Toast.loading("Processing...");
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
@@ -224,6 +227,7 @@ export const useEvent = () => {
       throw error;
     } finally {
       dispatch(setLoading(false));
+      Toast.dismiss(toastId);
     }
   };
 

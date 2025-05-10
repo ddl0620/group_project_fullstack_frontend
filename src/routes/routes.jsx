@@ -30,6 +30,7 @@ import AdminDashboard from '@/pages/Dashboard/Admin/components/AdminDashBoard.js
 import UserManagement from '@/pages/Admin/UserManagement/UserManagement.jsx';
 import adminManagementItems from '@/components/SidebarItems/AdminManagement.js';
 import EventManagement from '@/pages/Admin/EventManagement/EventManagement.jsx';
+import AboutPage from '@/pages/AboutUs/AboutUs.jsx';
 
 const ProtectedRoute = ({ allowedRoles, restrictedPaths = [] }) => {
   const { isAuthenticated, role } = useSelector((state) => state.user);
@@ -96,6 +97,11 @@ const routes = [
     children: [{ path: '', element: <ErrorPage /> }],
   },
   {
+    path: '/about-us',
+    element: <DefaultLayout />,
+    children: [{ path: '', element: <AboutPage /> }],
+  },
+  {
     path: '*',
     element: <Navigate to="/error" replace={false} />,
   },
@@ -144,7 +150,7 @@ const routes = [
         path: 'home',
         element: <UserLayout />,
         children: [{ path: '', element: <Home /> }],
-      },
+      }
     ],
   },
   {
