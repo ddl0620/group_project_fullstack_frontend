@@ -1,6 +1,11 @@
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { signInUser, SignUpUser, VerifySignUpAPI } from '../services/AuthService.js';
+import {
+  signInUser,
+  SignOutAPI,
+  SignUpUser,
+  VerifySignUpAPI,
+} from '../services/AuthService.js';
 import { login, logout } from '../store/slices/userSlice.js';
 import { Toast } from '../helpers/toastService.js';
 
@@ -38,16 +43,24 @@ export const useAuth = () => {
       navigate(role === 'admin' ? '/dashboard' : '/dashboard');
     } catch (e) {
       console.error(e);
-      Toast.error(e.response.data.message || "Có lỗi xảy ra. Vui lòng thử lại.");
+      Toast.error(
+        e.response.data.message || 'Có lỗi xảy ra. Vui lòng thử lại.'
+      );
 
-      setError(e.response.data.message || "Có lỗi xảy ra. Vui lòng thử lại.");
+      setError(e.response.data.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
     }
   };
 
   const handleSignUp = async (userData, setError) => {
     const loading = Toast.loading('Sending OTP code...');
     try {
-      if (!userData.name || !userData.email || !userData.password || !userData.confirmPassword || !userData.dateOfBirth) {
+      if (
+        !userData.name ||
+        !userData.email ||
+        !userData.password ||
+        !userData.confirmPassword ||
+        !userData.dateOfBirth
+      ) {
         Toast.error('Please enter all required fields!');
         setError('Please enter all required fields!');
         return;
@@ -61,21 +74,24 @@ export const useAuth = () => {
         return;
       }
 
-      Toast.success('OTP code has been sent to your email. Please check your inbox');
+      Toast.success(
+        'OTP code has been sent to your email. Please check your inbox'
+      );
+
+      return response;
     } catch (e) {
       //need more specific error handling
       Toast.error(e.response.data.message || 'Invalid sign up information!');
       console.log('Fail to sign up', e);
       setError?.(e.response.data.message || 'Invalid sign up information!');
-    }
-    finally {
+    } finally {
       Toast.dismiss(loading);
     }
   };
 
   const handleVerifyCodeSignUp = async (userData, setError) => {
     try {
-      if(!userData.code || !userData.email) {
+      if (!userData.code || !userData.email) {
         Toast.error('Please enter OTP code and email!');
         setError('Please enter OTP code and email!');
         return;
@@ -100,10 +116,12 @@ export const useAuth = () => {
     }
   };
 
-
-  const handleSignOut = () => {
-    const token = localStorage.getItem('token');
-    if (token) localStorage.removeItem('token');
+  const handleSignOut = async () => {
+    const response = await SignOutAPI();
+    if (!response.success) {
+      Toast.error('Sign out failed!');
+      return;
+    }
     dispatch(logout());
     Toast.success('Sign out successfully');
   };

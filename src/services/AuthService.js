@@ -14,3 +14,8 @@ export const VerifySignUpAPI = async (data) => {
   const response = await APIServices.post('/api/v1/auth/verify-sign-up', data);
   return response.data;
 };
+
+export const SignOutAPI = async () => {
+  const response = await APIServices.post('/api/v1/auth/sign-out');
+  return response.data;
+}
