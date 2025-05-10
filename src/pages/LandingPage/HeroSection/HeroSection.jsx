@@ -3,16 +3,16 @@ import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#f5f5f7] to-white py-24">
+    <section className="relative overflow-hidden">
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col items-center gap-16 md:flex-row md:justify-between">
           {/* Text Content */}
           <div className="w-full text-center md:w-1/2 md:text-left">
             <div className="mb-6 inline-flex items-center rounded-full bg-[#0071e3]/10 px-4 py-2 text-sm font-medium text-[#0071e3]">
-              Introducing EventApp 2.0
+              New version
             </div>
             <h1 className="mb-4 text-5xl font-semibold tracking-tight text-gray-900 md:text-6xl lg:text-7xl">
-              Events Made <span className="text-[#0071e3]">Simple</span>
+                <span className="text-[#0071e3] font-bold">Eventify</span>
             </h1>
             <p className="mb-8 text-lg leading-relaxed text-gray-600 md:pr-8">
               The all-in-one platform for creating, managing, and discovering events. Seamlessly organize, engage, and

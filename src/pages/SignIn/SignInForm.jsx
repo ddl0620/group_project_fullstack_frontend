@@ -26,7 +26,7 @@ export const SignInForm = () => {
     <div className="mx-auto flex w-full flex-col justify-center p-8 md:p-12">
       <div className="mb-10">
         <h2 className="mb-3 text-center text-3xl font-bold tracking-tight text-neutral-800">Welcome back</h2>
-        <p className="text-center text-lg font-light tracking-tight text-neutral-600">Login to your EventApp account</p>
+        <p className="text-center text-lg font-light tracking-tight text-neutral-600">Login to your <strong>Eventify</strong>  account</p>
       </div>
 
       {error && <div className="mb-8 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-500">{error}</div>}
