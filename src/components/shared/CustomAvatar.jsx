@@ -8,7 +8,7 @@ const getInitials = (name) => {
 };
 
 export function CustomAvatar({
-  src = '',
+  src = "",
   alt = 'User',
   fallbackText = 'A',
   _classname = '',
@@ -17,7 +17,7 @@ export function CustomAvatar({
     <Avatar
       className={`border-border cursor-pointer border transition-opacity hover:opacity-80 ${_classname}`}
     >
-      <AvatarImage src={src} alt={alt} />
+      <AvatarImage src={src || "/rmit.png"} alt={alt} />
       <AvatarFallback className={"text-[12px] font-semibold"}>{getInitials(fallbackText)}</AvatarFallback>
     </Avatar>
   );
