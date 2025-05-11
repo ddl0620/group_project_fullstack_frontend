@@ -163,7 +163,7 @@ const routes = [
       // Group using admin sidebar
       {
         element: (
-          <SidebarLayout title={'Admin'} items={adminManagementItems} />
+          <SidebarLayout title={'Management'} items={adminManagementItems} />
         ),
         children: [
           { path: 'management', element: <AdminDashboard/> },

@@ -1,1 +1,1 @@
-export const DEFAULT_IMAGE = "https://res.cloudinary.com/dvdlovkqi/image/upload/v1746814731/event/681db7560091acb3e9a9f73f/fzxsvf1caxodhpojkuxk.jpg";
+export const DEFAULT_IMAGE = "/eventify.webp";

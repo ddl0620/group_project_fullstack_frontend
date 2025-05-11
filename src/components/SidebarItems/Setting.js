@@ -1,28 +1,25 @@
-import { Calendar, Plus, UserIcon } from 'lucide-react';
+import { Mail, Shield, UserIcon, UserRoundPen } from 'lucide-react';
 
 const settingItems = [
-  // {
-  //     header: "Setting",
-  // },
   {
     title: 'My Profile',
     url: '/profile',
     icon: UserIcon,
   },
   {
-    title: 'Basic Information',
+    title: 'General',
     url: '/profile/edit',
-    icon: UserIcon,
+    icon: UserRoundPen,
   },
   {
-    title: 'Password',
+    title: 'Security',
     url: '/profile/password',
-    icon: Calendar,
+    icon: Shield,
   },
   {
     title: 'Email',
     url: '/profile/email',
-    icon: Plus,
+    icon: Mail,
   },
 ];
 

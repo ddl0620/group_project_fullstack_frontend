@@ -170,7 +170,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex-1 space-y-4 p-2 sm:p-4 md:p-8 pt-6 bg-gray-50 min-h-screen overflow-x-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Admin Dashboard</h2>
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Overview</h2>
         <div className="flex items-center space-x-2">
           <span className="text-xs sm:text-sm text-muted-foreground">
             Last updated:{" "}
