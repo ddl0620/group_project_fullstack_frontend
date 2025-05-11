@@ -150,33 +150,33 @@ const teamLeader = {
   sid: "4021494",
   role: "Project Manager & Team Leader",
   bio: "As the team leader, I coordinated our project development, managed timelines, and ensured effective communication between team members. I also contributed to frontend development and overall system architecture.",
-  avatar: "/member/khanh.png", // Replace with your actual image path
+  avatar: "/member/khanh.png",
 }
 
 // Team members data (excluding the leader)
 const teamMembers = [
   {
     name: "Luong Chi Bach",
-    sid: "23456789",
+    sid: "4029308",
     role: "UI/UX Designer",
-    avatar: "/member/bach.jpg", // Replace with actual image path
+    avatar: "/member/bach.jpg",
   },
   {
     name: "Dao Duc Lam",
-    sid: "34567890",
+    sid: "4019052",
     role: "Backend Developer",
-    avatar: "/member/lam.jpg" // Replace with actual image path
+    avatar: "/member/lam.jpg"
   },
   {
     name: "Tran Dinh Hai",
-    sid: "45678901",
+    sid: "4041605",
     role: "Database Administrator",
-    avatar: "/member/hai.jpg", // Replace with actual image path
+    avatar: "/member/hai.jpg",
   },
   {
     name: "Duong Bao Ngoc",
-    sid: "56789012",
+    sid: "3425449",
     role: "QA & Testing Engineer",
-    avatar: "/member/ngoc.jpg", // Replace with actual image path
+    avatar: "/member/ngoc.jpg",
   },
 ]
