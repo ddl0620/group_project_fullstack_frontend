@@ -3,7 +3,7 @@ import { Star } from "lucide-react"
 const TestimonialSection = () => {
   const testimonials = [
     {
-      image: "public/images/dr_tri_dang.jpg",
+      image: "/images/dr_tri_dang.jpg",
       name: "Dr. Tri Dang",
       role: "Event Organizer",
       feedback:
@@ -11,7 +11,7 @@ const TestimonialSection = () => {
       rating: 5,
     },
     {
-      image: "public/images/Dr_Tuan_Tran.jpg",
+      image: "/images/Dr_Tuan_Tran.jpg",
       name: "Dr. Tuan Tran",
       role: "Event Enthusiast",
       feedback:
@@ -19,7 +19,7 @@ const TestimonialSection = () => {
       rating: 5,
     },
     {
-      image: "public/images/dr_phong_ngo.jpg",
+      image: "/images/dr_phong_ngo.jpg",
       name: "Dr. Phong Ngo",
       role: "Professional Speaker",
       feedback:

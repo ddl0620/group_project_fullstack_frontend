@@ -36,9 +36,9 @@ const HeroSection = () => {
 
             <div className="mt-8 flex items-center justify-center space-x-4 md:justify-start">
               <div className="flex -space-x-2">
-                <img src="public/LandingPage/user1.jpg" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
-                <img src="public/LandingPage/user2.webp" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
-                <img src="public/LandingPage/user3.webp" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
+                <img src="/LandingPage/user1.jpg" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
+                <img src="/LandingPage/user2.webp" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
+                <img src="/LandingPage/user3.webp" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
               </div>
               <p className="text-sm text-gray-600">
                 <span className="font-medium">10,000+</span> event organizers trust us
@@ -52,16 +52,16 @@ const HeroSection = () => {
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-[#0071e3]/20 to-[#6c56f5]/20 opacity-70 blur"></div>
               <div className="relative overflow-hidden rounded-2xl bg-white/80 p-2 shadow-xl backdrop-blur-sm">
                 <img
-                  src="public/LandingPage/hero-dasboard.png"
+                  src="/LandingPage/hero-dasboard.png"
                   alt="EventApp Dashboard"
                   className="h-auto w-full rounded-xl object-cover"
                 />
                 {/* Add floating UI elements for more visual interest */}
                 <div className="absolute -right-6 top-1/4 w-32 rotate-6 rounded-xl bg-white/90 p-2 shadow-lg backdrop-blur-md">
-                  <img src="public/LandingPage/ui-element-chat.png" alt="Calendar UI" className="w-full" />
+                  <img src="/LandingPage/ui-element-chat.png" alt="Calendar UI" className="w-full" />
                 </div>
                 <div className="absolute -left-6 bottom-1/4 w-32 -rotate-6 rounded-xl bg-white/90 p-2 shadow-lg backdrop-blur-md">
-                  <img src="public/LandingPage/ui-element-chat.png" alt="Chat UI" className="w-full" />
+                  <img src="/LandingPage/ui-element-chat.png" alt="Chat UI" className="w-full" />
                 </div>
               </div>
             </div>

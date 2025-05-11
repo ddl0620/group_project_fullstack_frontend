@@ -18,7 +18,7 @@ const AppShowcase = () => {
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-[#0071e3]/20 to-[#6c56f5]/20 opacity-70 blur"></div>
               <div className="relative overflow-hidden rounded-2xl bg-white/80 p-2 shadow-xl backdrop-blur-sm">
                 <img
-                  src="public/LandingPage/desktop.png"
+                  src="/LandingPage/desktop.png"
                   alt="EventApp on Desktop"
                   className="h-auto w-full rounded-xl object-cover"
                 />
@@ -32,7 +32,7 @@ const AppShowcase = () => {
               <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-[#0071e3]/20 to-[#6c56f5]/20 opacity-70 blur"></div>
               <div className="relative overflow-hidden rounded-3xl bg-white/80 p-1 shadow-xl backdrop-blur-sm">
                 <img
-                  src="public/LandingPage/mobile.png"
+                  src="/LandingPage/mobile.png"
                   alt="EventApp on Mobile"
                   className="h-auto w-full rounded-2xl object-cover"
                 />
@@ -46,7 +46,7 @@ const AppShowcase = () => {
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-[#0071e3]/20 to-[#6c56f5]/20 opacity-70 blur"></div>
               <div className="relative overflow-hidden rounded-2xl bg-white/80 p-1 shadow-xl backdrop-blur-sm">
                 <img
-                  src="public/LandingPage/tablet.png"
+                  src="/LandingPage/tablet.png"
                   alt="EventApp on Tablet"
                   className="h-auto w-full rounded-xl object-cover"
                 />

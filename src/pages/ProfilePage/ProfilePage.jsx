@@ -49,7 +49,7 @@ function ProfilePage() {
       <div
         className="relative h-64 w-full bg-cover bg-center sm:h-80"
         style={{
-          backgroundImage: `url('public/cover.jpg')`,
+          backgroundImage: `url('/cover.jpg')`,
         }}
       >
         <div className="absolute inset-0 bg-opacity-30"></div>

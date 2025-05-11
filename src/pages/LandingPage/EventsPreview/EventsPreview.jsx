@@ -18,7 +18,7 @@ const EventsPreview = () => {
       date: "Nov 5-7, 2023",
       location: "Austin, TX",
       attendees: 5000,
-      image: "/public/LandingPage/eventpreview2.webp",
+      image: "/LandingPage/eventpreview2.webp",
       category: "Social",
       categoryColor: "bg-purple-500",
     },

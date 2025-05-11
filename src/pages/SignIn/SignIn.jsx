@@ -47,7 +47,7 @@ function Login() {
         {/* Image Section */}
         <div className="relative hidden md:block">
           <img
-            src="public/bgImageSignIn.png"
+            src="/bgImageSignIn.png"
             alt="Login Illustration"
             className="absolute inset-0 h-full w-full object-cover"
           />
