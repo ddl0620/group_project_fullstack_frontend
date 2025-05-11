@@ -26,6 +26,15 @@ function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Track scroll position to add background blur
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const NavItems = ({ isMobile = false }) => {
     // Filter navbar items based on authentication status and user role
     const filteredItems = navbarItems.filter((item) => {
@@ -56,7 +65,7 @@ function NavBar() {
                 navigate(item.path);
                 if (isMobile) setMenuOpen(false);
               }}
-              className={`relative mx-2 flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 ${
+              className={`relative mx-2 flex items-center px-2 py-2 text-xs font-medium transition-all duration-200 sm:text-sm ${
                 location.pathname === item.path
                   ? 'text-[#0071e3]'
                   : 'text-gray-700 hover:text-[#0071e3] dark:text-gray-300 dark:hover:text-white'
@@ -98,22 +107,23 @@ function NavBar() {
           : 'bg-white dark:bg-gray-900'
       } border-b border-gray-200 dark:border-gray-800`}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-2 sm:h-16 sm:px-4 lg:px-8">
         {/* Logo and desktop navigation */}
-        <div className="flex items-center space-x-8">
+        <div className="flex items-center space-x-4 sm:space-x-8">
           <a
             href="/"
             onClick={(e) => {
               e.preventDefault();
               navigate('/');
             }}
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-1 sm:space-x-2"
           >
-            {/*<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#0071e3] to-[#42a4ff]">*/}
-            {/*  <span className="text-lg font-bold text-white">E</span>*/}
-            {/*</div>*/}
-            <img src="/rmit.png" alt="Eventify Logo" className="h-8 w-8" />
-            <span className="text-md font-semibold text-gray-900 dark:text-white">
+            <img
+              src="/rmit.png"
+              alt="Eventify Logo"
+              className="h-6 w-6 sm:h-8 sm:w-8"
+            />
+            <span className="max-w-[120px] truncate text-xs font-semibold text-gray-900 sm:max-w-none sm:text-sm dark:text-white">
               RMIT × Eventify
             </span>
           </a>
@@ -124,12 +134,7 @@ function NavBar() {
         </div>
 
         {/* Search, notifications, and profile */}
-        <div className="flex items-center space-x-4">
-          {/*/!* Search button *!/*/}
-          {/*<button className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700">*/}
-          {/*  <Search className="h-4 w-4" />*/}
-          {/*</button>*/}
-
+        <div className="flex items-center space-x-1 sm:space-x-4">
           {isAuthenticated ? (
             <>
               {/* Notification dropdown */}
@@ -140,53 +145,53 @@ function NavBar() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="flex h-9 items-center justify-between space-x-2 rounded-full border border-gray-200 bg-white px-2 py-5 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+                    className="flex h-7 items-center justify-between space-x-1 rounded-full border border-gray-200 bg-white px-1 py-0 hover:bg-gray-100 sm:h-9 sm:space-x-2 sm:px-2 sm:py-5 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
                   >
                     <CustomAvatar
                       src={user?.avatar}
                       alt={user?.name}
                       fallbackText={user?.name}
-                      className="h-7 w-7"
+                      _classname="h-5 w-5 sm:h-7 sm:w-7"
                     />
-                    <ChevronDown className="h-4 w-4 text-gray-500" />
+                    <ChevronDown className="h-3 w-3 text-gray-500 sm:h-4 sm:w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-56 rounded-xl p-1"
+                  className="w-48 rounded-xl p-1 sm:w-56"
                 >
                   <div className="flex items-center space-x-2 p-2">
                     <CustomAvatar
                       src={user?.avatar}
                       alt={user?.name}
                       fallbackText={user?.name}
-                      className="h-10 w-10"
+                      className="h-8 w-8 sm:h-10 sm:w-10"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium">
+                      <span className="max-w-[120px] truncate text-xs font-medium sm:max-w-[180px] sm:text-sm">
                         {user?.name || 'User'}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="max-w-[120px] truncate text-[10px] text-gray-500 sm:max-w-[180px] sm:text-xs">
                         {user?.email || 'user@example.com'}
                       </span>
                     </div>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    className="cursor-pointer rounded-md"
+                    className="cursor-pointer rounded-md py-1.5 text-xs sm:text-sm"
                     onClick={() => navigate('/profile')}
                   >
                     Profile
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    className="cursor-pointer rounded-md"
+                    className="cursor-pointer rounded-md py-1.5 text-xs sm:text-sm"
                     onClick={() => navigate('/profile/edit')}
                   >
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    className="cursor-pointer rounded-md text-red-500 focus:bg-red-50 focus:text-red-500 dark:focus:bg-red-950"
+                    className="cursor-pointer rounded-md py-1.5 text-xs text-red-500 focus:bg-red-50 focus:text-red-500 sm:text-sm dark:focus:bg-red-950"
                     onClick={handleSignOut}
                   >
                     Sign Out
@@ -195,16 +200,16 @@ function NavBar() {
               </DropdownMenu>
             </>
           ) : (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               <Button
                 variant="ghost"
-                className="rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                className="h-7 rounded-full px-2 text-xs font-medium text-gray-700 hover:bg-gray-100 sm:h-9 sm:px-4 sm:text-sm dark:text-gray-300 dark:hover:bg-gray-800"
                 onClick={() => navigate('/sign-in')}
               >
                 Sign In
               </Button>
               <Button
-                className="rounded-full bg-[#0071e3] text-sm font-medium text-white hover:bg-[#0077ed]"
+                className="h-7 rounded-full bg-[#0071e3] px-2 text-xs font-medium text-white hover:bg-[#0077ed] sm:h-9 sm:px-4 sm:text-sm"
                 onClick={() => navigate('/sign-up')}
               >
                 Sign Up
@@ -215,9 +220,9 @@ function NavBar() {
           {/* Mobile menu button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 md:hidden dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 sm:h-9 sm:w-9 md:hidden dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         </div>
       </div>
@@ -239,16 +244,16 @@ function NavBar() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 z-50 h-full w-64 overflow-y-auto bg-white p-4 shadow-xl dark:bg-gray-900"
+              className="fixed top-0 right-0 z-50 h-full w-[250px] overflow-y-auto bg-white p-3 shadow-xl sm:w-64 sm:p-4 dark:bg-gray-900"
             >
-              <div className="mb-6 flex items-center justify-between">
+              <div className="mb-4 flex items-center justify-between sm:mb-6">
                 <div className="flex items-center space-x-2">
                   <img
                     src="/rmit.png"
                     alt="Eventify Logo"
-                    className="h-8 w-8"
+                    className="h-6 w-6 sm:h-8 sm:w-8"
                   />
-                  <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <span className="text-sm font-semibold text-gray-900 sm:text-lg dark:text-white">
                     RMIT × Eventify
                   </span>
                 </div>
@@ -256,23 +261,23 @@ function NavBar() {
                   onClick={() => setMenuOpen(false)}
                   className="rounded-full p-1 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
               </div>
 
               {isAuthenticated && (
-                <div className="mb-6 flex items-center space-x-3 border-b border-gray-200 pb-6 dark:border-gray-700">
+                <div className="mb-4 flex items-center space-x-2 border-b border-gray-200 pb-4 sm:mb-6 sm:space-x-3 sm:pb-6 dark:border-gray-700">
                   <CustomAvatar
                     src={user?.avatar}
                     alt={user?.name}
                     fallbackText={user?.name}
-                    className="h-10 w-10"
+                    className="h-8 w-8 sm:h-10 sm:w-10"
                   />
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
+                    <p className="max-w-[150px] truncate text-xs font-medium text-gray-900 sm:max-w-none sm:text-sm dark:text-white">
                       {user?.name || 'User'}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="max-w-[150px] truncate text-[10px] text-gray-500 sm:max-w-none sm:text-sm">
                       {user?.email || 'user@example.com'}
                     </p>
                   </div>
@@ -282,6 +287,42 @@ function NavBar() {
               <div className="space-y-1">
                 <NavItems isMobile={true} />
               </div>
+
+              {/* Mobile-only sign in/up buttons for unauthenticated users */}
+              {!isAuthenticated ? (
+                <div className="mt-6 space-y-2 border-t border-gray-200 pt-4 dark:border-gray-700">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-center rounded-full text-xs sm:text-sm"
+                    onClick={() => {
+                      navigate('/sign-in');
+                      setMenuOpen(false);
+                    }}
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    className="w-full justify-center rounded-full bg-[#0071e3] text-xs text-white hover:bg-[#0077ed] sm:text-sm"
+                    onClick={() => {
+                      navigate('/sign-up');
+                      setMenuOpen(false);
+                    }}
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              ) : (
+                <div className={"mt-6 space-y-2 border-t border-gray-200 pt-4"}>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-center hover:text-white rounded-full bg-red-600 text-xs text-white hover:bg-red-700 sm:text-sm"
+                    onClick={handleSignOut}
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+
+              )}
             </motion.div>
           </>
         )}
