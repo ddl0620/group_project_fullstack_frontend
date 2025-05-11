@@ -80,8 +80,8 @@ export const useUser = () => {
 
       dispatch(login({ user, role }));
     } catch (error) {
-      console.error('Error fetching user data:', error);
-      Toast.info('Please login again');
+      // console.error('Error fetching user data:', error);
+      // Toast.info('Please login again');
       dispatch(logout());
     } finally {
       if (setIsLoading) setIsLoading(false);

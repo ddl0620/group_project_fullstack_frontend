@@ -63,7 +63,7 @@ export default function EventFilters({
       {/* Search and Filter Bar */}
       <div className="mb-4 sm:mb-8 flex flex-col gap-3 rounded-lg border bg-white p-4 shadow-sm sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search className="absolute top-1/2 left-2 sm:left-3 h-3 w-3 sm:h-4 sm:w-4 -translate-y-1/2 text-gray-400" />
+          {/*<Search className="absolute top-1/2 left-2 sm:left-3 h-3 w-3 sm:h-4 sm:w-4 -translate-y-1/2 text-gray-400" />*/}
           <Input
             placeholder="Search events..."
             value={searchTerm}

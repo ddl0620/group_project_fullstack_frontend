@@ -43,10 +43,10 @@ function SidebarLayout({ title, items }) {
         <Button
           variant="outline"
           size="icon"
-          className="fixed top-20 left-4 z-30 h-10 w-10 rounded-full bg-white/80 shadow-md backdrop-blur-sm"
+          className="fixed bottom-5 left-3 z-30 h-10 w-10 rounded-full hover:bg-black hover:scale-110 bg-black shadow-md backdrop-blur-sm"
           onClick={toggleMobileSidebar}
         >
-          <PanelLeft className="h-5 w-5 text-gray-700" />
+          <PanelLeft className="h-5 w-5 text-white" />
         </Button>
       )}
 
@@ -64,7 +64,7 @@ function SidebarLayout({ title, items }) {
 
         {/* Main content - scrollable, with margin only on non-mobile */}
         <div className={`flex-1 transition-all duration-300 ${isMobile ? "ml-0" : "ml-[16rem]"}`} id="main-content">
-          <main className="h-[calc(100vh-4rem)] overflow-y-auto bg-gray-50 p-6">
+          <main className="h-[calc(100vh-4rem)] overflow-y-auto bg-gray-50">
             <Outlet />
           </main>
         </div>
