@@ -3,25 +3,25 @@ const EventTypes = () => {
     {
       title: "Conferences",
       description: "Professional gatherings with speakers, workshops, and networking opportunities.",
-      image: "public/LandingPage/conference-event.webp",
+      image: "/LandingPage/conference-event.webp",
       color: "from-blue-500 to-indigo-600",
     },
     {
       title: "Workshops",
       description: "Interactive sessions focused on learning and skill development.",
-      image: "public/LandingPage/workshop.webp",
+      image: "/LandingPage/workshop.webp",
       color: "from-emerald-500 to-teal-600",
     },
     {
       title: "Concerts",
       description: "Music performances and entertainment events for large audiences.",
-      image: "public/LandingPage/concert.webp",
+      image: "/LandingPage/concert.webp",
       color: "from-purple-500 to-pink-600",
     },
     {
       title: "Networking",
       description: "Social gatherings designed to build professional connections.",
-      image: "public/LandingPage/networking.webp",
+      image: "/LandingPage/networking.webp",
       color: "from-amber-500 to-orange-600",
     },
   ]

@@ -57,7 +57,7 @@ function Register() {
         {/* Image Section */}
         <div className="relative hidden md:block">
           <img
-            src="public/backgroundImage.png" // Fixed path to be relative to public folder
+            src="/backgroundImage.png" // Fixed path to be relative to public folder
             alt="Sign Up Illustration"
             className="absolute inset-0 h-full w-full object-cover"
           />

@@ -29,9 +29,9 @@ const CallToActionSection = ({ title, description, buttonText, buttonLink }) => 
 
               <div className="mt-8 flex items-center justify-center space-x-4">
                 <div className="flex -space-x-2">
-                  <img src="public/LandingPage/user1.jpg" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
-                  <img src="public/LandingPage/user2.webp" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
-                  <img src="public/LandingPage/user3.webp" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
+                  <img src="/LandingPage/user1.jpg" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
+                  <img src="/LandingPage/user2.webp" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
+                  <img src="/LandingPage/user3.webp" alt="User" className="h-8 w-8 rounded-full border-2 border-white" />
                 </div>
                 <p className="text-sm text-white/90">
                   Join <span className="font-medium">10,000+</span> event organizers today

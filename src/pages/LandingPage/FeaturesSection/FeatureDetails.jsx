@@ -19,7 +19,7 @@ const FeatureDetails = () => {
             icon={CalendarPlus}
             title="Create Stunning Events"
             description="Design beautiful event pages with our intuitive editor. Set up ticketing, registration forms, and customize every aspect of your event."
-            image="public/LandingPage/createEvent.png"
+            image="/LandingPage/createEvent.png"
             imageAlt="Event Creation Interface"
             reverse={false}
             benefits={[
@@ -35,7 +35,7 @@ const FeatureDetails = () => {
             icon={MessageCircle}
             title="Foster Community Engagement"
             description="Build excitement and keep the conversation going with integrated discussion boards and real-time chat for all your events."
-            image="public/LandingPage/ui-element-chat.png"
+            image="/LandingPage/ui-element-chat.png"
             imageAlt="Discussion Interface"
             reverse={true}
             benefits={[
@@ -51,7 +51,7 @@ const FeatureDetails = () => {
             icon={Users}
             title="Seamless Attendee Management"
             description="Track registrations, send automated reminders, and manage check-ins with our powerful attendee management tools."
-            image="public/LandingPage/event-mana.png"
+            image="/LandingPage/event-mana.png"
             imageAlt="Attendee Management Interface"
             reverse={false}
             benefits={[
@@ -67,7 +67,7 @@ const FeatureDetails = () => {
             icon={BarChart3}
             title="Comprehensive Analytics"
             description="Gain valuable insights with detailed analytics on attendance, engagement, and ticket sales to optimize your future events."
-            image="public/LandingPage/hero-dasboard.png"
+            image="/LandingPage/hero-dasboard.png"
             imageAlt="Analytics Dashboard"
             reverse={true}
             benefits={[
