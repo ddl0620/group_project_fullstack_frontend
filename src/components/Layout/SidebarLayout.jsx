@@ -43,10 +43,10 @@ function SidebarLayout({ title, items }) {
         <Button
           variant="outline"
           size="icon"
-          className="fixed bottom-5 left-3 z-30 h-10 w-10 rounded-full bg-white/80 shadow-md backdrop-blur-sm"
+          className="fixed bottom-5 left-3 z-30 h-10 w-10 rounded-full hover:bg-black hover:scale-110 bg-black shadow-md backdrop-blur-sm"
           onClick={toggleMobileSidebar}
         >
-          <PanelLeft className="h-5 w-5 text-gray-700" />
+          <PanelLeft className="h-5 w-5 text-white" />
         </Button>
       )}
 

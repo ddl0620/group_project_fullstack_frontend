@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useEvent } from "@/hooks/useEvent"
 import { toast } from "sonner"
-import { PlusCircle, Eye, Calendar, Loader2 } from "lucide-react"
+import { PlusCircle, Eye, Calendar, Loader2, X } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import Pagination from "@/components/shared/Pagination.jsx"
 import { EventCard } from "@/components/shared/EventCard.jsx"
@@ -69,18 +69,13 @@ export default function MyJoinedEvents() {
   }, [])
 
   const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   const handleShowEvent = (eventId) => {
     navigate(`/event/${eventId}`)
-  }
-
-  const handleLinkClick = (e) => {
-    if (location.pathname === "/events") {
-      e.preventDefault()
-    }
   }
 
   // Calculate pagination
@@ -96,8 +91,8 @@ export default function MyJoinedEvents() {
   }, [filteredEvents])
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gray-50 py-8 overflow-x-hidden">
+      <div className="container mx-auto px-4 max-w-full">
         <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">My Joined Events</h1>
@@ -139,7 +134,10 @@ export default function MyJoinedEvents() {
         {/* Error State */}
         {error && (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
-            <h3 className="flex items-center gap-2 font-medium">Error loading events</h3>
+            <h3 className="flex items-center gap-2 font-medium">
+              <X className="h-5 w-5" />
+              Error loading events
+            </h3>
             <p className="mt-1 text-sm">{error}</p>
           </div>
         )}
@@ -185,15 +183,17 @@ export default function MyJoinedEvents() {
 
         {/* Pagination */}
         {!loading && !error && filteredEvents.length > 0 && (
-          <div className="mt-8">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              totalItems={filteredEvents.length}
-              itemsPerPage={ITEMS_PER_PAGE}
-              itemName="events"
-            />
+          <div className="mt-8 w-full">
+            <div className="max-w-full overflow-hidden">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                totalItems={filteredEvents.length}
+                itemsPerPage={ITEMS_PER_PAGE}
+                itemName="events"
+              />
+            </div>
           </div>
         )}
       </div>
