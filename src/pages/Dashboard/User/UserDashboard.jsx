@@ -6,7 +6,7 @@ import { Mail, MessageSquare, User, Users } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "./components/ui/index"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs"
 import { InvitationOvertime } from "./components/InvitationOverTime"
-import { RsvpDistribution } from "./components/RsvpDistribution"
+import { RsvpDistribution } from "./components/RsvpDistribution.jsx"
 import { useUserStatis } from "@/hooks/useUserStatis"
 
 export default function UserDashboard() {
