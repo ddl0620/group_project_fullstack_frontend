@@ -110,17 +110,16 @@ function UpdateEmailPage() {
           Back to Profile
         </Link>
 
-        <SectionTitle title="Update Email Address" subtitle="Change the email address associated with your account" />
+        <SectionTitle title="Update Email Address" subtitle="Change the email address associated with your account " />
 
-        <div className="mt-8 rounded-lg bg-white p-6 shadow-sm sm:p-8">
-          <div className="mb-6 rounded-md bg-blue-50 p-4 text-sm text-blue-800">
+        <div className="mt-8 rounded-lg bg-white p-6 shadow-sm sm:p-8 font-semibold  ">
+          <div className="mb-6 rounded-md bg-orange-100 p-4 text-sm text-orange-900">
             <p>
-              <strong>Note:</strong> Changing your email will require verification. We'll send a confirmation link to
-              your new email address.
+              <strong>Note:</strong> This feature is currently in development! Due to project time constraints and final exam, this feature is not fully implemented yet. However, we are working hard to improve it in the future.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <form className={"pointer-events-none opacity-50 select-none"} onSubmit={handleSubmit}>
             <div className="space-y-5">
               <div>
                 <h4 className="mb-2 font-medium text-gray-700">Current Email</h4>

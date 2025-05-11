@@ -10,6 +10,7 @@ import Pagination from "@/components/shared/Pagination.jsx"
 import { EventCard } from "@/components/shared/EventCard.jsx"
 import EventFilters from "@/components/shared/EventFilters.jsx"
 import useEventFiltering from "@/hooks/useEventFiltering.js"
+import { useSelector } from 'react-redux';
 
 const ITEMS_PER_PAGE = 9
 
@@ -17,7 +18,7 @@ export default function MyJoinedEvents() {
   const [allEvents, setAllEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
+  const user = useSelector((state) => state.user.user)
   const { getAllJoinedEvents } = useEvent()
   const location = useLocation()
   const navigate = useNavigate()
@@ -49,7 +50,14 @@ export default function MyJoinedEvents() {
           limit: 1000,
           isAcs: sortBy === "oldest",
         })
-        setAllEvents(response.content.events || [])
+        const events = (response.content.events || []).filter((event) => {
+          for(const participant of event.participants) {
+            if (participant.userId === user._id && participant.status === "ACCEPTED") {
+              return true
+            }
+          }
+        })
+        setAllEvents(events || [])
       } catch (err) {
         toast.error("Error fetching events: " + err.message)
         setError(err.message)
@@ -66,7 +74,7 @@ export default function MyJoinedEvents() {
   }
 
   const handleShowEvent = (eventId) => {
-    navigate(`/events/${eventId}`)
+    navigate(`/event/${eventId}`)
   }
 
   const handleLinkClick = (e) => {

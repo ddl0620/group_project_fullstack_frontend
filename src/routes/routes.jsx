@@ -121,6 +121,8 @@ const routes = [
           { path: 'event/:eventId', element: <EventDetailPage /> },
           { path: 'event/create', element: <CreateEventPage /> },
           { path: 'event/update/:eventId', element: <CreateEventPage /> },
+          { path: '/discussions', element: <DiscussionPage /> },
+          { path: '/discussions/:eventId', element: <DiscussionPage /> },
         ],
       },
       // Group using user sidebar
@@ -140,8 +142,8 @@ const routes = [
         element: <SidebarLayout title={'Dashboard'} items={userItems} />,
         children: [
           { path: '/dashboard', element: <UserDashboard /> },
-          { path: '/discussions', element: <DiscussionPage /> },
-          { path: '/discussions/:eventId', element: <DiscussionPage /> },
+          // { path: '/discussions', element: <DiscussionPage /> },
+          // { path: '/discussions/:eventId', element: <DiscussionPage /> },
           { path: '/notifications', element: <NotificationsPage /> },
         ],
       },
@@ -163,7 +165,7 @@ const routes = [
       // Group using admin sidebar
       {
         element: (
-          <SidebarLayout title={'Admin'} items={adminManagementItems} />
+          <SidebarLayout title={'Management'} items={adminManagementItems} />
         ),
         children: [
           { path: 'management', element: <AdminDashboard/> },

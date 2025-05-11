@@ -6,7 +6,7 @@ export const navbarItems = [
   },
   {
     path: '/about-us',
-    title: 'About Us',
+    title: 'About',
     roles: ['user', 'admin', 'unauthenticated'],
   },
   {
