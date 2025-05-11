@@ -73,7 +73,7 @@ const DiscussionThreadList = ({ eventId }) => {
   // Generate page numbers for pagination
   const getPageNumbers = () => {
     const pages = []
-    const maxVisiblePages = 5 // Maximum number of page links to show
+    const maxVisiblePages = window.innerWidth < 375 ? 3 : 5 // Fewer pages on very small screens
 
     if (totalPages <= maxVisiblePages) {
       // Show all pages if total pages is less than or equal to max visible pages
@@ -88,14 +88,26 @@ const DiscussionThreadList = ({ eventId }) => {
       let startPage = Math.max(2, currentPage - 1)
       let endPage = Math.min(totalPages - 1, currentPage + 1)
 
-      // Adjust if we're near the beginning
-      if (currentPage <= 3) {
-        endPage = Math.min(4, totalPages - 1)
-      }
+      // For very small screens, show fewer pages
+      if (window.innerWidth < 375) {
+        if (currentPage <= 2) {
+          endPage = Math.min(3, totalPages - 1)
+        } else if (currentPage >= totalPages - 1) {
+          startPage = Math.max(2, totalPages - 2)
+        } else {
+          startPage = currentPage
+          endPage = currentPage
+        }
+      } else {
+        // Adjust if we're near the beginning
+        if (currentPage <= 3) {
+          endPage = Math.min(4, totalPages - 1)
+        }
 
-      // Adjust if we're near the end
-      if (currentPage >= totalPages - 2) {
-        startPage = Math.max(2, totalPages - 3)
+        // Adjust if we're near the end
+        if (currentPage >= totalPages - 2) {
+          startPage = Math.max(2, totalPages - 3)
+        }
       }
 
       // Add ellipsis after first page if needed
@@ -122,12 +134,12 @@ const DiscussionThreadList = ({ eventId }) => {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 rounded-lg border border-red-200 bg-red-50 m-6">
-        <div className="rounded-full bg-red-100 p-3 mb-4">
+      <div className="flex flex-col items-center justify-center p-3 sm:p-8 rounded-lg border border-red-200 bg-red-50 m-2 sm:m-6">
+        <div className="rounded-full bg-red-100 p-2 sm:p-3 mb-2 sm:mb-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -141,13 +153,14 @@ const DiscussionThreadList = ({ eventId }) => {
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-red-800 mb-2">Error Loading Discussions</h3>
-        <p className="text-red-600 text-center mb-4">{error}</p>
+        <h3 className="text-base sm:text-lg font-medium text-red-800 mb-1 sm:mb-2">Error Loading Discussions</h3>
+        <p className="text-red-600 text-center text-xs sm:text-sm mb-2 sm:mb-4">{error}</p>
         {error !== "You are not authorized to access this event" && (
           <Button
             onClick={() => fetchPosts(eventId, 1, postsPerPage, true)}
             variant="outline"
-            className="border-red-300 text-red-700 hover:bg-red-50"
+            size="sm"
+            className="border-red-300 text-red-700 hover:bg-red-50 text-xs sm:text-sm h-8 sm:h-10"
           >
             Try Again
           </Button>
@@ -158,11 +171,11 @@ const DiscussionThreadList = ({ eventId }) => {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      <div className="border-b bg-white p-4 sticky top-0 z-10 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-gray-900">Event Discussions</h1>
+      <div className="border-b bg-white p-2 sm:p-4 sticky top-0 z-10 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+          <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Event Discussions</h1>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="hidden sm:block">
               <TabsList>
                 <TabsTrigger value="all">All Posts</TabsTrigger>
@@ -172,12 +185,16 @@ const DiscussionThreadList = ({ eventId }) => {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Filter className="h-4 w-4" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1 sm:gap-2 h-8 sm:h-10 px-2 sm:px-3 text-xs sm:text-sm"
+                >
+                  <Filter className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="hidden sm:inline">Sort</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="text-xs sm:text-sm">
                 <DropdownMenuItem
                   onClick={() => setSortBy("newest")}
                   className={sortBy === "newest" ? "bg-primary/10" : ""}
@@ -199,73 +216,81 @@ const DiscussionThreadList = ({ eventId }) => {
               isModalOpen={isCreateModalOpen}
               setIsModalOpen={setIsCreateModalOpen}
               triggerButton={
-                <Button onClick={() => setIsCreateModalOpen(true)} className="gap-2">
-                  <PlusCircle className="h-4 w-4" />
+                <Button
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="gap-1 sm:gap-2 h-8 sm:h-10 px-2 sm:px-3 text-xs sm:text-sm"
+                >
+                  <PlusCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="hidden sm:inline">New Post</span>
                 </Button>
               }
             />
-
-            {/*<Button onClick={() => setIsCreateModalOpen(true)} className="gap-2">*/}
-            {/*  <PlusCircle className="h-4 w-4" />*/}
-            {/*  <span className="hidden sm:inline">New Post</span>*/}
-            {/*</Button>*/}
           </div>
         </div>
 
-        <div className="mt-4 sm:hidden">
+        <div className="mt-2 sm:mt-4 sm:hidden">
           <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="all">All Posts</TabsTrigger>
-              <TabsTrigger value="mine">My Posts</TabsTrigger>
+              <TabsTrigger value="all" className="text-xs py-1">
+                All Posts
+              </TabsTrigger>
+              <TabsTrigger value="mine" className="text-xs py-1">
+                My Posts
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+      <div className="flex-1 overflow-y-auto p-2 sm:p-6">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-gray-500">Loading discussions...</p>
+          <div className="flex flex-col items-center justify-center py-6 sm:py-12">
+            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-primary mb-2 sm:mb-4" />
+            <p className="text-gray-500 text-xs sm:text-sm">Loading discussions...</p>
           </div>
         ) : filteredDiscussions.length > 0 ? (
-          <div className="space-y-6">
+          <div className="space-y-3 sm:space-y-6">
             <div className="flex items-center justify-between">
-              <Badge variant="outline" className="bg-gray-100">
+              <Badge variant="outline" className="bg-gray-100 text-xs sm:text-sm">
                 {typeof pagination.total === "number" ? pagination.total : filteredDiscussions.length} posts
               </Badge>
 
               {activeTab === "mine" && filteredDiscussions.length === 0 && (
-                <p className="text-sm text-gray-500">You haven't created any posts yet</p>
+                <p className="text-xs sm:text-sm text-gray-500">You haven't created any posts yet</p>
               )}
             </div>
 
-            <div className="space-y-6 flex flex-col items-center justify-start">
+            <div className="space-y-3 sm:space-y-6 flex flex-col items-center justify-start w-full">
               {filteredDiscussions.map((discussion) => (
-                <DiscussionPost key={discussion._id} postData={discussion} />
+                <div key={discussion._id} className="w-full">
+                  <DiscussionPost postData={discussion} />
+                </div>
               ))}
             </div>
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <Pagination className="mt-8">
-                <PaginationContent>
+              <Pagination className="mt-4 sm:mt-8">
+                <PaginationContent className="gap-1 sm:gap-2">
                   <PaginationItem>
                     <PaginationPrevious
                       onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} h-8 w-8 sm:h-10 sm:w-10 p-0 sm:p-2 text-xs sm:text-sm`}
                     />
                   </PaginationItem>
 
                   {getPageNumbers().map((page, index) =>
                     page === "ellipsis1" || page === "ellipsis2" ? (
                       <PaginationItem key={`ellipsis-${index}`}>
-                        <PaginationEllipsis />
+                        <PaginationEllipsis className="h-8 w-8 sm:h-10 sm:w-10" />
                       </PaginationItem>
                     ) : (
                       <PaginationItem key={page}>
-                        <PaginationLink isActive={currentPage === page} onClick={() => handlePageChange(page)}>
+                        <PaginationLink
+                          isActive={currentPage === page}
+                          onClick={() => handlePageChange(page)}
+                          className="h-8 w-8 sm:h-10 sm:w-10 text-xs sm:text-sm"
+                        >
                           {page}
                         </PaginationLink>
                       </PaginationItem>
@@ -275,7 +300,7 @@ const DiscussionThreadList = ({ eventId }) => {
                   <PaginationItem>
                     <PaginationNext
                       onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} h-8 w-8 sm:h-10 sm:w-10 p-0 sm:p-2 text-xs sm:text-sm`}
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -283,28 +308,21 @@ const DiscussionThreadList = ({ eventId }) => {
             )}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="rounded-full bg-gray-100 p-6 mb-4">
-              <MessageSquare className="h-8 w-8 text-gray-400" />
+          <div className="flex flex-col items-center justify-center py-6 sm:py-12 text-center">
+            <div className="rounded-full bg-gray-100 p-4 sm:p-6 mb-2 sm:mb-4">
+              <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
             </div>
-            <h3 className="text-xl font-medium text-gray-900 mb-2">No discussions yet</h3>
-            <p className="text-gray-500 max-w-md mb-6">
+            <h3 className="text-base sm:text-xl font-medium text-gray-900 mb-1 sm:mb-2">No discussions yet</h3>
+            <p className="text-xs sm:text-sm text-gray-500 max-w-md mb-4 sm:mb-6 px-2">
               Be the first to start a discussion for this event. Share your thoughts, ask questions, or post updates.
             </p>
-            <Button onClick={() => setIsCreateModalOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" />
+            <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="h-8 sm:h-10 text-xs sm:text-sm">
+              <PlusCircle className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               Create New Post
             </Button>
           </div>
         )}
       </div>
-
-      {/*<CreateEditDiscussionPost*/}
-      {/*  onSuccess={handleCreatePost}*/}
-      {/*  eventId={eventId}*/}
-      {/*  isModalOpen={isCreateModalOpen}*/}
-      {/*  setIsModalOpen={setIsCreateModalOpen}*/}
-      {/*/>*/}
     </div>
   )
 }

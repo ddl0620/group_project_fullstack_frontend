@@ -1,60 +1,32 @@
+"use client"
+
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog.js';
-import { Button } from '@/components/ui/button.js';
-import {
-  HeartIcon,
-  ImageIcon,
-  MoreHorizontal,
-  Pencil,
-  Reply,
-  Send,
-  X,
-} from 'lucide-react';
+  Button
+} from '@/components/ui/button.js';
+import { Reply, Send } from 'lucide-react';
 import { Input } from '@/components/ui/input.js';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel.js';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { formatDistanceToNow } from 'date-fns';
-import { useEffect, useState } from 'react';
-import { useUser } from '@/hooks/useUser.js';
 import {
   useImageUploader,
   ImageUploader,
 } from '@/components/ImageUploader.jsx';
-import { CreateEditDiscussionPost } from '@/pages/Discussion/DiscussionPost/CreateEditDiscusisonPost.jsx';
+import { formatDistanceToNow } from 'date-fns';
+import { useEffect, useState } from 'react';
+import { useUser } from '@/hooks/useUser.js';
 import { TrashIcon } from '@heroicons/react/24/outline/index.js';
 import {AlertDialogUtils} from "@/helpers/AlertDialogUtils.jsx";
 import {PencilIcon} from "@heroicons/react/24/outline";
 import ImageCarousel from "@/components/ImageCarousel.jsx";
 
 const Comment = ({
-  comment,
-  onReply,
-  onEdit,
-  onDelete,
-  currentUserId,
-  postId,
-  depth = 0,
-}) => {
+                   comment,
+                   onReply,
+                   onEdit,
+                   onDelete,
+                   currentUserId,
+                   postId,
+                   depth = 0,
+                 }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -155,7 +127,6 @@ const Comment = ({
   };
 
   const handleDelete = async () => {
-
     const confirmed = await AlertDialogUtils.danger({
       title: 'Are you sure to delete this comment?',
       description: 'This action cannot be undone.',
@@ -169,20 +140,24 @@ const Comment = ({
   };
 
   if (!user) {
-    return <div>Loading user...</div>;
+    return <div className="text-xs sm:text-sm">Loading user...</div>;
   }
 
   return (
-    <div className="mt-4">
-      <div className="flex gap-3">
-        <CustomAvatar src={user?.avatar} fallbackText={user?.name} />
+    <div className="mt-2 sm:mt-4">
+      <div className="flex gap-1 sm:gap-3">
+        <CustomAvatar
+          src={user?.avatar}
+          fallbackText={user?.name}
+          className="h-6 w-6 sm:h-8 sm:w-8"
+        />
 
-        <div className="flex-1 space-y-2">
-          <div className="bg-muted rounded-lg p-3">
+        <div className="flex-1 space-y-1 sm:space-y-2">
+          <div className="bg-muted rounded-lg p-2 sm:p-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{user.name}</span>
-                <span className="text-muted-foreground text-xs">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <span className="font-medium text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{user.name}</span>
+                <span className="text-muted-foreground text-[10px] sm:text-xs">
                   {formatDistanceToNow(new Date(comment.created_at), {
                     addSuffix: true,
                   })}
@@ -190,76 +165,64 @@ const Comment = ({
               </div>
 
               {isOwnComment && (
-                <div>
+                <div className="flex gap-1">
                   <Button
-                      size={'sm'}
-                      onClick={() => handleDelete()}
-                      variant={'ghost'}
+                    size={'sm'}
+                    onClick={() => handleDelete()}
+                    variant={'ghost'}
+                    className="h-6 w-6 p-0 sm:h-8 sm:w-8 sm:p-1"
                   >
-                    <TrashIcon size={'sm'} />
+                    <TrashIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                   <Button
-                      size={'sm'}
-                      onClick={() => setIsEditMode(true)}
-                      variant={'ghost'}
+                    size={'sm'}
+                    onClick={() => setIsEditMode(true)}
+                    variant={'ghost'}
+                    className="h-6 w-6 p-0 sm:h-8 sm:w-8 sm:p-1"
                   >
-                    <PencilIcon size={'sm'} />
+                    <PencilIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
               )}
             </div>
 
-            <p className="mt-1 text-sm">{comment.content}</p>
+            <p className="mt-1 text-xs sm:text-sm break-words">{comment.content}</p>
 
             {/* Display images if any */}
             {comment.images && comment.images.length > 0 && (
-              <div className="mt-2">
-                {comment.images.length === 1 ? (
-                  <img
-                    src={comment.images[0] || '/placeholder.svg'}
-                    alt="Comment attachment"
-                    className="max-h-60 rounded-md object-cover"
-                    onError={(e) => {
-                      e.target.src = '/colorful-abstract-flow.png';
-                      e.target.alt = 'Failed to load image';
-                    }}
-                  />
-                ) : (
-                    <ImageCarousel images={comment.images} />
-                )}
+              <div className="mt-1 sm:mt-2">
+                <div className="max-h-40 sm:max-h-60 overflow-hidden">
+                  <ImageCarousel images={comment.images} />
+                </div>
               </div>
             )}
           </div>
 
-          <div className="flex items-center gap-4 text-xs">
-            <button
-              onClick={handleLike}
-              className={`flex items-center gap-1 ${liked ? 'text-red-500' : 'text-muted-foreground'}`}
-            >
-              <HeartIcon className={`h-4 w-4 ${liked ? 'fill-red-500' : ''}`} />
-              <span>{likeCount > 0 ? likeCount : ''} Like</span>
-            </button>
-
+          <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs">
             <button
               onClick={() => setShowReplyInput(!showReplyInput)}
               className="text-muted-foreground flex items-center gap-1"
             >
-              <Reply className="h-4 w-4" />
+              <Reply className="h-3 w-3 sm:h-4 sm:w-4" />
               <span>Reply</span>
             </button>
           </div>
 
           {/* Edit input */}
           {isEditMode && (
-            <div className="mt-2 space-y-2">
-              <div className="flex gap-2">
-                <CustomAvatar src={user?.avatar} fallbackText={user?.name} />
+            <div className="mt-1 sm:mt-2 space-y-1 sm:space-y-2">
+              <div className="flex gap-1 sm:gap-2">
+                <CustomAvatar
+                  src={user?.avatar}
+                  fallbackText={user?.name}
+                  className="h-6 w-6 sm:h-8 sm:w-8"
+                />
                 <div className="flex-1">
                   <Input
                     placeholder="Edit comment..."
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
-                    className="text-sm"
+                    className="text-xs sm:text-sm h-8 sm:h-10"
                   />
                 </div>
               </div>
@@ -281,6 +244,7 @@ const Comment = ({
                     setUploadedImages([]);
                     setExistingImageUrls([]);
                   }}
+                  className="text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3"
                 >
                   Cancel
                 </Button>
@@ -292,8 +256,9 @@ const Comment = ({
                     existingImageUrls.length === 0 &&
                     uploadedImages.length === 0
                   }
+                  className="text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3"
                 >
-                  <Send className="mr-1 h-4 w-4" />
+                  <Send className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
                   Save
                 </Button>
               </div>
@@ -302,15 +267,19 @@ const Comment = ({
 
           {/* Reply input */}
           {showReplyInput && (
-            <div className="mt-2 space-y-2">
-              <div className="flex gap-2">
-                <CustomAvatar src={user?.avatar} fallbackText={user?.name} />
+            <div className="mt-1 sm:mt-2 space-y-1 sm:space-y-2">
+              <div className="flex gap-1 sm:gap-2">
+                <CustomAvatar
+                  src={user?.avatar}
+                  fallbackText={user?.name}
+                  className="h-6 w-6 sm:h-8 sm:w-8"
+                />
                 <div className="flex-1">
                   <Input
                     placeholder="Comment..."
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
-                    className="text-sm"
+                    className="text-xs sm:text-sm h-8 sm:h-10"
                   />
                 </div>
               </div>
@@ -332,6 +301,7 @@ const Comment = ({
                     setUploadedImages([]);
                     setExistingImageUrls([]);
                   }}
+                  className="text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3"
                 >
                   Cancel
                 </Button>
@@ -341,8 +311,9 @@ const Comment = ({
                   disabled={
                     replyContent.trim() === '' && uploadedImages.length === 0
                   }
+                  className="text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3"
                 >
-                  <Send className="mr-1 h-4 w-4" />
+                  <Send className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
                   Reply
                 </Button>
               </div>
@@ -354,7 +325,7 @@ const Comment = ({
             comment.children.length > 0 &&
             depth < maxDepth && (
               <div
-                className={`pl-3 ${depth > 0 ? 'border-l border-gray-200' : ''}`}
+                className={`pl-1 sm:pl-3 ${depth > 0 ? 'border-l border-gray-200' : ''}`}
               >
                 {comment.children.map((reply) => (
                   <Comment
@@ -375,37 +346,16 @@ const Comment = ({
           {comment.children &&
             comment.children.length > 0 &&
             depth >= maxDepth && (
-              <Button variant="ghost" size="sm" className="mt-2 text-xs">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-1 sm:mt-2 text-[10px] sm:text-xs h-6 sm:h-8 px-2"
+              >
                 View more replies ({comment.children.length})
               </Button>
             )}
         </div>
       </div>
-
-      {/* Delete confirmation dialog */}
-      {/*<AlertDialog*/}
-      {/*  open={isDeleteDialogOpen}*/}
-      {/*  onOpenChange={setIsDeleteDialogOpen}*/}
-      {/*>*/}
-      {/*  <AlertDialogContent>*/}
-      {/*    <AlertDialogHeader>*/}
-      {/*      <AlertDialogTitle>Delete Comment</AlertDialogTitle>*/}
-      {/*      <AlertDialogDescription>*/}
-      {/*        Are you sure you want to delete this comment? This action cannot*/}
-      {/*        be undone.*/}
-      {/*      </AlertDialogDescription>*/}
-      {/*    </AlertDialogHeader>*/}
-      {/*    <AlertDialogFooter>*/}
-      {/*      <AlertDialogCancel>Cancel</AlertDialogCancel>*/}
-      {/*      <AlertDialogAction*/}
-      {/*        onClick={handleDelete}*/}
-      {/*        className="bg-red-600 hover:bg-red-700"*/}
-      {/*      >*/}
-      {/*        Delete*/}
-      {/*      </AlertDialogAction>*/}
-      {/*    </AlertDialogFooter>*/}
-      {/*  </AlertDialogContent>*/}
-      {/*</AlertDialog>*/}
     </div>
   );
 };

@@ -75,7 +75,7 @@ const DiscussionPage = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-gray-100 rouned-full m-2">
       <EventSidebar events={events} selectedEventId={selectedEvent?._id} />
       <div className="flex flex-1 flex-col overflow-hidden">
         {selectedEvent ? (
