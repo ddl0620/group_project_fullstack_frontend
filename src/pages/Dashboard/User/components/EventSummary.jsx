@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card.js"
 import { CalendarIcon, Users, Clock, CheckCircle, XCircle } from "lucide-react"
 
 export function EventSummary({ data }) {

@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card.js"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.js"
+import { Badge } from "@/components/ui/badge.js"
 
 export function RecentActivity({ recipients }) {
   // Ensure data exists and has the expected format

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card.js"
 import { ArrowUp, ArrowDown, Minus } from "lucide-react"
 
 export function InvitationTrend({ data }) {

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card.js"
+import { Badge } from "@/components/ui/badge.js"
 import { ArrowUp, ArrowDown, Minus } from "lucide-react"
 
 export function RsvpSummary({ data }) {

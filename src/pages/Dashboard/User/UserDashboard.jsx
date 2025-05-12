@@ -7,8 +7,8 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { useUserStatis } from "@/hooks/useUserStatis"
-import { InvitationTrend } from '@/pages/Dashboard/User/components/khanh/InvitationTrend.jsx';
-import { RsvpSummary } from '@/pages/Dashboard/User/components/khanh/RsvpSummary.jsx';
+import { InvitationTrend } from '@/pages/Dashboard/User/components/InvitationTrend.jsx';
+import { RsvpSummary } from '@/pages/Dashboard/User/components/RsvpSummary.jsx';
 
 export default function UserDashboard() {
   const {

@@ -1,14 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useAdminStatistics } from "@/hooks/useAdminStatistics"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useAdminStatistics } from "@/hooks/useAdminStatistics.js"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.js"
 import { Users, UserPlus, Calendar, MessageSquare } from "lucide-react"
 import {
   DeletedUsersDisplay,
   EventsByDateDisplay,
   EventVisibilityDisplay, UsersByDateDisplay,
-} from '@/pages/Dashboard/Admin/components/dashboard/components/index.js';
+} from '@/pages/Dashboard/Admin/components/index.js';
 
 
 export default function AdminDashboard() {

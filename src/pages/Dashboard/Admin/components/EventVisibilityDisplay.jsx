@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.js"
 import { Eye, EyeOff } from 'lucide-react'
 
 export function EventVisibilityDisplay({ data }) {
