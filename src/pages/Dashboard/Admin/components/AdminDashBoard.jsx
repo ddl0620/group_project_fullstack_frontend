@@ -2,16 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { useAdminStatistics } from "@/hooks/useAdminStatistics"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
-import { Users, UserPlus, Calendar, MessageSquare, AlertTriangle, Eye, EyeOff } from "lucide-react"
-import { BarChart, LineChart, PieChart } from '@/pages/Dashboard/Admin/components/dashboard/charts/index.js';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Users, UserPlus, Calendar, MessageSquare } from "lucide-react"
 import {
-  DiscussionsTable,
-  EventsTable,
-  UsersTable,
-} from '@/pages/Dashboard/Admin/components/dashboard/tables/index.js';
+  DeletedUsersDisplay,
+  EventsByDateDisplay,
+  EventVisibilityDisplay, UsersByDateDisplay,
+} from '@/pages/Dashboard/Admin/components/dashboard/khanh/index.js';
+
 
 export default function AdminDashboard() {
   const {
@@ -107,8 +105,8 @@ export default function AdminDashboard() {
   const finalDeletedUsersByDate = error ? deletedUsersData.content : deletedUsersByDate
   const finalPublicAndPrivateEvents = error ? eventVisibilityData : publicAndPrivateEvents
 
-  // Format data for charts - ensure proper formatting for small screens
-  const eventsByDateChartData =
+  // Format data for text displays - ensure proper formatting for small screens
+  const eventsByDateDisplayData =
     finalEventsByDate?.map((item) => {
       // For small screens, use shorter date format
       const dateFormat = screenSize.isExtraSmall
@@ -121,8 +119,8 @@ export default function AdminDashboard() {
       }
     }) || []
 
-  // Format users by date chart data
-  const usersByDateChartData =
+  // Format users by date display data
+  const usersByDateDisplayData =
     finalUsersByDate?.map((item) => {
       const dateFormat = screenSize.isExtraSmall
         ? { month: "short", day: "numeric" }
@@ -134,27 +132,7 @@ export default function AdminDashboard() {
       }
     }) || []
 
-  // Limit the number of data points for small screens
-  const limitedEventsByDateChartData = screenSize.isExtraSmall
-    ? eventsByDateChartData.slice(-6) // Show only the last 6 data points on very small screens
-    : eventsByDateChartData
-
-  const limitedUsersByDateChartData = screenSize.isExtraSmall
-    ? usersByDateChartData.slice(-6) // Show only the last 6 data points on very small screens
-    : usersByDateChartData
-
-  const rsvpChartData = rsvpTrendData.content.map((item) => {
-    const dateFormat = screenSize.isExtraSmall ? { month: "short", day: "numeric" } : { month: "short", day: "numeric" }
-
-    return {
-      name: new Date(item.date).toLocaleDateString("en-US", dateFormat),
-      accepted: item.accepted,
-      denied: item.denied,
-      pending: item.pending,
-    }
-  })
-
-  const eventVisibilityChartData = [
+  const eventVisibilityDisplayData = [
     { name: "Public", total: finalPublicAndPrivateEvents?.publicEvents || 0 },
     { name: "Private", total: finalPublicAndPrivateEvents?.privateEvents || 0 },
   ]
@@ -197,12 +175,11 @@ export default function AdminDashboard() {
                 {finalOverview?.activeUsers || 0} active users (
                 {safePercentage(finalOverview?.activeUsers, finalOverview?.totalUsers)}%)
               </p>
-              <div className="mt-2 sm:mt-3">
-                <Progress
-                  value={safePercentage(finalOverview?.activeUsers, finalOverview?.totalUsers)}
-                  className="h-1 sm:h-2"
-                />
-              </div>
+              <p className="text-[10px] sm:text-xs text-blue-500 mt-1">
+                {safePercentage(finalOverview?.activeUsers, finalOverview?.totalUsers) > 50
+                  ? "Good engagement rate"
+                  : "Engagement could be improved"}
+              </p>
             </CardContent>
           </Card>
 
@@ -213,19 +190,16 @@ export default function AdminDashboard() {
               <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-              <div className="text-lg sm:text-xl md:text-2xl font-bold">
-                {finalOverview?.totalDiscussionPosts || 0}
-              </div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold">{finalOverview?.totalDiscussionPosts || 0}</div>
               <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                 {finalOverview?.activeDiscussionPosts || 0} active posts (
                 {safePercentage(finalOverview?.activeDiscussionPosts, finalOverview?.totalDiscussionPosts)}%)
               </p>
-              <div className="mt-2 sm:mt-3">
-                <Progress
-                  value={safePercentage(finalOverview?.activeDiscussionPosts, finalOverview?.totalDiscussionPosts)}
-                  className="h-1 sm:h-2"
-                />
-              </div>
+              <p className="text-[10px] sm:text-xs text-blue-500 mt-1">
+                {finalOverview?.totalDiscussionPosts > 0
+                  ? `~${(finalOverview?.totalDiscussionPosts / (finalOverview?.totalUsers || 1)).toFixed(1)} posts per user`
+                  : "No discussion activity"}
+              </p>
             </CardContent>
           </Card>
 
@@ -241,15 +215,11 @@ export default function AdminDashboard() {
                 {finalOverview?.deletedEvents || 0} deleted events (
                 {safePercentage(finalOverview?.deletedEvents, finalOverview?.totalEvents)}%)
               </p>
-              <div className="mt-2 sm:mt-3">
-                <Progress
-                  value={safePercentage(
-                    finalOverview?.totalEvents - (finalOverview?.deletedEvents || 0),
-                    finalOverview?.totalEvents,
-                  )}
-                  className="h-1 sm:h-2"
-                />
-              </div>
+              <p className="text-[10px] sm:text-xs text-blue-500 mt-1">
+                {finalOverview?.totalEvents > 0
+                  ? `${(((finalOverview?.totalEvents - (finalOverview?.deletedEvents || 0)) / finalOverview?.totalEvents) * 100).toFixed(1)}% retention rate`
+                  : "No events created"}
+              </p>
             </CardContent>
           </Card>
 
@@ -260,142 +230,44 @@ export default function AdminDashboard() {
               <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-              <div className="text-lg sm:text-xl md:text-2xl font-bold">
-                {finalOverview?.lastWeek?.totalUsers || 0}
-              </div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold">{finalOverview?.lastWeek?.totalUsers || 0}</div>
               <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                 {finalOverview?.lastWeek?.activeUsers || 0} active new users (
                 {safePercentage(finalOverview?.lastWeek?.activeUsers, finalOverview?.lastWeek?.totalUsers)}%)
               </p>
-              <div className="mt-2 sm:mt-3">
-                <Progress
-                  value={safePercentage(finalOverview?.lastWeek?.activeUsers, finalOverview?.lastWeek?.totalUsers)}
-                  className="h-1 sm:h-2"
-                />
-              </div>
+              <p className="text-[10px] sm:text-xs text-blue-500 mt-1">
+                {finalOverview?.lastWeek?.totalUsers > 0
+                  ? `${((finalOverview?.lastWeek?.totalUsers / (finalOverview?.totalUsers || 1)) * 100).toFixed(1)}% growth`
+                  : "No new users"}
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Charts Row 1 */}
+        {/* Text Displays Row 1 */}
         <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
-          {/* Events by Date Chart */}
-          <Card className="bg-white lg:col-span-4">
-            <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
-              <CardTitle className="text-sm sm:text-base md:text-lg">Events by Date</CardTitle>
-              <CardDescription className="text-[10px] sm:text-xs">Number of events created per day</CardDescription>
-            </CardHeader>
-            <CardContent className="p-1 sm:p-2 md:p-4">
-              <BarChart
-                data={limitedEventsByDateChartData}
-                // height={screenSize.isExtraSmall ? 180 : screenSize.isMobile ? 200 : 300}
-                // valueFormatter={(value) => `${value} events`}
-              />
-            </CardContent>
-          </Card>
+          {/* Events by Date Display */}
+          <div className="lg:col-span-4">
+            <EventsByDateDisplay data={eventsByDateDisplayData} />
+          </div>
 
-          {/* Public vs Private Events */}
-          <Card className="bg-white lg:col-span-3">
-            <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
-              <CardTitle className="text-sm sm:text-base md:text-lg">Event Visibility</CardTitle>
-              <CardDescription className="text-[10px] sm:text-xs">
-                Distribution of public vs private events
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-1 sm:p-2 md:p-4">
-              <BarChart
-                data={eventVisibilityChartData}
-                // height={screenSize.isExtraSmall ? 180 : screenSize.isMobile ? 200 : 300}
-                // valueFormatter={(value) => `${value} events`}
-              />
-              <div className="flex flex-col xs:flex-row justify-center mt-2 space-y-2 xs:space-y-0 xs:space-x-8">
-                <div className="flex items-center justify-center">
-                  <Eye className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 mr-1 sm:mr-2" />
-                  <span className="text-[10px] sm:text-xs">
-                    Public: {finalPublicAndPrivateEvents?.publicEvents || 0}
-                  </span>
-                </div>
-                <div className="flex items-center justify-center">
-                  <EyeOff className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-500 mr-1 sm:mr-2" />
-                  <span className="text-[10px] sm:text-xs">
-                    Private: {finalPublicAndPrivateEvents?.privateEvents || 0}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Event Visibility Display */}
+          <div className="lg:col-span-3">
+            <EventVisibilityDisplay data={eventVisibilityDisplayData} />
+          </div>
         </div>
 
-        {/* Charts Row 2 */}
+        {/* Text Displays Row 2 */}
         <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
-          {/* Users by Date Chart */}
-          <Card className="bg-white lg:col-span-4">
-            <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
-              <CardTitle className="text-sm sm:text-base md:text-lg">Users by Date</CardTitle>
-              <CardDescription className="text-[10px] sm:text-xs">Number of users created per day</CardDescription>
-            </CardHeader>
-            <CardContent className="p-1 sm:p-2 md:p-4">
-              <BarChart
-                data={limitedUsersByDateChartData}
-                // height={screenSize.isExtraSmall ? 180 : screenSize.isMobile ? 200 : 300}
-                // valueFormatter={(value) => `${value} users`}
-              />
-            </CardContent>
-          </Card>
+          {/* Users by Date Display */}
+          <div className="lg:col-span-4">
+            <UsersByDateDisplay data={usersByDateDisplayData} />
+          </div>
 
-          {/* RSVP Trends */}
-          {/* <Card className="bg-white lg:col-span-4">
-            <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
-              <CardTitle className="text-sm sm:text-base md:text-lg">RSVP Trends</CardTitle>
-              <CardDescription className="text-[10px] sm:text-xs">
-                User responses to event invitations
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-1 sm:p-2 md:p-4">
-              <LineChart
-                data={rsvpChartData}
-                height={screenSize.isExtraSmall ? 180 : screenSize.isMobile ? 200 : 300}
-                series={[
-                  { dataKey: "accepted", color: "#4ade80" },
-                  { dataKey: "denied", color: "#f87171" },
-                  { dataKey: "pending", color: "#facc15" },
-                ]}
-                valueFormatter={(value) => `${value} responses`}
-              />
-            </CardContent>
-          </Card> */}
-
-          {/* Deleted Users */}
-          <Card className="bg-white lg:col-span-3">
-            <CardHeader className="px-3 sm:px-6 py-2 sm:py-4">
-              <CardTitle className="text-sm sm:text-base md:text-lg">Deleted Users</CardTitle>
-              <CardDescription className="text-[10px] sm:text-xs">
-                Users who have deleted their accounts
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-              {finalDeletedUsersByDate.length > 0 ? (
-                <div className="space-y-2 sm:space-y-4">
-                  <div className="pt-1 sm:pt-2 space-y-1 sm:space-y-2">
-                    {finalDeletedUsersByDate.map((item, index) => (
-                      <div key={index} className="flex items-center">
-                        <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500 mr-1 sm:mr-2" />
-                        <div>
-                          <p className="text-[10px] sm:text-xs md:text-sm font-medium">
-                            {item.count} users deleted on {new Date(item.date).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="h-[180px] sm:h-[200px] flex items-center justify-center">
-                  <p className="text-[10px] sm:text-xs text-muted-foreground">No deleted users in this period</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Deleted Users Display */}
+          <div className="lg:col-span-3">
+            <DeletedUsersDisplay data={finalDeletedUsersByDate} />
+          </div>
         </div>
       </div>
     </div>

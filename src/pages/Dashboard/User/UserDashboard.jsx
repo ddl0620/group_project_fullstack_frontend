@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from "react"
 import { subDays } from "date-fns"
 import { Mail, MessageSquare, User, Users } from "lucide-react"
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "./components/ui/index"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs"
-import { InvitationOvertime } from "./components/InvitationOverTime"
-import { RsvpDistribution } from "./components/RsvpDistribution.jsx"
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+
 import { useUserStatis } from "@/hooks/useUserStatis"
+import { InvitationTrend } from '@/pages/Dashboard/User/components/khanh/InvitationTrend.jsx';
+import { RsvpSummary } from '@/pages/Dashboard/User/components/khanh/RsvpSummary.jsx';
 
 export default function UserDashboard() {
   const {
@@ -34,7 +35,7 @@ export default function UserDashboard() {
     to: new Date(),
   })
 
-  const [interval] = useState("daily") // Removed setInterval as it's unused
+  const [interval] = useState("daily")
 
   // Render counter for debugging
   const renderCount = useRef(0)
@@ -82,50 +83,54 @@ export default function UserDashboard() {
     })
   }, [date.from, date.to, fetchEngagementStats, fetchInvitationsOverTime, fetchRsvpDistribution, fetchRecipients])
 
-  // Map engagement stats to numeric data
-  const numericData = engagementStats && engagementStats.previousWeek
-    ? [
-      {
-        title: "Total Invitations",
-        value: engagementStats.totalInvitations || 0,
-        percentage: calculatePercentageChange(
-          engagementStats.totalInvitations || 0,
-          engagementStats.previousWeek.totalInvitations || 0
-        ),
-        icon: <Mail className="h-4 w-4 text-muted-foreground" />,
-      },
-      {
-        title: "RSVP Accepted",
-        value: engagementStats.acceptedRSVPs || 0,
-        percentage: calculatePercentageChange(
-          engagementStats.acceptedRSVPs || 0,
-          engagementStats.previousWeek.acceptedRSVPs || 0
-        ),
-        icon: <Users className="h-4 w-4 text-muted-foreground" />,
-      },
-      {
-        title: "RSVP Pending",
-        value: engagementStats.pendingRSVPs || 0,
-        percentage: calculatePercentageChange(
-          engagementStats.pendingRSVPs || 0,
-          engagementStats.previousWeek.pendingRSVPs || 0
-        ),
-        icon: <User className="h-4 w-4 text-muted-foreground" />,
-      },
-      {
-        title: "Response Rate",
-        value: calculateResponseRate(
-          engagementStats.acceptedRSVPs || 0,
-          engagementStats.totalInvitations || 0
-        ),
-        percentage: calculatePercentageChange(
-          engagementStats.acceptedRSVPs || 0,
-          engagementStats.previousWeek.acceptedRSVPs || 0
-        ),
-        icon: <MessageSquare className="h-4 w-4 text-muted-foreground" />,
-      },
-    ]
-    : []
+  // Map rsvp distribution data to numeric data
+  const numericData =
+    rsvpDistribution && Array.isArray(rsvpDistribution) && rsvpDistribution.length > 0
+      ? (() => {
+        // Calculate total responses
+        const totalResponses = rsvpDistribution.reduce((sum, item) => sum + (item.value || 0), 0)
+
+        // Find specific RSVP types
+        const findRsvpValue = (status) => {
+          const item = rsvpDistribution.find((item) => item.status === status || item.name === status)
+          return item ? item.value : 0
+        }
+
+        const acceptedCount = findRsvpValue("Accepted")
+        const declinedCount = findRsvpValue("Denied")
+        const pendingCount = findRsvpValue("Pending")
+
+        // Calculate response rate
+        const responseRate = totalResponses > 0 ? `${Math.round((acceptedCount / totalResponses) * 100)}%` : "0%"
+
+        return [
+          {
+            title: "Total Responses",
+            value: totalResponses,
+            percentage: 0, // We don't have previous data for comparison
+            icon: <Mail className="h-4 w-4 text-muted-foreground" />,
+          },
+          {
+            title: "Accepted",
+            value: acceptedCount,
+            percentage: totalResponses > 0 ? Math.round((acceptedCount / totalResponses) * 100) : 0,
+            icon: <Users className="h-4 w-4 text-muted-foreground" />,
+          },
+          {
+            title: "Declined",
+            value: declinedCount,
+            percentage: totalResponses > 0 ? Math.round((declinedCount / totalResponses) * 100) : 0,
+            icon: <User className="h-4 w-4 text-muted-foreground" />,
+          },
+          {
+            title: "Pending",
+            value: pendingCount,
+            percentage: totalResponses > 0 ? Math.round((pendingCount / totalResponses) * 100) : 0,
+            icon: <MessageSquare className="h-4 w-4 text-muted-foreground" />,
+          },
+        ]
+      })()
+      : []
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -154,11 +159,10 @@ export default function UserDashboard() {
                         <div className="text-xl sm:text-2xl font-bold">{data.value}</div>
                         <p
                           className={`text-xs font-medium ${
-                            data.percentage >= 0 ? "text-green-500" : "text-red-500"
+                            data.title === "Declined" ? "text-red-500" : "text-blue-500"
                           }`}
                         >
-                          {data.percentage >= 0 ? "+" : ""}
-                          {data.percentage}% from last month
+                          {data.title !== "Total Responses" ? `${data.percentage}% of total` : "Total responses"}
                         </p>
                       </CardContent>
                     </Card>
@@ -174,15 +178,64 @@ export default function UserDashboard() {
                 <div>Loading invitations...</div>
               ) : (
                 <div className="col-span-1 lg:col-span-4">
-                  <Card className="hover:shadow-xl transition-shadow duration-50">
+                  <InvitationTrend data={invitationsOverTime} />
+                </div>
+              )}
+
+              {errorRsvpDistribution ? (
+                <div className="text-red-500">Error loading RSVP distribution: {errorRsvpDistribution}</div>
+              ) : loadingRsvpDistribution ? (
+                <div>Loading RSVP distribution...</div>
+              ) : (
+                <div className="col-span-1 lg:col-span-3">
+                  <RsvpSummary data={rsvpDistribution} />
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-4">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+              {errorInvitations ? (
+                <div className="text-red-500">Error loading invitations: {errorInvitations}</div>
+              ) : loadingInvitations ? (
+                <div>Loading invitations...</div>
+              ) : (
+                <div className="hover:shadow-xl transition-shadow duration-500">
+                  <Card>
                     <CardHeader>
-                      <CardTitle>Invitations Over Time</CardTitle>
-                      <CardDescription>
-                        Number of invitations sent {interval === "daily" ? "per day" : "per week"}
-                      </CardDescription>
+                      <CardTitle>RSVP Trend</CardTitle>
+                      <CardDescription>RSVP responses over time</CardDescription>
                     </CardHeader>
-                    <CardContent className="pl-2">
-                      <InvitationOvertime data={invitationsOverTime} />
+                    <CardContent>
+                      <div className="space-y-4">
+                        {invitationsOverTime &&
+                          invitationsOverTime.slice(0, 7).map((item, index) => {
+                            const date = new Date(item.date)
+                            const formattedDate = date.toLocaleDateString("en-US", {
+                              weekday: "short",
+                              month: "short",
+                              day: "numeric",
+                            })
+
+                            return (
+                              <div key={index} className="flex flex-col space-y-2 p-3 border rounded-md">
+                                <div className="flex justify-between items-center">
+                                  <span className="font-medium">{formattedDate}</span>
+                                  <span className="text-sm text-muted-foreground">{item.invitations} invitations</span>
+                                </div>
+                                <div className="w-full bg-gray-100 rounded-full h-2.5">
+                                  <div
+                                    className="bg-blue-600 h-2.5 rounded-full"
+                                    style={{
+                                      width: `${Math.min(100, (item.invitations / 10) * 100)}%`,
+                                    }}
+                                  ></div>
+                                </div>
+                              </div>
+                            )
+                          })}
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
@@ -193,59 +246,130 @@ export default function UserDashboard() {
               ) : loadingRsvpDistribution ? (
                 <div>Loading RSVP distribution...</div>
               ) : (
-                <div className="col-span-1 lg:col-span-3">
-                  <Card className="hover:shadow-xl transition-shadow duration-50">
+                <div className="hover:shadow-xl transition-shadow duration-500">
+                  <Card>
                     <CardHeader>
-                      <CardTitle>RSVP Distribution</CardTitle>
-                      <CardDescription>Distribution of RSVP responses</CardDescription>
+                      <CardTitle>Response Details</CardTitle>
+                      <CardDescription>Detailed breakdown of responses</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <RsvpDistribution data={rsvpDistribution} />
+                      <div className="space-y-6">
+                        {rsvpDistribution &&
+                          rsvpDistribution.map((item, index) => {
+                            const status = item.status || item.name
+                            let bgColor = "bg-gray-100"
+                            let textColor = "text-gray-800"
+
+                            if (status === "Accepted") {
+                              bgColor = "bg-green-100"
+                              textColor = "text-green-800"
+                            } else if (status === "Declined") {
+                              bgColor = "bg-red-100"
+                              textColor = "text-red-800"
+                            } else if (status === "Pending") {
+                              bgColor = "bg-yellow-100"
+                              textColor = "text-yellow-800"
+                            }
+
+                            return (
+                              <div key={index} className={`p-4 rounded-lg ${bgColor}`}>
+                                <h4 className={`text-lg font-semibold ${textColor}`}>{status}</h4>
+                                <div className="mt-2 grid grid-cols-2 gap-2">
+                                  <div>
+                                    <p className="text-sm text-muted-foreground">Count</p>
+                                    <p className="text-xl font-bold">{item.value}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm text-muted-foreground">Details</p>
+                                    <p className="text-sm">
+                                      {status === "Accepted"
+                                        ? "Ready to attend"
+                                        : status === "Declined"
+                                          ? "Cannot attend"
+                                          : "Awaiting response"}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          })}
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
               )}
             </div>
 
+            <Card className="hover:shadow-xl transition-shadow duration-500">
+              <CardHeader>
+                <CardTitle>Invitation Summary</CardTitle>
+                <CardDescription>Overview of all invitation activity</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="text-sm font-medium text-muted-foreground">Total Sent</h4>
+                      <p className="text-2xl font-bold">{engagementStats?.totalInvitations || 0}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Across all events</p>
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="text-sm font-medium text-muted-foreground">Response Rate</h4>
+                      <p className="text-2xl font-bold">
+                        {calculateResponseRate(
+                          (engagementStats?.acceptedRSVPs || 0) + (engagementStats?.deniedRSVPs || 0),
+                          engagementStats?.totalInvitations || 0,
+                        )}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">Of all invitations</p>
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="text-sm font-medium text-muted-foreground">Acceptance Rate</h4>
+                      <p className="text-2xl font-bold">
+                        {calculateResponseRate(
+                          engagementStats?.acceptedRSVPs || 0,
+                          (engagementStats?.acceptedRSVPs || 0) + (engagementStats?.deniedRSVPs || 0),
+                        )}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">Of all responses</p>
+                    </div>
+                  </div>
 
-          </TabsContent>
-
-
-          <TabsContent value="analytics" className="space-y-4">
-            {errorInvitations ? (
-              <div className="text-red-500">Error loading invitations: {errorInvitations}</div>
-            ) : loadingInvitations ? (
-              <div>Loading invitations...</div>
-            ) : (
-              <div className="hover:shadow-xl transition-shadow duration-50">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>RSVP Trend</CardTitle>
-                    <CardDescription>RSVP responses over time</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <InvitationOvertime data={invitationsOverTime} />
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-            {errorRsvpDistribution ? (
-              <div className="text-red-500">Error loading RSVP distribution: {errorRsvpDistribution}</div>
-            ) : loadingRsvpDistribution ? (
-              <div>Loading RSVP distribution...</div>
-            ) : (
-              <div className="col-span-1 lg:col-span-3 hover:shadow-xl transition-shadow duration-50">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>RSVP Distribution</CardTitle>
-                    <CardDescription>Distribution of RSVP responses</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <RsvpDistribution data={rsvpDistribution} />
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+                  <div className="p-4 border rounded-lg">
+                    <h4 className="text-sm font-medium mb-3">Invitation Timeline</h4>
+                    <div className="relative pt-1">
+                      <div className="flex mb-2 items-center justify-between">
+                        <div>
+                          <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full bg-blue-200 text-blue-800">
+                            Progress
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-xs font-semibold inline-block text-blue-800">
+                            {calculateResponseRate(
+                              (engagementStats?.acceptedRSVPs || 0) + (engagementStats?.deniedRSVPs || 0),
+                              engagementStats?.totalInvitations || 0,
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+                        <div
+                          style={{
+                            width:
+                              calculateResponseRateNumeric(
+                                (engagementStats?.acceptedRSVPs || 0) + (engagementStats?.deniedRSVPs || 0),
+                                engagementStats?.totalInvitations || 0,
+                              ) + "%",
+                          }}
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
@@ -262,4 +386,9 @@ function calculatePercentageChange(current, previous) {
 function calculateResponseRate(accepted, total) {
   if (total === 0) return "0%"
   return `${((accepted / total) * 100).toFixed(1)}%`
+}
+
+function calculateResponseRateNumeric(accepted, total) {
+  if (total === 0) return 0
+  return ((accepted / total) * 100).toFixed(1)
 }
