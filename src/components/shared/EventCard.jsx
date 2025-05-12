@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Commented out as requested
 import { useSelector } from 'react-redux';
 import {
@@ -12,7 +12,7 @@ import {
   LockIcon,
   Users,
   ChevronDown,
-  ChevronUp,
+  ChevronUp, UserCircle,
 } from 'lucide-react';
 import {
   Card,
@@ -25,6 +25,8 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { DEFAULT_IMAGE } from '@/components/DefaultImage.js';
+import { Toast } from '@/helpers/toastService.js';
+import { useUser } from '@/hooks/useUser.js';
 
 const formatDateTime = (dateString) => {
   if (!dateString) return 'N/A';
@@ -63,6 +65,30 @@ export function EventCard({ event, actions = [], className }) {
   const navigate = useNavigate(); // Commented out as requested
   // const navigate = (path) => console.log(`Navigating to: ${path}`) // Temporary replacement
   const { user } = useSelector((state) => state.user);
+  const [organizer, setOrganizer] = useState(null);
+  const { getUserById } = useUser();
+  useEffect(() => {
+    const fetchOrganizer = async (userId) => {
+      try {
+        const response = await getUserById(userId);
+        if (response.success) {
+          const user = response.content;
+          setOrganizer(user);
+        } else {
+          throw new Error('Failed to load organizer data');
+        }
+      } catch (err) {
+        Toast.error(err.response?.data?.message || 'Failed to load organizer');
+      }
+    }
+    if (event?.organizer) {
+      fetchOrganizer(event.organizer);
+    }
+
+
+  }, [event]);
+
+
 
   const {
     _id,
@@ -190,6 +216,10 @@ export function EventCard({ event, actions = [], className }) {
         </h3>
 
         <div className="mt-3 space-y-2">
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <UserCircle className="h-4 w-4 text-[#0071e3]" />
+            <div>Host: {organizer?.name || "Event Organizer"}</div>
+          </div>
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
             <Calendar className="h-4 w-4 text-[#0071e3]" />
             <span>{formatDate(startDate)}</span>

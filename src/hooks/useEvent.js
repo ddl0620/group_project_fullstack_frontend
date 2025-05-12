@@ -40,8 +40,7 @@ export const useEvent = () => {
       });
       // Dispatch để lưu vào Redux store
       // dispatch(setEvents(data));
-      if (response.success) Toast.success('Events fetched successfully');
-      else Toast.error(response.message);
+      if (!response.success) Toast.error(response.message);
       return response;
     } catch (error) {
       dispatch(setError(error.message));
@@ -63,8 +62,7 @@ export const useEvent = () => {
         isAcs: isAcs,
       });
 
-      if (response.success) Toast.success('Events fetched successfully');
-      else Toast.error(response.message);
+      if (!response.success) Toast.error(response.message);
 
       // Dispatch để lưu vào Redux store
       // dispatch(setEvents(data));
@@ -192,6 +190,7 @@ export const useEvent = () => {
   };
 
   const requestJoinEvent = async (eventId, userData) => {
+    const toastId = Toast.loading("Processing...");
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
@@ -207,6 +206,7 @@ export const useEvent = () => {
       throw error;
     } finally {
       dispatch(setLoading(false));
+      Toast.dismiss(toastId);
     }
   };
 

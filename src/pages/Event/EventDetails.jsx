@@ -34,9 +34,7 @@ import EventDetailsForOrganizer from '@/pages/Event/MyOrganizedEvents/EventDetai
 import EventInvitationsList from '@/pages/Event/MyJoinedEvents/EventInvitationList.jsx';
 import useInvitation from '@/hooks/useInvitation.js';
 import { useUser } from '@/hooks/useUser.js';
-import { Toast } from '@/helpers/toastService.js';
 import { UpdateIcon } from '@radix-ui/react-icons';
-import { formatDay } from '@/helpers/format.js';
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
@@ -56,14 +54,30 @@ export default function EventDetailPage() {
   const [invitationsLoading, setInvitationsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('details');
-
+  const [organizer, setOrganizer] = useState(null);
   useEffect(() => {
+    const fetchOrganizer = async (userId) => {
+      try {
+        const response = await getUserById(userId);
+        if (response.success) {
+          const user = response.content;
+          setOrganizer(user);
+        } else {
+          throw new Error('Failed to load organizer data');
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load organizer');
+        // toast.error(err.response?.data?.message || 'Failed to load organizer');
+      }
+    }
+
     const fetchEvent = async () => {
       try {
         setLoading(true);
         const response = await getEventById(eventId);
         if (response.success) {
           setEvent(response.content.event);
+          await fetchOrganizer(response.content.event.organizer);
         } else {
           throw new Error('Failed to load event data');
         }
@@ -100,7 +114,6 @@ export default function EventDetailPage() {
         // toast.error(err.response?.data?.message || 'Failed to load RSVP');
       }
     };
-
     const fetchInvitations = async () => {
       try {
         setInvitationsLoading(true);
@@ -140,15 +153,6 @@ export default function EventDetailPage() {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
-    });
-  };
-
-  const formatTime = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
     });
   };
 
@@ -540,14 +544,14 @@ export default function EventDetailPage() {
 
                 <div className="mb-6 flex items-center gap-3">
                   <CustomAvatar
-                    src={''}
-                    fallbackText="Organizer"
+                    src={organizer?.avatar || ''}
+                    fallbackText={organizer.name || 'Organizer'}
                     alt="Organizer"
                     className="h-10 w-10"
                   />
                   <div>
                     <p className="text-sm text-gray-500">Hosted by</p>
-                    <p className="font-medium">Event Organizer</p>
+                    <p className="font-medium">{organizer.name || "Event Organizer"}</p>
                   </div>
                 </div>
 

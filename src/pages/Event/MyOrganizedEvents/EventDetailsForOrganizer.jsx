@@ -30,6 +30,7 @@ import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
 import { useEvent } from '@/hooks/useEvent.js';
 import { formatDay, formatTime } from '@/helpers/format.js';
 import { UpdateIcon } from '@radix-ui/react-icons';
+import { useSelector } from 'react-redux';
 
 export default function EventDetailsForOrganizer({ event }) {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export default function EventDetailsForOrganizer({ event }) {
   const [activeTab, setActiveTab] = useState('details');
   const [pendingRequests, setPendingRequests] = useState(0);
   const { deleteEvent } = useEvent();
-
+  const user = useSelector((state => state.user.user));
   useEffect(() => {
     if (event?._id) {
       fetchInvitationsByEventId(event._id, 1, 10);
@@ -212,14 +213,14 @@ export default function EventDetailsForOrganizer({ event }) {
 
                 <div className="mb-6 flex items-center gap-3">
                   <CustomAvatar
-                    src={''}
-                    fallbackText="Organizer"
+                    src={user.avatar || ''}
+                    fallbackText={user.avatar || 'You'}
                     alt="Organizer"
                     className="h-10 w-10"
                   />
                   <div>
                     <p className="text-sm text-gray-500">Hosted by</p>
-                    <p className="font-medium">You (Event Organizer)</p>
+                    <p className="font-medium">{user.name || "You"}</p>
                   </div>
                 </div>
                 <div className="mb-6 flex items-center gap-3 rounded-lg border bg-gray-50 p-4">
