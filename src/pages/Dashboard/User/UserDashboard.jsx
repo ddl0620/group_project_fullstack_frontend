@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { useUserStatis } from "@/hooks/useUserStatis"
 import { InvitationTrend } from '@/pages/Dashboard/User/components/InvitationTrend.jsx';
 import { RsvpSummary } from '@/pages/Dashboard/User/components/RsvpSummary.jsx';
+import { useSelector } from 'react-redux';
 
 export default function UserDashboard() {
   const {
@@ -30,6 +31,7 @@ export default function UserDashboard() {
     fetchRecipients,
   } = useUserStatis()
 
+  const user = useSelector(state => state.user.user);
   const [date, setDate] = useState({
     from: subDays(new Date(), 30),
     to: new Date(),
@@ -135,6 +137,7 @@ export default function UserDashboard() {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex-1 space-y-4 p-4 sm:p-6 md:p-8 pt-6">
+        <div className={"text-md sm:text-lg md:text-2xl lg:text-4xl font-bold"}>Welcome, {user?.name || "User"}</div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList className="flex flex-wrap justify-start">
             <TabsTrigger value="overview">Overview</TabsTrigger>
