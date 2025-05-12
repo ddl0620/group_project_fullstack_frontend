@@ -154,7 +154,7 @@ const teamLeader = {
   sid: "4021494",
   role: "Project Manager & Team Leader",
   bio: "As the team leader, I coordinated our project development, managed timelines, and ensured effective communication between team members. I also contributed to frontend development and overall system architecture.",
-  avatar: "/member/components.png", // Replace with your actual image path
+  avatar: "/member/khanh.png", // Replace with your actual image path
 }
 
 // Team members data (excluding the leader)
