@@ -8,7 +8,7 @@ import {
   DeletedUsersDisplay,
   EventsByDateDisplay,
   EventVisibilityDisplay, UsersByDateDisplay,
-} from '@/pages/Dashboard/Admin/components/dashboard/khanh/index.js';
+} from '@/pages/Dashboard/Admin/components/dashboard/components/index.js';
 
 
 export default function AdminDashboard() {
