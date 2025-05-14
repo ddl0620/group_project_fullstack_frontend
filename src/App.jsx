@@ -34,7 +34,7 @@ function App() {
     }
   }, [dispatch, isAuthenticated, handleGetMe])
 
-  if(isRelease === "false") {
+  if(isRelease === "false" || !isRelease) {
     return <IsNotReleased />
   }
 
