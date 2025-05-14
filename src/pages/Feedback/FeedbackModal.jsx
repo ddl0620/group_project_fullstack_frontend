@@ -26,7 +26,7 @@ export default function FeedbackModal() {
       const timer = setTimeout(() => {
         setIsOpen(true)
         // Mark that the modal has been shown
-        // sessionStorage.setItem("feedbackModalShown", "true")
+        sessionStorage.setItem("feedbackModalShown", "true")
       }, 3) // Show after 3 seconds
 
       return () => clearTimeout(timer)
