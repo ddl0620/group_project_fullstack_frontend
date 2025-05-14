@@ -8,8 +8,9 @@ import "./App.css"
 import routes from "./routes/routes.jsx"
 import { Toaster } from "sonner"
 import { useUser } from "@/hooks/useUser.js"
-import { IsNotReleased, LoadingScreen } from '@/components/shared/LoadingScreen.jsx';
-const isRelease = import.meta.env.VITE_IS_RELEASE;
+import { IsNotReleased, LoadingScreen } from "@/components/shared/LoadingScreen.jsx"
+import FeedbackModal from '@/pages/Feedback/FeedbackModal.jsx';
+const isRelease = import.meta.env.VITE_IS_RELEASE
 
 // Hàm để render các tuyến đường phân cấp
 const renderRoutes = (routeList) =>
@@ -28,27 +29,25 @@ function App() {
   // Kiểm tra trạng thái đăng nhập bằng API
   useEffect(() => {
     if (!isAuthenticated) {
-      handleGetMe(setIsLoading);
+      handleGetMe(setIsLoading)
     } else {
       setIsLoading(false)
     }
   }, [dispatch, isAuthenticated, handleGetMe])
 
-  if(isRelease === "false" || !isRelease) {
+  if (isRelease === "false" || !isRelease) {
     return <IsNotReleased />
   }
-
 
   if (isLoading) {
     return <LoadingScreen />
   }
 
-
-
   return (
     <HeroUIProvider>
       <BrowserRouter>
-          <Routes>{renderRoutes(routes)}</Routes>
+        <Routes>{renderRoutes(routes)}</Routes>
+        <FeedbackModal />
         <Toaster position="bottom-left" theme="light" richColors={true} closeButton={false} duration={3000} />
       </BrowserRouter>
     </HeroUIProvider>

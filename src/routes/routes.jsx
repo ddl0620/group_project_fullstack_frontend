@@ -31,6 +31,7 @@ import UserManagement from '@/pages/Admin/UserManagement/UserManagement.jsx';
 import adminManagementItems from '@/components/SidebarItems/AdminManagement.js';
 import EventManagement from '@/pages/Admin/EventManagement/EventManagement.jsx';
 import AboutPage from '@/pages/AboutUs/AboutUs.jsx';
+import FeedbackPage from "@/pages/Feedback/Feedback.jsx";
 
 const ProtectedRoute = ({ allowedRoles, restrictedPaths = [] }) => {
   const { isAuthenticated, role } = useSelector((state) => state.user);
@@ -101,6 +102,17 @@ const routes = [
     element: <DefaultLayout />,
     children: [{ path: '', element: <AboutPage /> }],
   },
+
+  {
+    path: '/feedback',
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <DefaultLayout />,
+        children: [{ path: '', element: <FeedbackPage /> }],
+      },
+    ],
+  },
   {
     path: '*',
     element: <Navigate to="/error" replace={false} />,
@@ -109,7 +121,6 @@ const routes = [
     path: '/',
     element: <ProtectedRoute allowedRoles={['user', 'admin']} />,
     children: [
-      // Group using event sidebar
       {
         element: (
           <SidebarLayout title={'Event Management'} items={eventItems} />
@@ -152,15 +163,22 @@ const routes = [
         path: 'home',
         element: <UserLayout />,
         children: [{ path: '', element: <Home /> }],
-      }
+      },
     ],
   },
   {
     path: '/',
-    element: <ProtectedRoute
-      allowedRoles={['admin']}
-      restrictedPaths={['/management', '/management/user', '/management/event', '/dashboard/admin']}
-    />,
+    element: (
+      <ProtectedRoute
+        allowedRoles={['admin']}
+        restrictedPaths={[
+          '/management',
+          '/management/user',
+          '/management/event',
+          '/dashboard/admin',
+        ]}
+      />
+    ),
     children: [
       // Group using admin sidebar
       {
@@ -168,7 +186,7 @@ const routes = [
           <SidebarLayout title={'Management'} items={adminManagementItems} />
         ),
         children: [
-          { path: 'management', element: <AdminDashboard/> },
+          { path: 'management', element: <AdminDashboard /> },
           { path: 'management/user', element: <UserManagement /> },
           { path: 'management/event', element: <EventManagement /> },
           { path: 'event/:eventId', element: <EventDetailPage /> },
@@ -179,9 +197,7 @@ const routes = [
       // Dashboard route for admin
       {
         element: <SidebarLayout title={'Dashboard'} items={userItems} />,
-        children: [
-          { path: 'dashboard/admin', element: <AdminDashboard /> },
-        ],
+        children: [{ path: 'dashboard/admin', element: <AdminDashboard /> }],
       },
     ],
   },

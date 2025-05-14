@@ -13,7 +13,6 @@ import { checkToken } from '@/helpers/checkToken.js';
 
 export const useUser = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.user);
 
   const handleUpdateUser = async (userData, userId, setError) => {
     const loadingToast = Toast.loading('Updating user information...');
