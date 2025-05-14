@@ -26,6 +26,11 @@ const eventItems = [
     url: '/discussions',
     icon: MessageSquare,
   },
+  {
+    title: 'Invitation',
+    url: '/invitations',
+    icon: Handshake,
+  },
 ];
 
 export default eventItems;

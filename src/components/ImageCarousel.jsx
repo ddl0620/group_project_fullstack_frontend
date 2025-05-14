@@ -88,7 +88,7 @@ const ImageCarousel = ({ images }) => {
 
             <div className="w-full h-full flex items-center justify-center bg-black/80 rounded-lg overflow-hidden">
               <img
-                src={validImages[currentImageIndex] || "/placeholder.svg"}
+                src={validImages[currentImageIndex] || DEFAULT_IMAGE}
                 alt={`Full size image ${currentImageIndex + 1}`}
                 className="max-h-[80vh] max-w-full object-contain"
                 onClick={(e) => e.stopPropagation()}
