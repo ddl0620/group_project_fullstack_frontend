@@ -31,6 +31,7 @@ import UserManagement from '@/pages/Admin/UserManagement/UserManagement.jsx';
 import adminManagementItems from '@/components/SidebarItems/AdminManagement.js';
 import EventManagement from '@/pages/Admin/EventManagement/EventManagement.jsx';
 import AboutPage from '@/pages/AboutUs/AboutUs.jsx';
+import MyInvitations from '@/pages/Event/MyEmailInvitations.jsx';
 import FeedbackPage from "@/pages/Feedback/Feedback.jsx";
 
 const ProtectedRoute = ({ allowedRoles, restrictedPaths = [] }) => {
@@ -133,6 +134,7 @@ const routes = [
           { path: 'event/create', element: <CreateEventPage /> },
           { path: 'event/update/:eventId', element: <CreateEventPage /> },
           { path: '/discussions', element: <DiscussionPage /> },
+          { path: '/invitations', element: <MyInvitations /> },
           { path: '/discussions/:eventId', element: <DiscussionPage /> },
         ],
       },

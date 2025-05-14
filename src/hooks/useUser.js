@@ -1,15 +1,17 @@
-import APIServices from '@/services/APIServices.js';
 import {
   getMe,
   updateUser,
   updatePassword,
   getUserById as getUserByIdAPI,
 } from '@/services/UserService.js';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Toast } from '@/helpers/toastService.js';
 import { login, logout } from '@/store/slices/userSlice.js';
 import { setError, setLoading } from '@/store/slices/eventSlice.js';
 import { checkToken } from '@/helpers/checkToken.js';
+import { useCallback, useRef } from 'react';
+import { setUsers } from '@/store/slices/adminManagementSlice.js';
+import { getAllUsersAPI } from '@/services/AdminManagementService.js';
 
 export const useUser = () => {
   const dispatch = useDispatch();
@@ -40,6 +42,7 @@ export const useUser = () => {
       Toast.dismiss(loadingToast);
     }
   };
+  const cache = useRef({});
 
   const handleUpdatePassword = async (userData, userId, setError) => {
     const loadingToast = Toast.loading('Updating password information...');
@@ -87,6 +90,49 @@ export const useUser = () => {
     }
   };
 
+  const fetchUsers = useCallback(
+    async (page = 1, limit = 10, isAcs = true, forceRefresh = false) => {
+      const cacheKey = `users-${page}-${limit}-${isAcs}`;
+      if (!forceRefresh && cache.current[cacheKey]) {
+        dispatch(setUsers(cache.current[cacheKey]));
+        return cache.current[cacheKey];
+      }
+
+      try {
+        dispatch(setError(null));
+        dispatch(setLoading(true));
+        checkToken();
+        const response = await getAllUsersAPI(page, limit, isAcs);
+        if (!response.success) {
+          throw new Error(response.message || 'Failed to fetch users');
+        }
+
+        const result = {
+          users: Array.isArray(response.content.users)
+            ? response.content.users
+            : [],
+          pagination: response.content.pagination || {
+            page,
+            limit,
+            total: response.content.users.length,
+          },
+        };
+
+        cache.current[cacheKey] = result;
+        dispatch(setUsers(result));
+        return result;
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        dispatch(setError(errorMessage));
+        Toast.error(`Failed to fetch users: ${errorMessage}`);
+        throw error;
+      } finally {
+        dispatch(setLoading(false));
+      }
+    },
+    [dispatch]
+  );
+
 
   const getUserById = async (userId) => {
     try {
@@ -108,6 +154,7 @@ export const useUser = () => {
   };
 
   return {
+    fetchUsers,
     getUserById,
     handleGetMe,
     handleUpdateUser,

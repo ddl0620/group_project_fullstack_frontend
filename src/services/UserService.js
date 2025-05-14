@@ -13,6 +13,13 @@ export const updateUser = async (userData, userId) => {
   return response.data;
 };
 
+export const getAllUsersAPI = async (page, limit, isAcs) => {
+  const sort = isAcs ? 'asc' : 'desc';
+  const response = await APIServices.get(
+    `/api/v1/user/all/?page=${page}&limit=${limit}&sortBy=${sort}`);
+  return response.data;
+}
+
 export const updatePassword = async (userData, userId) => {
   const response = await APIServices.put(
     `/api/v1/user/password/${userId}`,
