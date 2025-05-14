@@ -8,23 +8,8 @@ import "./App.css"
 import routes from "./routes/routes.jsx"
 import { Toaster } from "sonner"
 import { useUser } from "@/hooks/useUser.js"
-import { LoadingScreen } from '@/components/shared/LoadingScreen.jsx';
-
-// Loading component with animation
-// const LoadingScreen = () => {
-//   return (
-//     <div className="fixed inset-0 flex items-center justify-center bg-white">
-//       <div className="flex flex-col items-center">
-//         <div className="relative">
-//           <div className="w-16 h-16 border-4 border-gray-200 rounded-full"></div>
-//           <div className="absolute top-0 w-16 h-16 border-4 border-t-[#3b82f6] rounded-full animate-spin"></div>
-//         </div>
-//         <p className="mt-4 text-lg font-medium text-[#1f2937]">Loading application...</p>
-//         <p className="mt-1 text-sm text-[#6b7280]">Please wait while we set things up</p>
-//       </div>
-//     </div>
-//   )
-// }
+import { IsNotReleased, LoadingScreen } from '@/components/shared/LoadingScreen.jsx';
+const isRelease = import.meta.env.VITE_IS_RELEASE;
 
 // Hàm để render các tuyến đường phân cấp
 const renderRoutes = (routeList) =>
@@ -49,14 +34,21 @@ function App() {
     }
   }, [dispatch, isAuthenticated, handleGetMe])
 
+  if(isRelease === "false") {
+    return <IsNotReleased />
+  }
+
+
   if (isLoading) {
     return <LoadingScreen />
   }
 
+
+
   return (
     <HeroUIProvider>
       <BrowserRouter>
-        <Routes>{renderRoutes(routes)}</Routes>
+          <Routes>{renderRoutes(routes)}</Routes>
         <Toaster position="bottom-left" theme="light" richColors={true} closeButton={false} duration={3000} />
       </BrowserRouter>
     </HeroUIProvider>
