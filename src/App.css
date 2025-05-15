@@ -239,3 +239,11 @@
 .animate-bounce-slow {
   animation: bounce-slow 2s infinite;
 }
+
+/*.scrollbar-hide::-webkit-scrollbar {*/
+/*  display: none;*/
+/*}*/
+/*.scrollbar-hide {*/
+/*  -ms-overflow-style: none;*/
+/*  scrollbar-width: none;*/
+/*}*/

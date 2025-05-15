@@ -2,7 +2,7 @@ import {
   getMe,
   updateUser,
   updatePassword,
-  getUserById as getUserByIdAPI,
+  getUserById as getUserByIdAPI, getAllUsersAPI,
 } from '@/services/UserService.js';
 import { useDispatch } from 'react-redux';
 import { Toast } from '@/helpers/toastService.js';
@@ -11,7 +11,6 @@ import { setError, setLoading } from '@/store/slices/eventSlice.js';
 import { checkToken } from '@/helpers/checkToken.js';
 import { useCallback, useRef } from 'react';
 import { setUsers } from '@/store/slices/adminManagementSlice.js';
-import { getAllUsersAPI } from '@/services/AdminManagementService.js';
 
 export const useUser = () => {
   const dispatch = useDispatch();
@@ -142,6 +141,7 @@ export const useUser = () => {
       const response = await getUserByIdAPI(userId);
       // if (response.success) Toast.success(response.message);
       // else Toast.error(response.message);
+      console.log(response);
       return response;
     } catch (error) {
       dispatch(setError(error.message));
