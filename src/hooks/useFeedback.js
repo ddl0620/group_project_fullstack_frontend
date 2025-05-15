@@ -11,12 +11,12 @@ export const useFeedback = () => {
   const cache = useRef({});
 
   const createFeedback = async (userData) => {
-    const toastId = Toast.loading('Creating user...');
+    const toastId = Toast.loading('Submiting...');
     try {
       checkToken();
       const response = await submitFeedbackAPI(userData);
       if (!response.success) {
-         new Error(response.message || 'Failed to create user');
+         new Error(response.message || 'Failed to create feedback');
       }
       Toast.success(
         'Feedback sent!',
