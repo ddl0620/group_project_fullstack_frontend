@@ -248,7 +248,7 @@ export default function CreateEventPage() {
       console.log("Backend Response:", response)
 
       if (response.success) {
-        toast.success(isUpdateMode ? "Event updated successfully!" : "Sự kiện được tạo thành công!")
+        // toast.success(isUpdateMode ? "Event updated successfully!" : "Sự kiện được tạo thành công!")
         // Reset form state after successful submission
         setFormData({
           title: "",
@@ -267,22 +267,9 @@ export default function CreateEventPage() {
         setUploadedImages([])
         setCurrentStage(1)
         navigate("/event")
-      } else {
-        toast.error(
-          "Không thể " +
-          (isUpdateMode ? "cập nhật" : "tạo") +
-          " sự kiện: " +
-          (response.message || "Lỗi không xác định"),
-        )
       }
     } catch (error) {
       console.error("Lỗi khi " + (isUpdateMode ? "cập nhật" : "tạo") + " sự kiện:", error)
-      toast.error(
-        "Đã xảy ra lỗi khi " +
-        (isUpdateMode ? "cập nhật" : "tạo") +
-        " sự kiện: " +
-        (error.response.data.message || "Lỗi không xác định"),
-      )
     }
   }
 

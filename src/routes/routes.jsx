@@ -33,6 +33,7 @@ import EventManagement from '@/pages/Admin/EventManagement/EventManagement.jsx';
 import AboutPage from '@/pages/AboutUs/AboutUs.jsx';
 import MyInvitations from '@/pages/Event/MyEmailInvitations.jsx';
 import FeedbackPage from "@/pages/Feedback/Feedback.jsx";
+import contactItems from '@/components/SidebarItems/Contact.js';
 
 const ProtectedRoute = ({ allowedRoles, restrictedPaths = [] }) => {
   const { isAuthenticated, role } = useSelector((state) => state.user);
@@ -100,20 +101,19 @@ const routes = [
   },
   {
     path: '/about-us',
-    element: <DefaultLayout />,
+    element: <SidebarLayout title={'Contact'} items={contactItems} />,
     children: [{ path: '', element: <AboutPage /> }],
   },
-
-  {
-    path: '/feedback',
-    element: <ProtectedRoute />,
-    children: [
-      {
-        element: <DefaultLayout />,
-        children: [{ path: '', element: <FeedbackPage /> }],
-      },
-    ],
-  },
+  // {
+  //   path: '/feedback',
+  //   element: <ProtectedRoute />,
+  //   children: [
+  //     {
+  //       element: <DefaultLayout />,
+  //       children: [{ path: '', element: <FeedbackPage /> }],
+  //     },
+  //   ],
+  // },
   {
     path: '*',
     element: <Navigate to="/error" replace={false} />,
@@ -122,6 +122,15 @@ const routes = [
     path: '/',
     element: <ProtectedRoute allowedRoles={['user', 'admin']} />,
     children: [
+      {
+        element: (
+          <SidebarLayout title={'Contact'} items={contactItems} />
+        ),
+        children: [
+          { path: 'about-us', element: <AboutPage /> },
+          { path: 'feedback', element: <FeedbackPage /> },
+        ],
+      },
       {
         element: (
           <SidebarLayout title={'Event Management'} items={eventItems} />

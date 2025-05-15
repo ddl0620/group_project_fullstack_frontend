@@ -181,7 +181,7 @@ export const useEvent = () => {
       return response;
     } catch (error) {
       dispatch(setError(error.message));
-      Toast.error('Failed to create event: ' + error.response.data.message);
+      Toast.error('Failed to create event', error.response.data.message);
       throw error;
     } finally {
       dispatch(setLoading(false));

@@ -45,7 +45,7 @@ export default function EmailInvite({ event }) {
             invitedParticipants.map(async (participant) => {
               try {
                 const userResponse = await getUserById(participant.userId)
-                console.log("Fetched user data:", userResponse)
+                console.log("Fetched user data:", userResponse.content)
                 if (userResponse.success) {
                   return {
                     avatar: userResponse.content.avatar,
@@ -149,7 +149,6 @@ export default function EmailInvite({ event }) {
         setShowMatches(false)
       }
     } catch (error) {
-      Toast.error("Error", "Failed to send invitation. Please try again.")
       console.error("Invite error:", error)
     } finally {
       setIsLoading(false)

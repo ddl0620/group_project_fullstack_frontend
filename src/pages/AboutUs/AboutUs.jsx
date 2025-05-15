@@ -174,7 +174,7 @@ const teamMembers = [
   },
   {
     name: "Tran Dinh Hai",
-    sid: "45678901",
+    sid: "4041605",
     role: "Database Administrator",
     avatar: "/member/hai.jpg", // Replace with actual image path
   },

@@ -6,14 +6,14 @@ export const navbarItems = [
   },
   {
     path: '/about-us',
-    title: 'About',
+    title: 'Contact',
     roles: ['user', 'admin', 'unauthenticated'],
   },
-  {
-    path: '/feedback',
-    title: 'Feedback',
-    roles: ['user', 'admin', 'unauthenticated'],
-  },
+  // {
+  //   path: '/feedback',
+  //   title: 'Feedback',
+  //   roles: ['user', 'admin', 'unauthenticated'],
+  // },
   {
     path: '/event',
     title: 'Events',
