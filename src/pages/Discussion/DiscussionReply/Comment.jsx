@@ -1,8 +1,6 @@
-"use client"
+'use client';
 
-import {
-  Button
-} from '@/components/ui/button.js';
+import { Button } from '@/components/ui/button.js';
 import { Reply, Send } from 'lucide-react';
 import { Input } from '@/components/ui/input.js';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
@@ -14,19 +12,19 @@ import { formatDistanceToNow } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useUser } from '@/hooks/useUser.js';
 import { TrashIcon } from '@heroicons/react/24/outline/index.js';
-import {AlertDialogUtils} from "@/helpers/AlertDialogUtils.jsx";
-import {PencilIcon} from "@heroicons/react/24/outline";
-import ImageCarousel from "@/components/ImageCarousel.jsx";
+import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
+import { PencilIcon } from '@heroicons/react/24/outline';
+import ImageCarousel from '@/components/ImageCarousel.jsx';
 
 const Comment = ({
-                   comment,
-                   onReply,
-                   onEdit,
-                   onDelete,
-                   currentUserId,
-                   postId,
-                   depth = 0,
-                 }) => {
+  comment,
+  onReply,
+  onEdit,
+  onDelete,
+  currentUserId,
+  postId,
+  depth = 0,
+}) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -111,9 +109,9 @@ const Comment = ({
       description: 'You still can edit comment later',
       confirmText: 'Save',
       cancelText: 'Cancel',
-    })
+    });
 
-    if(!confirmed) return;
+    if (!confirmed) return;
 
     onEdit(comment._id, {
       content: editContent,
@@ -132,9 +130,9 @@ const Comment = ({
       description: 'This action cannot be undone.',
       confirmText: 'Delete',
       cancelText: 'Cancel',
-    })
+    });
 
-    if(!confirmed) return;
+    if (!confirmed) return;
 
     onDelete(comment._id);
   };
@@ -156,7 +154,9 @@ const Comment = ({
           <div className="bg-muted rounded-lg p-2 sm:p-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1 sm:gap-2">
-                <span className="font-medium text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{user.name}</span>
+                <span className="max-w-[100px] truncate text-xs font-medium sm:max-w-none sm:text-sm">
+                  {user.name}
+                </span>
                 <span className="text-muted-foreground text-[10px] sm:text-xs">
                   {formatDistanceToNow(new Date(comment.created_at), {
                     addSuffix: true,
@@ -186,19 +186,21 @@ const Comment = ({
               )}
             </div>
 
-            <p className="mt-1 text-xs sm:text-sm break-words">{comment.content}</p>
+            <p className="mt-1 text-xs break-words sm:text-sm">
+              {comment.content}
+            </p>
 
             {/* Display images if any */}
             {comment.images && comment.images.length > 0 && (
               <div className="mt-1 sm:mt-2">
-                <div className="max-h-40 sm:max-h-60 overflow-hidden">
+                <div className="max-h-40 overflow-hidden sm:max-h-60">
                   <ImageCarousel images={comment.images} />
                 </div>
               </div>
             )}
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs">
+          <div className="flex items-center gap-2 text-[10px] sm:gap-4 sm:text-xs">
             <button
               onClick={() => setShowReplyInput(!showReplyInput)}
               className="text-muted-foreground flex items-center gap-1"
@@ -210,7 +212,7 @@ const Comment = ({
 
           {/* Edit input */}
           {isEditMode && (
-            <div className="mt-1 sm:mt-2 space-y-1 sm:space-y-2">
+            <div className="mt-1 space-y-1 sm:mt-2 sm:space-y-2">
               <div className="flex gap-1 sm:gap-2">
                 <CustomAvatar
                   src={user?.avatar}
@@ -222,7 +224,7 @@ const Comment = ({
                     placeholder="Edit comment..."
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
-                    className="text-xs sm:text-sm h-8 sm:h-10"
+                    className="h-8 text-xs sm:h-10 sm:text-sm"
                   />
                 </div>
               </div>
@@ -244,7 +246,7 @@ const Comment = ({
                     setUploadedImages([]);
                     setExistingImageUrls([]);
                   }}
-                  className="text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3"
+                  className="h-7 px-2 text-xs sm:h-9 sm:px-3 sm:text-sm"
                 >
                   Cancel
                 </Button>
@@ -256,7 +258,7 @@ const Comment = ({
                     existingImageUrls.length === 0 &&
                     uploadedImages.length === 0
                   }
-                  className="text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3"
+                  className="h-7 px-2 text-xs sm:h-9 sm:px-3 sm:text-sm"
                 >
                   <Send className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
                   Save
@@ -267,7 +269,7 @@ const Comment = ({
 
           {/* Reply input */}
           {showReplyInput && (
-            <div className="mt-1 sm:mt-2 space-y-1 sm:space-y-2">
+            <div className="mt-1 space-y-1 sm:mt-2 sm:space-y-2">
               <div className="flex gap-1 sm:gap-2">
                 <CustomAvatar
                   src={user?.avatar}
@@ -279,7 +281,7 @@ const Comment = ({
                     placeholder="Comment..."
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
-                    className="text-xs sm:text-sm h-8 sm:h-10"
+                    className="h-8 text-xs sm:h-10 sm:text-sm"
                   />
                 </div>
               </div>
@@ -301,7 +303,7 @@ const Comment = ({
                     setUploadedImages([]);
                     setExistingImageUrls([]);
                   }}
-                  className="text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3"
+                  className="h-7 px-2 text-xs sm:h-9 sm:px-3 sm:text-sm"
                 >
                   Cancel
                 </Button>
@@ -311,7 +313,7 @@ const Comment = ({
                   disabled={
                     replyContent.trim() === '' && uploadedImages.length === 0
                   }
-                  className="text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3"
+                  className="h-7 px-2 text-xs sm:h-9 sm:px-3 sm:text-sm"
                 >
                   <Send className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
                   Reply
@@ -349,7 +351,7 @@ const Comment = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="mt-1 sm:mt-2 text-[10px] sm:text-xs h-6 sm:h-8 px-2"
+                className="mt-1 h-6 px-2 text-[10px] sm:mt-2 sm:h-8 sm:text-xs"
               >
                 View more replies ({comment.children.length})
               </Button>
