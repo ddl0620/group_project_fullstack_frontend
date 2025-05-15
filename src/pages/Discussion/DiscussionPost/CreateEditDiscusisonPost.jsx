@@ -235,7 +235,8 @@ export function CreateEditDiscussionPost({
           </Button>
           <Button
             onClick={handleSubmitPost}
-            disabled={!postContent.trim() || allImages.length === 0}
+            disabled={postContent.trim() === '' || (allImages.length >= 0 && postContent.trim() === '')}
+
           >
             {isEdit ? 'Update Post' : 'Create Post'}
           </Button>

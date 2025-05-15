@@ -262,7 +262,7 @@ export function CommentSection({ postId, initialReplies = [] }) {
 
           <Button
             onClick={handleAddComment}
-            disabled={newComment.trim() === '' || uploadedImages.length === 0}
+            disabled={newComment.trim() === '' || (uploadedImages.length >= 0 && newComment.trim() === '')}
             size="sm"
             className="h-7 px-2 text-xs sm:h-9 sm:px-3 sm:text-sm"
           >

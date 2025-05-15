@@ -253,11 +253,8 @@ const Comment = ({
                 <Button
                   size="sm"
                   onClick={handleEditSubmit}
-                  disabled={
-                    editContent.trim() === '' &&
-                    existingImageUrls.length === 0 &&
-                    uploadedImages.length === 0
-                  }
+                  disabled={editContent.trim() === '' || (uploadedImages.length >= 0 && editContent.trim() === '')}
+
                   className="h-7 px-2 text-xs sm:h-9 sm:px-3 sm:text-sm"
                 >
                   <Send className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
@@ -310,9 +307,8 @@ const Comment = ({
                 <Button
                   size="sm"
                   onClick={handleNestedReply}
-                  disabled={
-                    replyContent.trim() === '' && uploadedImages.length === 0
-                  }
+                  disabled={replyContent.trim() === '' || (uploadedImages.length >= 0 && replyContent.trim() === '')}
+
                   className="h-7 px-2 text-xs sm:h-9 sm:px-3 sm:text-sm"
                 >
                   <Send className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
