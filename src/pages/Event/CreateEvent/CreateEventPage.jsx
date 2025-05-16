@@ -406,7 +406,7 @@ export default function CreateEventPage() {
           <p className="text-muted-foreground">
             {isUpdateMode
               ? 'Update the details of your event'
-              : 'Điền thông tin để tạo sự kiện của bạn'}
+              : 'Create a new event to share with your community'}
           </p>
         </div>
 
@@ -433,7 +433,7 @@ export default function CreateEventPage() {
                   currentStage === 1 ? () => navigate('/event') : prevStage
                 }
               >
-                {currentStage === 1 ? 'Hủy' : 'Quay lại'}
+                {currentStage === 1 ? 'Cancel' : 'Back'}
               </Button>
 
               <Button
@@ -445,7 +445,7 @@ export default function CreateEventPage() {
                   ? isUpdateMode
                     ? 'Update Event'
                     : 'Create Event'
-                  : 'Tiếp theo'}
+                  : 'Next'}
               </Button>
             </div>
           </CardContent>
