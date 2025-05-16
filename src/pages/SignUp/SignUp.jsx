@@ -26,22 +26,22 @@ function Register() {
   }
 
   // Add a global keydown listener for the Enter key
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault() // Prevent default form submission behavior
-        handleRegister() // Call handleRegister when Enter is pressed
-      }
-    }
-
-    // Attach the event listener to the document
-    document.addEventListener("keydown", handleKeyDown)
-
-    // Cleanup the event listener on component unmount
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown)
-    }
-  }, [userData]) // Dependency array ensures the latest userData is used
+  // useEffect(() => {
+  //   const handleKeyDown = (e) => {
+  //     if (e.key === "Enter") {
+  //       e.preventDefault() // Prevent default form submission behavior
+  //       handleRegister() // Call handleRegister when Enter is pressed
+  //     }
+  //   }
+  //
+  //   // Attach the event listener to the document
+  //   document.addEventListener("keydown", handleKeyDown)
+  //
+  //   // Cleanup the event listener on component unmount
+  //   return () => {
+  //     document.removeEventListener("keydown", handleKeyDown)
+  //   }
+  // }, [userData]) // Dependency array ensures the latest userData is used
 
   return (
     <motion.div

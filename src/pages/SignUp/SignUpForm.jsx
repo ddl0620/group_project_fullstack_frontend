@@ -29,9 +29,9 @@ function SignUpForm() {
     dateOfBirth: undefined,
   });
   const [error, setError] = useState(null);
-  const [yearInput, setYearInput] = useState('');
+  const [yearInput, setYearInput] = useState('2007'); // Initial year set to 2007
   const [yearError, setYearError] = useState('');
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [currentYear, setCurrentYear] = useState(2007); // Initial year set to 2007
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [calendarKey, setCalendarKey] = useState(0); // To force re-render
   const { handleSignUp } = useAuth();
@@ -47,19 +47,30 @@ function SignUpForm() {
 
   // Handle year input change
   const handleYearChange = (e) => {
-    setYearInput(e.target.value);
-    setYearError('');
-  };
-
-  // Handle year update when "Go" button is clicked
-  const handleYearUpdate = () => {
-    const year = parseInt(yearInput, 10);
-    if (isNaN(year) || year < 1900 || year > new Date().getFullYear()) {
-      setYearError('Year must be between 1900 and current year');
-    } else {
+    const value = e.target.value;
+    setYearInput(value);
+    const year = parseInt(value, 10);
+    if (!isNaN(year) && year >= 1900 && year <= 2007) {
       setCurrentYear(year);
       setYearError('');
-      setCalendarKey((prev) => prev + 1); // Force PureCalendar re-render
+      setCalendarKey((prev) => prev + 1); // Update calendar on valid input
+    } else if (value && (isNaN(year) || year < 1900 || year > 2007)) {
+      setYearError('Year must be between 1900 and 2007');
+    }
+  };
+
+  // Handle year update on Enter
+  const handleYearEnter = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent form submission
+      const year = parseInt(yearInput, 10);
+      if (!isNaN(year) && year >= 1900 && year <= 2007) {
+        setCurrentYear(year);
+        setYearError('');
+        setCalendarKey((prev) => prev + 1); // Force calendar update
+      } else {
+        setYearError('Year must be between 1900 and 2007');
+      }
     }
   };
 
@@ -130,7 +141,7 @@ function SignUpForm() {
           Create an account. <br /> Join us today!
         </h2>
 
-        {error && <p className="text-red]+$500 mb-4 text-sm">{error}</p>}
+        {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
         <div className="flex flex-col justify-center gap-y-4">
           <TextInputField
@@ -182,11 +193,8 @@ function SignUpForm() {
               <PopoverContent className="w-auto p-0" align="start">
                 <div className="flex flex-col px-4 py-2">
                   {/* Year Input */}
-                  <div className="mb-2 flex items-center gap-2">
-                    <label
-                      htmlFor="year-input"
-                      className="text-sm font-medium text-gray-700"
-                    >
+                  <div className="flex items-center gap-2 mb-2">
+                    <label htmlFor="year-input" className="text-sm font-medium text-gray-700">
                       Year:
                     </label>
                     <input
@@ -194,23 +202,16 @@ function SignUpForm() {
                       type="number"
                       value={yearInput}
                       onChange={handleYearChange}
+                      onKeyDown={handleYearEnter}
+                      min="1900"
+                      max="2007"
                       className={cn(
-                        'focus:ring-primary-500 focus:border-primary-500 w-20 rounded border px-2 py-1 text-black',
-                        yearError && 'border-red-500'
+                        "w-20 px-2 py-1 border rounded text-black focus:ring-primary-500 focus:border-primary-500",
+                        yearError && "border-red-500"
                       )}
                     />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleYearUpdate}
-                      className="h-7 px-2"
-                    >
-                      Go
-                    </Button>
                   </div>
-                  {yearError && (
-                    <p className="text-xs text-red-500">{yearError}</p>
-                  )}
+                  {yearError && <p className="text-red-500 text-xs">{yearError}</p>}
                 </div>
                 <PureCalendar
                   key={calendarKey} // Force re-render when year changes
@@ -218,7 +219,7 @@ function SignUpForm() {
                   selected={userData.dateOfBirth}
                   onSelect={handleDateChange}
                   disabled={(date) =>
-                    date > new Date() || date < new Date('1900-01-01')
+                    date > new Date('2007-12-31') || date < new Date('1900-01-01')
                   }
                   defaultMonth={new Date(currentYear, currentMonth)}
                   onMonthChange={(date) => {
