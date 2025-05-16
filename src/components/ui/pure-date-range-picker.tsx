@@ -27,12 +27,11 @@ export function PureDateRangePicker({
   minDate,
   maxDate,
   numberOfMonths = 2,
-  darkMode = false, // Changed default to false for light theme
+  darkMode = false,
 }: PureDateRangePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  // Handle clicks outside to close the calendar
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -52,18 +51,31 @@ export function PureDateRangePicker({
     };
   }, [isOpen]);
 
-  // Toggle calendar visibility
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768 && numberOfMonths > 1) {
+        // Force rerender with adjusted layout
+        setIsOpen(isOpen);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    // Initial check
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isOpen, numberOfMonths]);
+
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
 
-  // Handle date range selection
   const handleSelect = (range: DateRange | undefined) => {
     onDateChange?.(range);
-    // Removed the auto-close behavior when a date range is selected
   };
 
-  // Format the date range for display
   const formatDisplayDate = () => {
     if (!date?.from) return placeholder;
 
@@ -102,7 +114,8 @@ export function PureDateRangePicker({
           )}
           style={{
             width: 'auto',
-            minWidth: numberOfMonths > 1 ? '600px' : '300px',
+            maxWidth: 'calc(100vw - 20px)',
+            overflowX: 'auto',
           }}
         >
           <CustomCalendar
@@ -112,7 +125,7 @@ export function PureDateRangePicker({
             disabled={disabled}
             minDate={minDate}
             maxDate={maxDate}
-            numberOfMonths={numberOfMonths}
+            numberOfMonths={window.innerWidth < 768 ? 1 : numberOfMonths}
             defaultMonth={date?.from}
             darkMode={darkMode}
           />
@@ -122,7 +135,6 @@ export function PureDateRangePicker({
   );
 }
 
-// Custom calendar component
 function CustomCalendar({
   mode = 'range',
   selected,
@@ -150,12 +162,10 @@ function CustomCalendar({
       new Date()
   );
 
-  // Get month names
   const getMonthName = (date: Date) => {
     return format(date, 'MMMM yyyy');
   };
 
-  // Handle month navigation
   const handlePreviousMonth = () => {
     setCurrentMonth((prev) => addMonths(prev, -1));
   };
@@ -164,7 +174,6 @@ function CustomCalendar({
     setCurrentMonth((prev) => addMonths(prev, 1));
   };
 
-  // Render months
   const renderMonths = () => {
     return Array.from({ length: numberOfMonths }).map((_, index) => {
       const monthToRender = addMonths(currentMonth, index);
@@ -192,15 +201,12 @@ function CustomCalendar({
     });
   };
 
-  // Render days in a month
   const renderDaysInMonth = (month: Date) => {
     const firstDay = new Date(month.getFullYear(), month.getMonth(), 1);
     const lastDay = new Date(month.getFullYear(), month.getMonth() + 1, 0);
 
-    // Get the day of the week for the first day (0 = Sunday, 6 = Saturday)
     const firstDayOfWeek = firstDay.getDay();
 
-    // Calculate days from previous month to show
     const daysFromPrevMonth = Array.from({ length: firstDayOfWeek }, (_, i) => {
       const day = new Date(
         month.getFullYear(),
@@ -210,13 +216,11 @@ function CustomCalendar({
       return renderDay(day, true);
     });
 
-    // Current month days
     const daysInMonth = Array.from({ length: lastDay.getDate() }, (_, i) => {
       const day = new Date(month.getFullYear(), month.getMonth(), i + 1);
       return renderDay(day, false);
     });
 
-    // Calculate days from next month to show
     const remainingCells = (7 - ((firstDayOfWeek + lastDay.getDate()) % 7)) % 7;
     const daysFromNextMonth = Array.from({ length: remainingCells }, (_, i) => {
       const day = new Date(month.getFullYear(), month.getMonth() + 1, i + 1);
@@ -226,7 +230,6 @@ function CustomCalendar({
     return [...daysFromPrevMonth, ...daysInMonth, ...daysFromNextMonth];
   };
 
-  // Check if a date is in the selected range
   const isInRange = (date: Date) => {
     if (mode !== 'range' || !selected) return false;
     const range = selected as DateRange;
@@ -235,21 +238,18 @@ function CustomCalendar({
     return date >= range.from && date <= range.to;
   };
 
-  // Check if a date is the start of the range
   const isRangeStart = (date: Date) => {
     if (mode !== 'range' || !selected) return false;
     const range = selected as DateRange;
     return range.from ? isSameDay(date, range.from) : false;
   };
 
-  // Check if a date is the end of the range
   const isRangeEnd = (date: Date) => {
     if (mode !== 'range' || !selected) return false;
     const range = selected as DateRange;
     return range.to ? isSameDay(date, range.to) : false;
   };
 
-  // Check if two dates are the same day
   const isSameDay = (date1: Date, date2: Date) => {
     return (
       date1.getDate() === date2.getDate() &&
@@ -258,7 +258,6 @@ function CustomCalendar({
     );
   };
 
-  // Check if a date is disabled
   const isDateDisabled = (date: Date) => {
     if (disabled && disabled(date)) return true;
     if (minDate && date < minDate) return true;
@@ -266,13 +265,11 @@ function CustomCalendar({
     return false;
   };
 
-  // Check if a date is today
   const isToday = (date: Date) => {
     const today = new Date();
     return isSameDay(date, today);
   };
 
-  // Check if a date is in the current month
   const isCurrentMonth = (date: Date, month: Date) => {
     return (
       date.getMonth() === month.getMonth() &&
@@ -280,26 +277,20 @@ function CustomCalendar({
     );
   };
 
-  // Handle date selection
   const handleDateClick = (date: Date) => {
     if (isDateDisabled(date)) return;
 
-    if (mode === 'single') {
-      onSelect?.(date);
-    } else if (mode === 'range') {
-      const range = selected as DateRange | undefined;
+    const range = selected as DateRange | undefined;
 
-      if (!range?.from) {
-        onSelect?.({ from: date });
-      } else if (!range.to && date > range.from) {
-        onSelect?.({ ...range, to: date });
-      } else {
-        onSelect?.({ from: date });
-      }
+    if (!range?.from) {
+      onSelect?.({ from: date });
+    } else if (!range.to && date >= range.from) {
+      onSelect?.({ ...range, to: date });
+    } else {
+      onSelect?.({ from: date });
     }
   };
 
-  // Render a single day
   const renderDay = (date: Date, isOutsideMonth: boolean) => {
     const isSelected =
       mode === 'single' && selected && isSameDay(date, selected as Date);
@@ -316,7 +307,7 @@ function CustomCalendar({
         disabled={disabled}
         onClick={() => handleDateClick(date)}
         className={cn(
-          'flex h-10 w-10 items-center justify-center rounded-md text-sm',
+          'flex h-8 w-8 items-center justify-center rounded-md text-xs sm:h-10 sm:w-10 sm:text-sm',
           isOutsideMonth &&
             (darkMode
               ? 'text-gray-600 opacity-50'
@@ -414,7 +405,7 @@ function CustomCalendar({
       <div
         className={cn(
           'grid gap-8',
-          numberOfMonths > 1 ? 'grid-cols-2' : 'grid-cols-1'
+          numberOfMonths > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'
         )}
       >
         {renderMonths()}
