@@ -19,16 +19,16 @@ interface PureDateRangePickerProps {
 }
 
 export function PureDateRangePicker({
-                                      date,
-                                      onDateChange,
-                                      placeholder = 'Select date range',
-                                      className,
-                                      disabled,
-                                      minDate,
-                                      maxDate,
-                                      numberOfMonths = 2,
-                                      darkMode = false,
-                                    }: PureDateRangePickerProps) {
+  date,
+  onDateChange,
+  placeholder = 'Select date range',
+  className,
+  disabled,
+  minDate,
+  maxDate,
+  numberOfMonths = 2,
+  darkMode = false,
+}: PureDateRangePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -50,6 +50,23 @@ export function PureDateRangePicker({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen]);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768 && numberOfMonths > 1) {
+        // Force rerender with adjusted layout
+        setIsOpen(isOpen);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    // Initial check
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isOpen, numberOfMonths]);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -97,7 +114,8 @@ export function PureDateRangePicker({
           )}
           style={{
             width: 'auto',
-            minWidth: numberOfMonths > 1 ? '600px' : '300px',
+            maxWidth: 'calc(100vw - 20px)',
+            overflowX: 'auto',
           }}
         >
           <CustomCalendar
@@ -107,7 +125,7 @@ export function PureDateRangePicker({
             disabled={disabled}
             minDate={minDate}
             maxDate={maxDate}
-            numberOfMonths={numberOfMonths}
+            numberOfMonths={window.innerWidth < 768 ? 1 : numberOfMonths}
             defaultMonth={date?.from}
             darkMode={darkMode}
           />
@@ -118,16 +136,16 @@ export function PureDateRangePicker({
 }
 
 function CustomCalendar({
-                          mode = 'range',
-                          selected,
-                          onSelect,
-                          disabled,
-                          minDate,
-                          maxDate,
-                          numberOfMonths = 2,
-                          defaultMonth,
-                          darkMode = false,
-                        }: {
+  mode = 'range',
+  selected,
+  onSelect,
+  disabled,
+  minDate,
+  maxDate,
+  numberOfMonths = 2,
+  defaultMonth,
+  darkMode = false,
+}: {
   mode?: 'single' | 'range';
   selected?: Date | DateRange;
   onSelect?: (date: Date | DateRange | undefined) => void;
@@ -140,8 +158,8 @@ function CustomCalendar({
 }) {
   const [currentMonth, setCurrentMonth] = React.useState<Date>(
     defaultMonth ||
-    (mode === 'range' && (selected as DateRange)?.from) ||
-    new Date()
+      (mode === 'range' && (selected as DateRange)?.from) ||
+      new Date()
   );
 
   const getMonthName = (date: Date) => {
@@ -289,26 +307,26 @@ function CustomCalendar({
         disabled={disabled}
         onClick={() => handleDateClick(date)}
         className={cn(
-          'flex h-10 w-10 items-center justify-center rounded-md text-sm',
+          'flex h-8 w-8 items-center justify-center rounded-md text-xs sm:h-10 sm:w-10 sm:text-sm',
           isOutsideMonth &&
-          (darkMode
-            ? 'text-gray-600 opacity-50'
-            : 'text-gray-400 opacity-50'),
+            (darkMode
+              ? 'text-gray-600 opacity-50'
+              : 'text-gray-400 opacity-50'),
           disabled && 'cursor-not-allowed opacity-30',
           !isOutsideMonth &&
-          !disabled &&
-          !isSelected &&
-          !inRange &&
-          (darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'),
+            !disabled &&
+            !isSelected &&
+            !inRange &&
+            (darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'),
           today &&
-          !isSelected &&
-          !inRange &&
-          (darkMode ? 'border border-gray-600' : 'border border-gray-300'),
+            !isSelected &&
+            !inRange &&
+            (darkMode ? 'border border-gray-600' : 'border border-gray-300'),
           isSelected && 'bg-blue-500 text-white',
           inRange &&
-          !isStart &&
-          !isEnd &&
-          (darkMode ? 'bg-gray-800' : 'bg-blue-100'),
+            !isStart &&
+            !isEnd &&
+            (darkMode ? 'bg-gray-800' : 'bg-blue-100'),
           isStart && 'rounded-l-md bg-gray-700 text-white',
           isEnd && 'rounded-r-md bg-gray-700 text-white',
           darkMode ? 'text-white' : 'text-gray-900'
@@ -387,7 +405,7 @@ function CustomCalendar({
       <div
         className={cn(
           'grid gap-8',
-          numberOfMonths > 1 ? 'grid-cols-2' : 'grid-cols-1'
+          numberOfMonths > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'
         )}
       >
         {renderMonths()}
