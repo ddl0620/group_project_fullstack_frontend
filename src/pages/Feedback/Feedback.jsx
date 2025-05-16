@@ -1,54 +1,44 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Toast } from '@/helpers/toastService.js';
-import useFeedback from '@/hooks/useFeedback.js';
+"use client"
+
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { ArrowLeft, Send, CheckCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Toast } from "@/helpers/toastService.js"
+import useFeedback from "@/hooks/useFeedback.js"
 
 export default function FeedbackPage() {
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-    role: 'student',
-    university: '',
+    email: "",
+    name: "",
+    role: "student",
+    university: "",
     rating: {
       ui: 5,
       ux: 5,
       overall: 5,
     },
-    feedback: '',
-  });
+    feedback: "",
+  })
 
-  const { createFeedback } = useFeedback();
+  const { createFeedback } = useFeedback()
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData({
       ...formData,
       [name]: value,
-    });
-  };
+    })
+  }
 
   const handleRatingChange = (category, value) => {
     setFormData({
@@ -57,92 +47,100 @@ export default function FeedbackPage() {
         ...formData.rating,
         [category]: Number.parseInt(value),
       },
-    });
-  };
+    })
+  }
 
   const handleRoleChange = (value) => {
     setFormData({
       ...formData,
       role: value,
-    });
-  };
+    })
+  }
 
   const handleUniversityChange = (value) => {
     setFormData({
       ...formData,
       university: value,
-    });
-  };
+    })
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // Validate required fields
     if (!formData.email || !formData.name || !formData.university) {
-      Toast.error('Missing information', 'Please fill in all required fields');
-      return;
+      Toast.error("Missing information", "Please fill in all required fields")
+      return
     }
 
     // Validate email format
-    if (!formData.email.includes('@')) {
-      Toast.error('Invalid email', 'Please enter a valid email address');
-      return;
+    if (!formData.email.includes("@")) {
+      Toast.error("Invalid email", "Please enter a valid email address")
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
       // Simulate API call
-      await createFeedback(formData);
-      setIsSubmitted(true);
+      await createFeedback(formData)
+      setIsSubmitted(true)
     } catch (error) {
-      Toast.error('Submission failed', 'Please try again later');
-      console.error('Error submitting feedback:', error);
+      Toast.error("Submission failed", "Please try again later")
+      console.error("Error submitting feedback:", error)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleReset = () => {
-    setIsSubmitted(false);
+    setIsSubmitted(false)
     setFormData({
-      email: '',
-      name: '',
-      role: 'student',
-      university: '',
+      email: "",
+      name: "",
+      role: "student",
+      university: "",
       rating: {
         ui: 5,
         ux: 5,
         overall: 5,
       },
-      feedback: '',
-    });
-  };
+      feedback: "",
+    })
+  }
 
+  // New rating component using buttons instead of a slider
   const RatingScale = ({ category, label, value }) => {
+    const ratings = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
     return (
       <div className="mb-6">
         <div className="mb-2 flex items-center justify-between">
           <Label className="text-sm font-medium">{label}</Label>
-          <span className="text-sm font-bold text-blue-600">{value}/10</span>
+          <span className="text-sm font-bold text-primary">{value}/10</span>
         </div>
-        <div className="flex items-center">
-          <input
-            type="range"
-            min="1"
-            max="10"
-            value={value}
-            onChange={(e) => handleRatingChange(category, e.target.value)}
-            className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200"
-          />
+        <div className="flex flex-wrap gap-2">
+          {ratings.map((rating) => (
+            <button
+              key={rating}
+              type="button"
+              onClick={() => handleRatingChange(category, rating)}
+              className={`h-10 w-10 rounded-full transition-all duration-200 ${
+                rating <= value ? "bg-primary text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+              }`}
+              aria-label={`Rate ${rating} out of 10`}
+            >
+              {rating}
+            </button>
+          ))}
         </div>
-        <div className="mt-1 flex justify-between text-xs text-gray-500">
+        <div className="mt-2 flex justify-between text-xs text-gray-500">
           <span>Poor</span>
           <span>Excellent</span>
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   if (isSubmitted) {
     return (
@@ -154,12 +152,9 @@ export default function FeedbackPage() {
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
-                <h2 className="mb-2 text-2xl font-bold text-gray-900">
-                  Thank You!
-                </h2>
+                <h2 className="mb-2 text-2xl font-bold text-gray-900">Thank You!</h2>
                 <p className="mb-6 text-gray-600">
-                  Your feedback has been submitted successfully. We appreciate
-                  your time and input.
+                  Your feedback has been submitted successfully. We appreciate your time and input.
                 </p>
                 <div className="flex gap-3">
                   <Button variant="outline" onClick={() => navigate(-1)}>
@@ -172,18 +167,14 @@ export default function FeedbackPage() {
           </Card>
         </div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto max-w-2xl px-4">
         <div className="mb-6">
-          <Button
-            onClick={() => navigate(-1)}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
+          <Button onClick={() => navigate(-1)} variant="outline" className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
@@ -191,12 +182,9 @@ export default function FeedbackPage() {
 
         <Card className="border-0 shadow-lg">
           <CardHeader className="pb-4">
-            <CardTitle className="text-2xl font-bold text-gray-900">
-              Website Feedback
-            </CardTitle>
+            <CardTitle className="text-2xl font-bold text-gray-900">Website Feedback</CardTitle>
             <CardDescription className="text-gray-600">
-              We value your opinion! Please share your thoughts about our
-              website to help us improve.
+              We value your opinion! Please share your thoughts about our website to help us improve.
             </CardDescription>
           </CardHeader>
 
@@ -204,15 +192,12 @@ export default function FeedbackPage() {
             {/* Personal note from team leader */}
             <div className="mb-6 rounded-lg bg-blue-50 p-4 text-sm text-blue-800">
               <p className="font-medium">
-                I am Khong Quoc Khanh, team leader of Group 5 in RMIT University
-                in Hanoi Campus.
+                I am Khong Quoc Khanh, team leader of Group 5 in RMIT University in Hanoi Campus.
               </p>
               <p className="mt-2">
-                We are taking the course of "Fullstack Web Development". To
-                evaluate the user experience and website overall experience, I
-                want to hear your feedback on your real experience with this
-                demo version. Your feedback means a lot to us. Please provide
-                your thoughts about our app below.
+                We are taking the course of "Fullstack Web Development". To evaluate the user experience and website
+                overall experience, I want to hear your feedback on your real experience with this demo version. Your
+                feedback means a lot to us. Please provide your thoughts about our app below.
               </p>
             </div>
 
@@ -256,11 +241,7 @@ export default function FeedbackPage() {
                   <Label className="text-sm font-medium">
                     You are <span className="text-red-500">*</span>
                   </Label>
-                  <RadioGroup
-                    value={formData.role}
-                    onValueChange={handleRoleChange}
-                    className="flex gap-4"
-                  >
+                  <RadioGroup value={formData.role} onValueChange={handleRoleChange} className="flex gap-4">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="student" id="student" />
                       <Label htmlFor="student">Student</Label>
@@ -276,11 +257,7 @@ export default function FeedbackPage() {
                   <Label className="text-sm font-medium">
                     University <span className="text-red-500">*</span>
                   </Label>
-                  <Select
-                    value={formData.university}
-                    onValueChange={handleUniversityChange}
-                    required
-                  >
+                  <Select value={formData.university} onValueChange={handleUniversityChange} required>
                     <SelectTrigger>
                       <SelectValue placeholder="Select university" />
                     </SelectTrigger>
@@ -293,9 +270,7 @@ export default function FeedbackPage() {
               </div>
 
               <div className="mb-6">
-                <h3 className="mb-4 text-lg font-semibold text-gray-800">
-                  Rate our website (1-10)
-                </h3>
+                <h3 className="mb-4 text-lg font-semibold text-gray-800">Rate our website (1-10)</h3>
 
                 <RatingScale
                   category="ui"
@@ -309,18 +284,11 @@ export default function FeedbackPage() {
                   value={formData.rating.ux}
                 />
 
-                <RatingScale
-                  category="overall"
-                  label="Overall Experience"
-                  value={formData.rating.overall}
-                />
+                <RatingScale category="overall" label="Overall Experience" value={formData.rating.overall} />
               </div>
 
               <div className="mb-6">
-                <Label
-                  htmlFor="feedback"
-                  className="mb-2 block text-sm font-medium"
-                >
+                <Label htmlFor="feedback" className="mb-2 block text-sm font-medium">
                   Additional Feedback (optional)
                 </Label>
                 <Textarea
@@ -352,5 +320,5 @@ export default function FeedbackPage() {
         </Card>
       </div>
     </div>
-  );
+  )
 }
