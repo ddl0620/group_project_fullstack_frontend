@@ -6,7 +6,12 @@ export default function EventSummary({
   existingImageUrls = [],
 }) {
   const totalImages = uploadedImages.length + existingImageUrls.length;
-
+  formData.dateRange = {
+    from: new Date(formData.dateRange.from),
+    to: formData.dateRange.to
+      ? new Date(formData.dateRange.to)
+      : new Date(formData.dateRange.from),
+  }
   return (
     <Card className="mt-6 border-dashed">
       <CardContent className="pt-6">
@@ -42,7 +47,7 @@ export default function EventSummary({
             </p>
             <p>
               {formData.dateRange.from.toLocaleDateString()} -{' '}
-              {formData.dateRange.to.toLocaleDateString()}
+              {formData.dateRange.to?.toLocaleDateString()}
             </p>
           </div>
 
