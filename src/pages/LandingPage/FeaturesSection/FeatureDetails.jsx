@@ -19,7 +19,7 @@ const FeatureDetails = () => {
             icon={CalendarPlus}
             title="Create Stunning Events"
             description="Design beautiful event pages with our intuitive editor. Set up ticketing, registration forms, and customize every aspect of your event."
-            image="/LandingPage/createEvent.png"
+            image="/LandingPage/createEvent2.png"
             imageAlt="Event Creation Interface"
             reverse={false}
             benefits={[
@@ -35,7 +35,7 @@ const FeatureDetails = () => {
             icon={MessageCircle}
             title="Foster Community Engagement"
             description="Build excitement and keep the conversation going with integrated discussion boards and real-time chat for all your events."
-            image="/LandingPage/ui-element-chat.png"
+            image="/LandingPage/ui-element-chat2.png"
             imageAlt="Discussion Interface"
             reverse={true}
             benefits={[
@@ -51,7 +51,7 @@ const FeatureDetails = () => {
             icon={Users}
             title="Seamless Attendee Management"
             description="Track registrations, send automated reminders, and manage check-ins with our powerful attendee management tools."
-            image="/LandingPage/event-mana.png"
+            image="/LandingPage/event-mana2.png"
             imageAlt="Attendee Management Interface"
             reverse={false}
             benefits={[
@@ -67,7 +67,7 @@ const FeatureDetails = () => {
             icon={BarChart3}
             title="Comprehensive Analytics"
             description="Gain valuable insights with detailed analytics on attendance, engagement, and ticket sales to optimize your future events."
-            image="/LandingPage/hero-dasboard.png"
+            image="/LandingPage/hero-dasboard3.png"
             imageAlt="Analytics Dashboard"
             reverse={true}
             benefits={[
@@ -98,7 +98,7 @@ const FeatureRow = ({ icon: Icon, title, description, image, imageAlt, reverse, 
 
             {/* Add floating UI elements for more visual interest */}
             <div className="absolute -bottom-4 right-8 w-24 rotate-6 rounded-lg bg-white/90 p-2 shadow-md backdrop-blur-md">
-              <img src="/ui-element-stats.png" alt="UI Element" className="w-full" />
+
             </div>
           </div>
         </div>

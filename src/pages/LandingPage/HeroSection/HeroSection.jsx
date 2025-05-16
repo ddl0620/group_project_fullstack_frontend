@@ -52,7 +52,7 @@ const HeroSection = () => {
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-[#0071e3]/20 to-[#6c56f5]/20 opacity-70 blur"></div>
               <div className="relative overflow-hidden rounded-2xl bg-white/80 p-2 shadow-xl backdrop-blur-sm">
                 <img
-                  src="/LandingPage/hero-dasboard.png"
+                  src="/LandingPage/hero-dasboard2.png"
                   alt="EventApp Dashboard"
                   className="h-auto w-full rounded-xl object-cover"
                 />
