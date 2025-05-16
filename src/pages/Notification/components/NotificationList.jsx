@@ -1,8 +1,11 @@
-"use client"
+import { NotificationItem } from '@/pages/Notification/components/NotificationItem.jsx';
 
-import { NotificationItem } from "@/pages/Notification/components/NotificationItem.jsx"
-
-export function NotificationList({ notifications, onDelete, onMarkAsRead, onNotificationClick }) {
+export function NotificationList({
+  notifications,
+  onDelete,
+  onMarkAsRead,
+  onNotificationClick,
+}) {
   return (
     <div className="divide-y text-sm">
       {notifications.map((notification) => (
@@ -15,5 +18,5 @@ export function NotificationList({ notifications, onDelete, onMarkAsRead, onNoti
         />
       ))}
     </div>
-  )
+  );
 }

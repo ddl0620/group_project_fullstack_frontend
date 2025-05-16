@@ -1,26 +1,24 @@
-"use client"
+import { useState, useEffect, useMemo } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useEvent } from '@/hooks/useEvent';
+import { toast } from 'sonner';
+import { PlusCircle, Loader2, X, Calendar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { EventCard } from '@/components/shared/EventCard.jsx';
+import Pagination from '@/components/shared/Pagination.jsx';
+import EventFilters from '@/components/shared/EventFilters.jsx';
+import useEventFiltering from '@/hooks/useEventFiltering.js';
 
-import { useState, useEffect, useMemo } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
-import { useEvent } from "@/hooks/useEvent"
-import { toast } from "sonner"
-import { PlusCircle, Loader2, X, Calendar } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { EventCard } from "@/components/shared/EventCard.jsx"
-import Pagination from "@/components/shared/Pagination.jsx"
-import EventFilters from "@/components/shared/EventFilters.jsx"
-import useEventFiltering from "@/hooks/useEventFiltering.js"
-
-const ITEMS_PER_PAGE = 9
+const ITEMS_PER_PAGE = 9;
 
 export default function BrowseEvents() {
-  const [allEvents, setAllEvents] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [allEvents, setAllEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const { getAllEvents } = useEvent()
-  const location = useLocation()
-  const navigate = useNavigate()
+  const { getAllEvents } = useEvent();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Use the custom hook for filtering
   const {
@@ -36,64 +34,66 @@ export default function BrowseEvents() {
     setCurrentPage,
     filteredEvents,
     clearFilters,
-  } = useEventFiltering(allEvents)
+  } = useEventFiltering(allEvents);
 
   // Fetch all events once
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        setLoading(true)
-        setError(null)
+        setLoading(true);
+        setError(null);
 
         // Only use pagination parameters
         const params = {
           page: 1,
           limit: 1000, // Fetch a large number of events
-          isAcs: sortBy === "oldest", // Only use sorting parameter
-        }
+          isAcs: sortBy === 'oldest', // Only use sorting parameter
+        };
 
-        const response = await getAllEvents(params)
-        setAllEvents(response.content.events || [])
+        const response = await getAllEvents(params);
+        setAllEvents(response.content.events || []);
       } catch (err) {
-        toast.error("Error fetching events: " + err.message)
-        setError(err.message)
+        toast.error('Error fetching events: ' + err.message);
+        setError(err.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchEvents()
-  }, [])
+    fetchEvents();
+  }, []);
 
   // Calculate pagination
   const paginatedEvents = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-    const endIndex = startIndex + ITEMS_PER_PAGE
-    return filteredEvents.slice(startIndex, endIndex)
-  }, [filteredEvents, currentPage])
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredEvents.slice(startIndex, endIndex);
+  }, [filteredEvents, currentPage]);
 
   // Calculate total pages
   const totalPages = useMemo(() => {
-    return Math.ceil(filteredEvents.length / ITEMS_PER_PAGE)
-  }, [filteredEvents])
+    return Math.ceil(filteredEvents.length / ITEMS_PER_PAGE);
+  }, [filteredEvents]);
 
   const handlePageChange = (page) => {
-    if (page < 1 || page > totalPages) return
-    setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleShowEvent = (eventId) => {
-    navigate(`/event/${eventId}`)
-  }
+    navigate(`/event/${eventId}`);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 overflow-x-hidden">
-      <div className="container mx-auto px-4 max-w-full">
+    <div className="min-h-screen overflow-x-hidden bg-gray-50 py-8">
+      <div className="container mx-auto max-w-full px-4">
         <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Browse Events</h1>
-            <p className="mt-1 text-gray-500">Discover and join exciting events</p>
+            <p className="mt-1 text-gray-500">
+              Discover and join exciting events
+            </p>
           </div>
 
           <Link to="/event/create">
@@ -122,7 +122,7 @@ export default function BrowseEvents() {
         {loading && (
           <div className="flex h-64 items-center justify-center">
             <div className="flex flex-col items-center gap-2">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <Loader2 className="text-primary h-8 w-8 animate-spin" />
               <p className="text-sm text-gray-500">Loading events...</p>
             </div>
           </div>
@@ -168,9 +168,11 @@ export default function BrowseEvents() {
             <Calendar className="h-12 w-12 text-gray-300" />
             <h3 className="mt-4 text-lg font-medium">No events found</h3>
             <p className="mt-1 text-center text-gray-500">
-              {searchTerm || visibilityFilter !== "all" || selectedTypes.length > 0
-                ? "Try adjusting your search or filters to find events"
-                : "Create your first event to get started"}
+              {searchTerm ||
+              visibilityFilter !== 'all' ||
+              selectedTypes.length > 0
+                ? 'Try adjusting your search or filters to find events'
+                : 'Create your first event to get started'}
             </p>
             <Link to="/event/create" className="mt-4">
               <Button>
@@ -198,5 +200,5 @@ export default function BrowseEvents() {
         )}
       </div>
     </div>
-  )
+  );
 }
