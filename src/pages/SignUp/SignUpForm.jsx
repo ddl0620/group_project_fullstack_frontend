@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -29,6 +29,11 @@ function SignUpForm() {
     dateOfBirth: undefined,
   });
   const [error, setError] = useState(null);
+  const [yearInput, setYearInput] = useState('');
+  const [yearError, setYearError] = useState('');
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [calendarKey, setCalendarKey] = useState(0); // To force re-render
   const { handleSignUp } = useAuth();
 
   // OTP modal state
@@ -40,8 +45,33 @@ function SignUpForm() {
     setUserData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle year input change
+  const handleYearChange = (e) => {
+    setYearInput(e.target.value);
+    setYearError('');
+  };
+
+  // Handle year update when "Go" button is clicked
+  const handleYearUpdate = () => {
+    const year = parseInt(yearInput, 10);
+    if (isNaN(year) || year < 1900 || year > new Date().getFullYear()) {
+      setYearError('Year must be between 1900 and current year');
+    } else {
+      setCurrentYear(year);
+      setYearError('');
+      setCalendarKey((prev) => prev + 1); // Force PureCalendar re-render
+    }
+  };
+
   // Handle date of birth selection
   const handleDateChange = (date) => {
+    if (date) {
+      setCurrentYear(date.getFullYear());
+      setCurrentMonth(date.getMonth());
+      setYearInput(date.getFullYear().toString());
+      setYearError('');
+      setCalendarKey((prev) => prev + 1); // Ensure calendar updates
+    }
     setUserData((prev) => ({ ...prev, dateOfBirth: date }));
   };
 
@@ -100,7 +130,7 @@ function SignUpForm() {
           Create an account. <br /> Join us today!
         </h2>
 
-        {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+        {error && <p className="text-red]+$500 mb-4 text-sm">{error}</p>}
 
         <div className="flex flex-col justify-center gap-y-4">
           <TextInputField
@@ -150,13 +180,54 @@ function SignUpForm() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
+                <div className="flex flex-col px-4 py-2">
+                  {/* Year Input */}
+                  <div className="mb-2 flex items-center gap-2">
+                    <label
+                      htmlFor="year-input"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Year:
+                    </label>
+                    <input
+                      id="year-input"
+                      type="number"
+                      value={yearInput}
+                      onChange={handleYearChange}
+                      className={cn(
+                        'focus:ring-primary-500 focus:border-primary-500 w-20 rounded border px-2 py-1 text-black',
+                        yearError && 'border-red-500'
+                      )}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleYearUpdate}
+                      className="h-7 px-2"
+                    >
+                      Go
+                    </Button>
+                  </div>
+                  {yearError && (
+                    <p className="text-xs text-red-500">{yearError}</p>
+                  )}
+                </div>
                 <PureCalendar
+                  key={calendarKey} // Force re-render when year changes
                   mode="single"
                   selected={userData.dateOfBirth}
                   onSelect={handleDateChange}
                   disabled={(date) =>
                     date > new Date() || date < new Date('1900-01-01')
                   }
+                  defaultMonth={new Date(currentYear, currentMonth)}
+                  onMonthChange={(date) => {
+                    setCurrentYear(date.getFullYear());
+                    setCurrentMonth(date.getMonth());
+                    setYearInput(date.getFullYear().toString());
+                    setYearError('');
+                    setCalendarKey((prev) => prev + 1);
+                  }}
                 />
               </PopoverContent>
             </Popover>
