@@ -104,16 +104,11 @@ const routes = [
     element: <SidebarLayout title={'Contact'} items={contactItems} />,
     children: [{ path: '', element: <AboutPage /> }],
   },
-  // {
-  //   path: '/feedback',
-  //   element: <ProtectedRoute />,
-  //   children: [
-  //     {
-  //       element: <DefaultLayout />,
-  //       children: [{ path: '', element: <FeedbackPage /> }],
-  //     },
-  //   ],
-  // },
+  {
+    path: '/feedback',
+    element: <SidebarLayout title={'Contact'} items={contactItems} />,
+    children: [{ path: '', element: <FeedbackPage /> }],
+  },
   {
     path: '*',
     element: <Navigate to="/error" replace={false} />,
