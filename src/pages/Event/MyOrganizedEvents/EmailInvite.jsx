@@ -1,51 +1,49 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Send, CheckCircle, XCircle, Clock } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { CustomAvatar } from "@/components/shared/CustomAvatar"
-import { Toast } from "@/helpers/toastService.js"
-import { useUser } from '@/hooks/useUser.js'
-import { useEvent } from '@/hooks/useEvent.js'
+import { useState, useEffect } from 'react';
+import { Send, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { CustomAvatar } from '@/components/shared/CustomAvatar';
+import { Toast } from '@/helpers/toastService.js';
+import { useUser } from '@/hooks/useUser.js';
+import { useEvent } from '@/hooks/useEvent.js';
 
 export default function EmailInvite({ event }) {
-  const [email, setEmail] = useState("")
-  const [selectedUserId, setSelectedUserId] = useState(null) // New state for user ID
-  const [isLoading, setIsLoading] = useState(false)
-  const [matchingUsers, setMatchingUsers] = useState([])
-  const [showMatches, setShowMatches] = useState(false)
-  const [users, setUsers] = useState([])
-  const [isFetchingUsers, setIsFetchingUsers] = useState(true)
-  const [invitedUsers, setInvitedUsers] = useState([])
+  const [email, setEmail] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState(null); // New state for user ID
+  const [isLoading, setIsLoading] = useState(false);
+  const [matchingUsers, setMatchingUsers] = useState([]);
+  const [showMatches, setShowMatches] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [isFetchingUsers, setIsFetchingUsers] = useState(true);
+  const [invitedUsers, setInvitedUsers] = useState([]);
 
-  const { fetchUsers, getUserById } = useUser()
-  const { requestJoinEvent } = useEvent()
+  const { fetchUsers, getUserById } = useUser();
+  const { requestJoinEvent } = useEvent();
 
   // Fetch users and initialize invited users on component mount
   useEffect(() => {
     const getUsers = async () => {
       try {
-        setIsFetchingUsers(true)
-        const response = await fetchUsers(1, 1000, true)
-        console.log("Fetched users:", response.users)
+        setIsFetchingUsers(true);
+        const response = await fetchUsers(1, 1000, true);
+        console.log('Fetched users:', response.users);
         if (response.users) {
-          setUsers(response.users)
+          setUsers(response.users);
         } else {
-          Toast.error("Error", "Failed to fetch users")
+          Toast.error('Error', 'Failed to fetch users');
         }
 
         // Initialize invited users from event.participants with status "INVITED"
         if (event?.participants) {
           const invitedParticipants = event.participants.filter(
-            (p) => p.status === "INVITED"
-          )
+            (p) => p.status === 'INVITED'
+          );
           const invitedUsersData = await Promise.all(
             invitedParticipants.map(async (participant) => {
               try {
-                const userResponse = await getUserById(participant.userId)
-                console.log("Fetched user data:", userResponse.content)
+                const userResponse = await getUserById(participant.userId);
+                console.log('Fetched user data:', userResponse.content);
                 if (userResponse.success) {
                   return {
                     avatar: userResponse.content.avatar,
@@ -53,149 +51,174 @@ export default function EmailInvite({ event }) {
                     userId: participant.userId,
                     status: participant.status,
                     date: new Date(participant.invitedAt),
-                  }
+                  };
                 }
-                return null
+                return null;
               } catch (error) {
-                console.error(`Failed to fetch user ${participant.userId}:`, error)
-                return null
+                console.error(
+                  `Failed to fetch user ${participant.userId}:`,
+                  error
+                );
+                return null;
               }
             })
-          )
-          setInvitedUsers(invitedUsersData.filter((user) => user !== null))
+          );
+          setInvitedUsers(invitedUsersData.filter((user) => user !== null));
         }
       } catch (error) {
-        Toast.error("Error", "Failed to fetch users. Please try again.")
-        console.error("Fetch users error:", error)
+        Toast.error('Error', 'Failed to fetch users. Please try again.');
+        console.error('Fetch users error:', error);
       } finally {
-        setIsFetchingUsers(false)
+        setIsFetchingUsers(false);
       }
-    }
+    };
 
-    getUsers()
-  }, [fetchUsers, event])
+    getUsers();
+  }, [fetchUsers, event]);
 
   // Search for matching users when email input changes
   useEffect(() => {
     if (isFetchingUsers || email.length <= 1) {
-      setMatchingUsers([])
-      setShowMatches(false)
-      return
+      setMatchingUsers([]);
+      setShowMatches(false);
+      return;
     }
 
     const searchUsers = setTimeout(() => {
-      console.log("Users in search effect:", users)
+      console.log('Users in search effect:', users);
       const matches = users
         .filter(
           (user) =>
             user.email.toLowerCase().includes(email.toLowerCase()) ||
             user.name.toLowerCase().includes(email.toLowerCase())
         )
-        .slice(0, 5) // Limit to 5 results
+        .slice(0, 5); // Limit to 5 results
 
-      setMatchingUsers(matches)
-      setShowMatches(matches.length > 0)
-    }, 300) // Debounce for 300ms
+      setMatchingUsers(matches);
+      setShowMatches(matches.length > 0);
+    }, 300); // Debounce for 300ms
 
-    return () => clearTimeout(searchUsers)
-  }, [email, users, isFetchingUsers])
+    return () => clearTimeout(searchUsers);
+  }, [email, users, isFetchingUsers]);
 
   // Clear selectedUserId when email is manually changed
   useEffect(() => {
-    if (email && !users.some((user) => user.email === email && user._id === selectedUserId)) {
-      setSelectedUserId(null)
+    if (
+      email &&
+      !users.some((user) => user.email === email && user._id === selectedUserId)
+    ) {
+      setSelectedUserId(null);
     }
-  }, [email, users, selectedUserId])
+  }, [email, users, selectedUserId]);
 
   const handleInvite = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!email || !email.includes("@")) {
-      Toast.error("Invalid email", "Please enter a valid email address")
-      return
+    if (!email || !email.includes('@')) {
+      Toast.error('Invalid email', 'Please enter a valid email address');
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       const response = await requestJoinEvent(event._id, {
         userId: selectedUserId,
-        status: "INVITED",
-      })
+        status: 'INVITED',
+      });
 
       if (!response.success) {
-        Toast.error("Error", "Failed to send invitation. Please try again.")
-        return
+        Toast.error('Error', 'Failed to send invitation. Please try again.');
+        return;
       }
-      console.log("Invite response:", response)
+      console.log('Invite response:', response);
 
       // Check if user is already invited
       if (invitedUsers.some((user) => user.email === email)) {
-        Toast.error("Already invited", "This user has already been invited to this event")
+        Toast.error(
+          'Already invited',
+          'This user has already been invited to this event'
+        );
       } else {
         // Add to invited users with _id if available
         const newInvitation = {
           email,
           userId: selectedUserId || null, // Include userId if selected
-          status: "PENDING",
+          status: 'PENDING',
           date: new Date(),
-        }
-        setInvitedUsers([...invitedUsers, newInvitation])
-        Toast.info("Invitation sent", `Invitation email sent to ${email}`)
+        };
+        setInvitedUsers([...invitedUsers, newInvitation]);
+        Toast.info('Invitation sent', `Invitation email sent to ${email}`);
 
         // Clear input and selected user
-        setEmail("")
-        setSelectedUserId(null)
-        setShowMatches(false)
+        setEmail('');
+        setSelectedUserId(null);
+        setShowMatches(false);
       }
     } catch (error) {
-      console.error("Invite error:", error)
+      console.error('Invite error:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const selectUser = (user) => {
-    setEmail(user.email)
-    setSelectedUserId(user._id) // Store the selected user's _id
-    setShowMatches(false)
-  }
+    setEmail(user.email);
+    setSelectedUserId(user._id); // Store the selected user's _id
+    setShowMatches(false);
+  };
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case "ACCEPTED":
+      case 'ACCEPTED':
         return (
-          <Badge variant="outline" className="flex items-center gap-1 bg-green-50 text-green-700">
+          <Badge
+            variant="outline"
+            className="flex items-center gap-1 bg-green-50 text-green-700"
+          >
             <CheckCircle className="h-3 w-3" />
             Accepted
           </Badge>
-        )
-      case "DECLINED":
+        );
+      case 'DECLINED':
         return (
-          <Badge variant="outline" className="flex items-center gap-1 bg-red-50 text-red-700">
+          <Badge
+            variant="outline"
+            className="flex items-center gap-1 bg-red-50 text-red-700"
+          >
             <XCircle className="h-3 w-3" />
             Declined
           </Badge>
-        )
-      case "PENDING":
+        );
+      case 'PENDING':
       default:
         return (
-          <Badge variant="outline" className="flex items-center gap-1 bg-amber-50 text-amber-700">
+          <Badge
+            variant="outline"
+            className="flex items-center gap-1 bg-amber-50 text-amber-700"
+          >
             <Clock className="h-3 w-3" />
             Pending
           </Badge>
-        )
+        );
     }
-  }
+  };
 
   const removeInvitation = (emailToRemove) => {
-    setInvitedUsers(invitedUsers.filter((user) => user.email !== emailToRemove))
-    Toast.info("Invitation removed", `Invitation for ${emailToRemove} has been removed`)
-  }
+    setInvitedUsers(
+      invitedUsers.filter((user) => user.email !== emailToRemove)
+    );
+    Toast.info(
+      'Invitation removed',
+      `Invitation for ${emailToRemove} has been removed`
+    );
+  };
 
   return (
     <div>
-      <h2 className="mb-4 text-lg font-semibold text-gray-800">Invite Users by Email</h2>
+      <h2 className="mb-4 text-lg font-semibold text-gray-800">
+        Invite Users by Email
+      </h2>
       <form onSubmit={handleInvite} className="mb-6">
         <div className="relative">
           <div className="flex gap-2">
@@ -234,15 +257,21 @@ export default function EmailInvite({ event }) {
                 </div>
               )}
             </div>
-            <Button type="submit" disabled={isLoading} className="flex items-center gap-2">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="flex items-center gap-2"
+            >
               <Send className="h-4 w-4" />
-              {isLoading ? "Sending..." : "Invite"}
+              {isLoading ? 'Sending...' : 'Invite'}
             </Button>
           </div>
         </div>
       </form>
 
-      <h2 className="mb-4 text-lg font-semibold text-gray-800">Invited Users</h2>
+      <h2 className="mb-4 text-lg font-semibold text-gray-800">
+        Invited Users
+      </h2>
       {invitedUsers.length === 0 ? (
         <div className="rounded-lg border border-gray-200 p-6 text-center text-gray-500">
           No users have been invited yet
@@ -267,12 +296,14 @@ export default function EmailInvite({ event }) {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">{getStatusBadge(user.status)}</div>
+                <div className="flex items-center gap-3">
+                  {getStatusBadge(user.status)}
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
     </div>
-  )
+  );
 }

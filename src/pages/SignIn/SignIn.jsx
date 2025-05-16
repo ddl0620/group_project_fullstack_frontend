@@ -1,36 +1,34 @@
-"use client"
-
-import { motion } from "framer-motion"
-import { SignInForm } from "@/pages/SignIn/SignInForm.jsx"
-import { useState } from "react"
-import { useAuth } from "@/hooks/useAuth.js"
+import { motion } from 'framer-motion';
+import { SignInForm } from '@/pages/SignIn/SignInForm.jsx';
+import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth.js';
 
 function Login() {
   // Animation variants for fade-in effect
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
-  }
+  };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      handleLogin()
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleLogin();
     }
-  }
+  };
 
-  const [credentials, setCredentials] = useState({ email: "", password: "" })
-  const [error, setError] = useState(null)
-  const { handleSignIn } = useAuth()
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [error, setError] = useState(null);
+  const { handleSignIn } = useAuth();
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setCredentials((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setCredentials((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleLogin = async () => {
-    await handleSignIn(credentials, setError)
-  }
+    await handleSignIn(credentials, setError);
+  };
 
   return (
     <motion.div
@@ -51,15 +49,15 @@ function Login() {
             alt="Login Illustration"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-opacity-20"></div>
-          <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+          <div className="bg-opacity-20 absolute inset-0"></div>
+          <div className="absolute right-0 bottom-0 left-0 p-8 text-white">
             <h3 className="mb-2 text-2xl font-bold">Welcome Back!</h3>
             <p className="text-sm">Sign in to continue your journey with us.</p>
           </div>
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
 
-export default Login
+export default Login;

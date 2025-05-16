@@ -1,83 +1,85 @@
-"use client"
-
-import { useState, useRef } from "react"
-import Button from "../../components/shared/SubmitButton.jsx"
-import SectionTitle from "./SectionTitle.jsx"
-import TextInputField from "@/components/shared/TextInputField.jsx"
-import { Toast } from "@/helpers/toastService.js"
-import { useSelector } from "react-redux"
-import { useUser } from "@/hooks/useUser.js"
-import { validateForm, scrollToFirstError, validationPatterns } from "../../components/shared/validationUtils.jsx"
-import { ArrowLeft } from "lucide-react"
-import { Link } from "react-router-dom"
+import { useState, useRef } from 'react';
+import Button from '../../components/shared/SubmitButton.jsx';
+import SectionTitle from './SectionTitle.jsx';
+import TextInputField from '@/components/shared/TextInputField.jsx';
+import { Toast } from '@/helpers/toastService.js';
+import { useSelector } from 'react-redux';
+import { useUser } from '@/hooks/useUser.js';
+import {
+  validateForm,
+  scrollToFirstError,
+  validationPatterns,
+} from '../../components/shared/validationUtils.jsx';
+import { ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 function UpdateEmailPage() {
-  const { user } = useSelector((state) => state.user)
-  const emailRef = useRef(null)
-  const passwordRef = useRef(null)
+  const { user } = useSelector((state) => state.user);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  })
+    email: '',
+    password: '',
+  });
 
-  const [errors, setErrors] = useState({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState(null)
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   // Define validation rules
   const validationRules = {
     email: {
       required: true,
-      requiredMessage: "New email address is required",
+      requiredMessage: 'New email address is required',
       pattern: validationPatterns.email.pattern,
       patternMessage: validationPatterns.email.message,
     },
     password: {
       required: true,
-      requiredMessage: "Password is required to confirm this change",
+      requiredMessage: 'Password is required to confirm this change',
     },
-  }
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
-    }))
+    }));
 
     // Clear error when field is being edited
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
-        [name]: "",
-      }))
+        [name]: '',
+      }));
     }
-  }
+  };
 
-  const { handleUpdateEmail } = useUser()
+  const { handleUpdateEmail } = useUser();
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Validate form
-    const newErrors = validateForm(formData, validationRules)
-    setErrors(newErrors)
+    const newErrors = validateForm(formData, validationRules);
+    setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
-      scrollToFirstError({ email: emailRef, password: passwordRef })
-      return
+      scrollToFirstError({ email: emailRef, password: passwordRef });
+      return;
     }
 
     // Check if new email is the same as current email
     if (formData.email === user.email) {
       setErrors({
-        email: "New email must be different from your current email",
-      })
-      return
+        email: 'New email must be different from your current email',
+      });
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       await handleUpdateEmail(
@@ -85,44 +87,60 @@ function UpdateEmailPage() {
           email: formData.email,
           password: formData.password,
         },
-        setError,
-      )
+        setError
+      );
 
       // Reset form after successful submission
       setFormData({
-        email: "",
-        password: "",
-      })
+        email: '',
+        password: '',
+      });
 
-      Toast.success("Email update request sent. Please check your new email for verification.")
+      Toast.success(
+        'Email update request sent. Please check your new email for verification.'
+      );
     } catch (err) {
       // Error handling is done by the handleUpdateEmail function
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="h-screen max-w-screen items-center justify-between bg-white px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl">
-        <Link to="/profile/edit" className="mb-6 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900">
+        <Link
+          to="/profile/edit"
+          className="mb-6 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Profile
         </Link>
 
-        <SectionTitle title="Update Email Address" subtitle="Change the email address associated with your account " />
+        <SectionTitle
+          title="Update Email Address"
+          subtitle="Change the email address associated with your account "
+        />
 
-        <div className="mt-8 rounded-lg bg-white p-6 shadow-sm sm:p-8 font-semibold  ">
+        <div className="mt-8 rounded-lg bg-white p-6 font-semibold shadow-sm sm:p-8">
           <div className="mb-6 rounded-md bg-orange-100 p-4 text-sm text-orange-900">
             <p>
-              <strong>Note:</strong> This feature is currently in development! Due to project time constraints and final exam, this feature is not fully implemented yet. However, we are working hard to improve it in the future.
+              <strong>Note:</strong> This feature is currently in development!
+              Due to project time constraints and final exam, this feature is
+              not fully implemented yet. However, we are working hard to improve
+              it in the future.
             </p>
           </div>
 
-          <form className={"pointer-events-none opacity-50 select-none"} onSubmit={handleSubmit}>
+          <form
+            className={'pointer-events-none opacity-50 select-none'}
+            onSubmit={handleSubmit}
+          >
             <div className="space-y-5">
               <div>
-                <h4 className="mb-2 font-medium text-gray-700">Current Email</h4>
+                <h4 className="mb-2 font-medium text-gray-700">
+                  Current Email
+                </h4>
                 <p className="text-gray-600">{user.email}</p>
               </div>
 
@@ -151,16 +169,24 @@ function UpdateEmailPage() {
                   required
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                  For security reasons, please enter your current password to confirm this change.
+                  For security reasons, please enter your current password to
+                  confirm this change.
                 </p>
               </div>
             </div>
 
-            {error && <div className="mt-4 rounded-md bg-red-50 p-4 text-sm text-red-800">{error}</div>}
+            {error && (
+              <div className="mt-4 rounded-md bg-red-50 p-4 text-sm text-red-800">
+                {error}
+              </div>
+            )}
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-end">
               <Link to="/profile">
-                <Button className="w-full bg-gray-200 text-gray-800 hover:bg-gray-300 sm:w-auto" type="button">
+                <Button
+                  className="w-full bg-gray-200 text-gray-800 hover:bg-gray-300 sm:w-auto"
+                  type="button"
+                >
                   Cancel
                 </Button>
               </Link>
@@ -169,14 +195,14 @@ function UpdateEmailPage() {
                 type="submit"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Updating..." : "Update Email"}
+                {isSubmitting ? 'Updating...' : 'Update Email'}
               </Button>
             </div>
           </form>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default UpdateEmailPage
+export default UpdateEmailPage;

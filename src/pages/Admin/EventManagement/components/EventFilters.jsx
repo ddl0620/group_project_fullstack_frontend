@@ -1,21 +1,25 @@
-"use client"
-
-import { Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function EventFilters({
-                                       searchTerm,
-                                       setSearchTerm,
-                                       statusFilter,
-                                       setStatusFilter,
-                                       typeFilter,
-                                       setTypeFilter,
-                                     }) {
+  searchTerm,
+  setSearchTerm,
+  statusFilter,
+  setStatusFilter,
+  typeFilter,
+  setTypeFilter,
+}) {
   return (
-    <div className="flex flex-col space-y-3 w-full md:flex-row md:space-x-4 md:space-y-0">
+    <div className="flex w-full flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-4">
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
         <Input
           placeholder="Search events..."
           value={searchTerm}
@@ -52,5 +56,5 @@ export default function EventFilters({
         </Select>
       </div>
     </div>
-  )
+  );
 }
