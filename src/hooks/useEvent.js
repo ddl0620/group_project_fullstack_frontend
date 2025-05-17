@@ -173,7 +173,6 @@ export const useEvent = () => {
       dispatch(setLoading(true));
       dispatch(setError(null));
       checkToken();
-      console.log(eventData.getAll('images'));
 
       const response = await createEventAPI(eventData);
       dispatch(addEvent(response));
@@ -201,8 +200,7 @@ export const useEvent = () => {
       return response;
     } catch (error) {
       dispatch(setError(error.message));
-      console.log(error);
-      Toast.error(error.response.data.message);
+      Toast.error('Error', error.response.data.message);
       throw error;
     } finally {
       dispatch(setLoading(false));
@@ -222,7 +220,6 @@ export const useEvent = () => {
       return response;
     } catch (error) {
       dispatch(setError(error.message));
-      console.log(error);
       Toast.error(error.response.data.message);
       throw error;
     } finally {
