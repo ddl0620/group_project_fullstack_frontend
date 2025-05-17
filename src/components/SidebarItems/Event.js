@@ -12,12 +12,12 @@ const eventItems = [
     icon: PartyPopper ,
   },
   {
-    title: 'My Organized Events',
+    title: 'Organized Events',
     url: '/event/organized',
     icon: Calendar,
   },
   {
-    title: 'My Joined Events',
+    title: 'Joined Events',
     url: '/event/joined',
     icon: Tickets,
   },
