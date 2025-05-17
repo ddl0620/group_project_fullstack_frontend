@@ -5,10 +5,10 @@ import {
   format,
   addMonths,
   subMonths,
-  isSameMonth,
   isSameDay,
   isAfter,
   isBefore,
+  isSameMonth,
   startOfDay,
 } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -23,12 +23,12 @@ import {
   isRangeEnd,
 } from '@/lib/date-utils';
 
-export type DateRange = {
+type CalendarMode = 'single' | 'multiple' | 'range';
+
+type DateRange = {
   from?: Date;
   to?: Date;
 };
-
-type CalendarMode = 'single' | 'range';
 
 interface PureCalendarProps {
   mode?: CalendarMode;
@@ -40,6 +40,124 @@ interface PureCalendarProps {
   className?: string;
   numberOfMonths?: number;
   defaultMonth?: Date;
+  showYearInput?: boolean;
+  minYear?: number;
+  maxYear?: number;
+  onMonthChange?: (date: Date) => void;
+}
+
+interface DayProps {
+  day: Date;
+  selected?: Date | DateRange;
+  disabled?: (date: Date) => boolean;
+  mode?: CalendarMode;
+  onSelect?: (date: Date | DateRange | undefined) => void;
+}
+
+function Day({ day, selected, disabled, mode, onSelect }: DayProps) {
+  const isSelected =
+    mode === 'single'
+      ? selected instanceof Date
+        ? isSameDay(day, selected)
+        : false
+      : mode === 'range'
+        ? isDateInRange(day, selected as DateRange)
+        : false;
+
+  const isStart =
+    mode === 'range' ? isRangeStart(day, selected as DateRange) : false;
+  const isEnd =
+    mode === 'range' ? isRangeEnd(day, selected as DateRange) : false;
+
+  const isDisabled = disabled?.(day) || isAfter(day, new Date());
+
+  const handleSelect = () => {
+    if (isDisabled) {
+      return;
+    }
+
+    if (mode === 'single') {
+      onSelect?.(day);
+    } else if (mode === 'range') {
+      if (!(selected as DateRange)?.from) {
+        onSelect?.({ from: day, to: undefined });
+      } else if (
+        !(selected as DateRange)?.to &&
+        isBefore(day, (selected as DateRange).from)
+      ) {
+        onSelect?.({ from: day, to: (selected as DateRange).from });
+      } else {
+        onSelect?.({ from: (selected as DateRange).from, to: day });
+      }
+    }
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      className={cn(
+        'h-9 w-9 p-0 font-normal aria-selected:opacity-100',
+        isSelected &&
+          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
+        isStart &&
+          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-l-md',
+        isEnd &&
+          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-r-md',
+        isDisabled && 'pointer-events-none opacity-50'
+      )}
+      onClick={handleSelect}
+      disabled={isDisabled}
+    >
+      {format(day, 'd')}
+    </Button>
+  );
+}
+
+interface MonthProps {
+  month: Date;
+  selected?: Date | DateRange;
+  disabled?: (date: Date) => boolean;
+  mode?: CalendarMode;
+  onSelect?: (date: Date | DateRange | undefined) => void;
+}
+
+function Month({ month, selected, disabled, mode, onSelect }: MonthProps) {
+  const days = getCalendarDays(month);
+  const weekDays = getWeekDays();
+
+  return (
+    <div className="rounded-md border shadow-sm">
+      <div className="flex flex-col space-y-2 p-4">
+        <div className="flex items-center justify-center">
+          <div className="text-sm font-semibold">
+            {format(month, 'MMMM yyyy')}
+          </div>
+        </div>
+        <div className="grid grid-cols-7">
+          {weekDays.map((weekDay) => (
+            <div
+              key={weekDay}
+              className="text-muted-foreground text-center text-xs"
+            >
+              {weekDay}
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-7">
+          {days.map((day) => (
+            <Day
+              key={day.getTime()}
+              day={day}
+              selected={selected}
+              disabled={disabled}
+              mode={mode}
+              onSelect={onSelect}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function PureCalendar({
@@ -52,6 +170,10 @@ export function PureCalendar({
   className,
   numberOfMonths = 1,
   defaultMonth,
+  showYearInput = false,
+  minYear = 1900,
+  maxYear = new Date().getFullYear(),
+  onMonthChange,
 }: PureCalendarProps) {
   // State for current month view
   const [currentMonth, setCurrentMonth] = React.useState<Date>(
@@ -61,17 +183,63 @@ export function PureCalendar({
       new Date()
   );
 
+  // Add state for year input
+  const [yearInput, setYearInput] = React.useState<string>(
+    currentMonth.getFullYear().toString()
+  );
+  const [yearError, setYearError] = React.useState<string>('');
+
   // Get days for the current month
   const days = getCalendarDays(currentMonth);
   const weekDays = getWeekDays();
 
   // Handle month navigation
   const handlePreviousMonth = () => {
-    setCurrentMonth((prev) => subMonths(prev, 1));
+    const newMonth = subMonths(currentMonth, 1);
+    setCurrentMonth(newMonth);
+    setYearInput(newMonth.getFullYear().toString());
+    onMonthChange?.(newMonth);
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth((prev) => addMonths(prev, 1));
+    const newMonth = addMonths(currentMonth, 1);
+    setCurrentMonth(newMonth);
+    setYearInput(newMonth.getFullYear().toString());
+    onMonthChange?.(newMonth);
+  };
+
+  // Handle year input change
+  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setYearInput(value);
+
+    const year = Number.parseInt(value, 10);
+    if (!isNaN(year) && year >= minYear && year <= maxYear) {
+      const newDate = new Date(currentMonth);
+      newDate.setFullYear(year);
+      setCurrentMonth(newDate);
+      setYearError('');
+      onMonthChange?.(newDate);
+    } else if (value && (isNaN(year) || year < minYear || year > maxYear)) {
+      setYearError(`Year must be between ${minYear} and ${maxYear}`);
+    }
+  };
+
+  // Handle year update on Enter
+  const handleYearKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const year = Number.parseInt(yearInput, 10);
+      if (!isNaN(year) && year >= minYear && year <= maxYear) {
+        const newDate = new Date(currentMonth);
+        newDate.setFullYear(year);
+        setCurrentMonth(newDate);
+        setYearError('');
+        onMonthChange?.(newDate);
+      } else {
+        setYearError(`Year must be between ${minYear} and ${maxYear}`);
+      }
+    }
   };
 
   // Check if a date is disabled
@@ -87,7 +255,9 @@ export function PureCalendar({
     if (isDateDisabled(date)) return;
 
     if (mode === 'single') {
+      // Call onSelect without closing the popover
       onSelect?.(date);
+      // We don't need to do anything else here to keep the calendar open
     } else if (mode === 'range') {
       const range = selected as DateRange | undefined;
 
@@ -115,12 +285,6 @@ export function PureCalendar({
 
     return (
       <div key={month.toISOString()} className="space-y-4">
-        {/*<div className="flex items-center justify-center">*/}
-        {/*  <div className="text-sm font-medium">*/}
-        {/*    {format(month, 'MMMM yyyy')}*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-
         <div className="grid grid-cols-7 gap-1 text-center">
           {weekDays.map((day, index) => (
             <div
@@ -194,6 +358,34 @@ export function PureCalendar({
 
   return (
     <div className={cn('p-3', className)}>
+      {showYearInput && (
+        <div className="flex flex-col px-4 py-2">
+          {/* Year Input */}
+          <div className="mb-2 flex items-center gap-2">
+            <label
+              htmlFor="year-input"
+              className="text-sm font-medium text-gray-700"
+            >
+              Year:
+            </label>
+            <input
+              id="year-input"
+              type="number"
+              value={yearInput}
+              onChange={handleYearChange}
+              onKeyDown={handleYearKeyDown}
+              min={minYear}
+              max={maxYear}
+              className={cn(
+                'focus:ring-primary-500 focus:border-primary-500 w-20 rounded border px-2 py-1 text-black',
+                yearError && 'border-red-500'
+              )}
+            />
+          </div>
+          {yearError && <p className="text-xs text-red-500">{yearError}</p>}
+        </div>
+      )}
+
       <div className="mb-4 flex items-center justify-between">
         <Button
           variant="outline"

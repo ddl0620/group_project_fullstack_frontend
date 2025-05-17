@@ -228,13 +228,17 @@ function EditProfilePage() {
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <PureCalendar
+                        showYearInput={true}
+                        minYear={1900}
+                        maxYear={2007}
+                        disabled={(date) =>
+                          date > new Date('2007-12-31') ||
+                          date < new Date('1900-01-01')
+                        }
                         mode="single"
                         selected={formData.dateOfBirth}
                         onSelect={handleDateChange}
                         initialFocus
-                        disabled={(date) =>
-                          date > new Date() || date < new Date('1900-01-01')
-                        }
                       />
                     </PopoverContent>
                   </Popover>
