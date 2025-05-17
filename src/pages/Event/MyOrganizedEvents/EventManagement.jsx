@@ -1,10 +1,5 @@
-'use client';
-
 import React, { useState, useMemo, useEffect } from 'react';
 import {
-  MessageSquare,
-  ThumbsUp,
-  MessageCircle,
   Clock,
   Users,
   Calendar,
@@ -15,7 +10,6 @@ import {
   Globe,
 } from 'lucide-react';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
-import Button from '@/components/shared/SubmitButton.jsx';
 import EventRequestManagement from '@/pages/Event/MyOrganizedEvents/EventRequestManagement.jsx';
 import EventInvitationManagement from '@/pages/Event/MyOrganizedEvents/EventInvitationManagement.jsx';
 import EventRSVP from '@/pages/Event/MyOrganizedEvents/EventRSVP.jsx';

@@ -1,6 +1,4 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -193,8 +191,11 @@ function SignUpForm() {
               <PopoverContent className="w-auto p-0" align="start">
                 <div className="flex flex-col px-4 py-2">
                   {/* Year Input */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <label htmlFor="year-input" className="text-sm font-medium text-gray-700">
+                  <div className="mb-2 flex items-center gap-2">
+                    <label
+                      htmlFor="year-input"
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Year:
                     </label>
                     <input
@@ -206,12 +207,14 @@ function SignUpForm() {
                       min="1900"
                       max="2007"
                       className={cn(
-                        "w-20 px-2 py-1 border rounded text-black focus:ring-primary-500 focus:border-primary-500",
-                        yearError && "border-red-500"
+                        'focus:ring-primary-500 focus:border-primary-500 w-20 rounded border px-2 py-1 text-black',
+                        yearError && 'border-red-500'
                       )}
                     />
                   </div>
-                  {yearError && <p className="text-red-500 text-xs">{yearError}</p>}
+                  {yearError && (
+                    <p className="text-xs text-red-500">{yearError}</p>
+                  )}
                 </div>
                 <PureCalendar
                   key={calendarKey} // Force re-render when year changes
@@ -219,7 +222,8 @@ function SignUpForm() {
                   selected={userData.dateOfBirth}
                   onSelect={handleDateChange}
                   disabled={(date) =>
-                    date > new Date('2007-12-31') || date < new Date('1900-01-01')
+                    date > new Date('2007-12-31') ||
+                    date < new Date('1900-01-01')
                   }
                   defaultMonth={new Date(currentYear, currentMonth)}
                   onMonthChange={(date) => {
