@@ -16,8 +16,8 @@ export const useAuth = () => {
   const handleSignIn = async (credentials, setError) => {
     try {
       if (!credentials.email || !credentials.password) {
-        Toast.error('Vui lòng nhập đầy đủ thông tin đăng nhập!');
-        setError('Vui lòng nhập đầy đủ thông tin đăng nhập!');
+        Toast.error('Login Error', 'Please fill in all required information!');
+        setError('Please fill in all required information!');
         return;
       }
 

@@ -58,7 +58,6 @@ export default function EventFilters({
 }) {
   const [activeFilters, setActiveFilters] = useState(0);
 
-  // Count active filters
   useEffect(() => {
     let count = 0;
     if (visibilityFilter !== 'all') count++;

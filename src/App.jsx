@@ -51,7 +51,7 @@ function App() {
         <FeedbackModal />
         <Toaster
           position="bottom-left"
-          theme="light"
+          theme="system"
           richColors={true}
           closeButton={false}
           duration={3000}

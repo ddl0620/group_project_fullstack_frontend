@@ -122,9 +122,9 @@ export function PureCalendar({
         {/*</div>*/}
 
         <div className="grid grid-cols-7 gap-1 text-center">
-          {weekDays.map((day) => (
+          {weekDays.map((day, index) => (
             <div
-              key={day}
+              key={day + index}
               className="py-1 text-xs font-medium text-neutral-500"
             >
               {day}

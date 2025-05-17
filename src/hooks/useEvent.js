@@ -40,11 +40,12 @@ export const useEvent = () => {
       });
       // Dispatch để lưu vào Redux store
       // dispatch(setEvents(data));
-      if (!response.success) Toast.error(response.message);
+      if (!response.success)
+        Toast.error('Something went wrong', response.message);
       return response;
     } catch (error) {
       dispatch(setError(error.message));
-      Toast.error('Failed to fetch events: ' + error.message);
+      Toast.error('Failed to fetch events', error.message);
       throw error;
     } finally {
       dispatch(setLoading(false));
@@ -62,14 +63,13 @@ export const useEvent = () => {
         isAcs: isAcs,
       });
 
-      if (!response.success) Toast.error(response.message);
+      if (!response.success)
+        Toast.error('Something went wrong', response.message);
 
-      // Dispatch để lưu vào Redux store
-      // dispatch(setEvents(data));
       return response;
     } catch (error) {
       dispatch(setError(error.message));
-      Toast.error('Failed to fetch events: ' + error.message);
+      Toast.error('Failed to fetch events', error.message);
       throw error;
     } finally {
       dispatch(setLoading(false));
@@ -90,7 +90,7 @@ export const useEvent = () => {
       return data;
     } catch (error) {
       dispatch(setError(error.message));
-      Toast.error('Failed to fetch your events: ' + error.message);
+      Toast.error('Failed to fetch your events: ', error.message);
       throw error;
     } finally {
       dispatch(setLoading(false));
@@ -99,7 +99,7 @@ export const useEvent = () => {
 
   const getEventById = async (id) => {
     if (!id) {
-      Toast.info('No ID found. Please check the event ID');
+      Toast.info('Error', 'No ID found. Please check the event ID');
       throw new Error('No ID found');
     }
     try {
@@ -127,7 +127,7 @@ export const useEvent = () => {
       Toast.info('No data found. Please check the event data');
       throw new Error('No data found');
     }
-    const toastId = Toast.loading("Updating event...");
+    const toastId = Toast.loading('Updating event...');
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
@@ -135,11 +135,11 @@ export const useEvent = () => {
       const response = await updateEventAPI(id, eventData);
       console.log(response);
       await dispatch(updateEventRedux(response));
-      Toast.success('Event updated successfully');
+      Toast.success('Updated', 'Event updated successfully');
       return response;
     } catch (error) {
       dispatch(setError(error.message));
-      Toast.error('Failed to update event: ' + error.message);
+      Toast.error('Failed to update event', error.message);
       throw error;
     } finally {
       dispatch(setLoading(false));
@@ -148,14 +148,14 @@ export const useEvent = () => {
   };
 
   const deleteEvent = async (id) => {
-    const toastId = Toast.loading("Deleting event...");
+    const toastId = Toast.loading('Deleting event...');
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
       checkToken();
       const response = await deleteEventAPI(id);
       dispatch(removeEvent(id));
-      Toast.success('Event deleted successfully');
+      Toast.success('Deleted', 'Event deleted successfully');
       return response;
     } catch (error) {
       dispatch(setError(error.message));
@@ -168,12 +168,12 @@ export const useEvent = () => {
   };
 
   const createEvent = async (eventData) => {
-    const toastId = Toast.loading("Creating event...");
+    const toastId = Toast.loading('Creating event...');
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
       checkToken();
-      console.log(eventData.getAll("images"));
+      console.log(eventData.getAll('images'));
 
       const response = await createEventAPI(eventData);
       dispatch(addEvent(response));
@@ -190,7 +190,7 @@ export const useEvent = () => {
   };
 
   const requestJoinEvent = async (eventId, userData) => {
-    const toastId = Toast.loading("Processing...");
+    const toastId = Toast.loading('Processing...');
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
@@ -211,7 +211,7 @@ export const useEvent = () => {
   };
 
   const respondJoinEvent = async (eventId, userData) => {
-    const toastId = Toast.loading("Processing...");
+    const toastId = Toast.loading('Processing...');
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));

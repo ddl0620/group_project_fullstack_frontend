@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { navbarItems } from './NavbarItem.js';
@@ -102,9 +100,9 @@ function NavBar() {
   return (
     <nav
       className={`fixed top-0 right-0 left-0 z-50 transition-all duration-300 ${
-          scrolled
-              ? 'bg-white/80 backdrop-blur-lg dark:bg-gray-900/80'
-              : 'bg-white dark:bg-gray-900'
+        scrolled
+          ? 'bg-white/80 backdrop-blur-lg dark:bg-gray-900/80'
+          : 'bg-white dark:bg-gray-900'
       } border-b border-gray-200 dark:border-gray-800`}
     >
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-2 sm:h-16 sm:px-4 lg:px-8">
@@ -312,16 +310,15 @@ function NavBar() {
                   </Button>
                 </div>
               ) : (
-                <div className={"mt-6 space-y-2 border-t border-gray-200 pt-4"}>
+                <div className={'mt-6 space-y-2 border-t border-gray-200 pt-4'}>
                   <Button
                     variant="outline"
-                    className="w-full justify-center hover:text-white rounded-full bg-red-600 text-xs text-white hover:bg-red-700 sm:text-sm"
+                    className="w-full justify-center rounded-full bg-red-600 text-xs text-white hover:bg-red-700 hover:text-white sm:text-sm"
                     onClick={handleSignOut}
                   >
                     Sign Out
                   </Button>
                 </div>
-
               )}
             </motion.div>
           </>

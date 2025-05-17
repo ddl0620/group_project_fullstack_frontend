@@ -7,39 +7,21 @@ import {
   Calendar,
   MapPin,
   Globe,
-  Clock,
   Unlock,
   LockIcon,
   Users,
   ChevronDown,
-  ChevronUp, UserCircle,
+  ChevronUp,
+  UserCircle,
 } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { DEFAULT_IMAGE } from '@/components/DefaultImage.js';
+import { DEFAULT_IMAGE } from '@/components/shared/DefaultImage.js';
 import { Toast } from '@/helpers/toastService.js';
 import { useUser } from '@/hooks/useUser.js';
-
-const formatDateTime = (dateString) => {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
@@ -48,15 +30,6 @@ const formatDate = (dateString) => {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
-};
-
-const formatTime = (dateString) => {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
   });
 };
 
@@ -80,15 +53,11 @@ export function EventCard({ event, actions = [], className }) {
       } catch (err) {
         Toast.error(err.response?.data?.message || 'Failed to load organizer');
       }
-    }
+    };
     if (event?.organizer) {
       fetchOrganizer(event.organizer);
     }
-
-
   }, [event]);
-
-
 
   const {
     _id,
@@ -218,7 +187,7 @@ export function EventCard({ event, actions = [], className }) {
         <div className="mt-3 space-y-2">
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
             <UserCircle className="h-4 w-4 text-[#0071e3]" />
-            <div>Host: {organizer?.name || "Event Organizer"}</div>
+            <div>Host: {organizer?.name || 'Event Organizer'}</div>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
             <Calendar className="h-4 w-4 text-[#0071e3]" />

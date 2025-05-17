@@ -2,11 +2,8 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import UserDashboard from '../pages/Dashboard/User/UserDashboard.jsx';
-import Home from '../pages/Home/home';
 import Login from '../pages/SignIn/SignIn';
 import SignUp from '../pages/SignUp/SignUp';
-import UserLayout from '../components/Layout/UserLayout/UserLayout.jsx';
-import AdminLayout from '../components/Layout/AdminLayout/AdminLayout.jsx';
 import DefaultLayout from '../components/Layout/DefaultLayout/defaultLayout.jsx';
 import ErrorPage from '../pages/ErrorPage/ErrorPage.jsx';
 import LandingPage from '../pages/LandingPage/LandingPage.jsx';
@@ -15,25 +12,24 @@ import MyEvents from '../pages/Event/MyOrganizedEvents/MyOrganizedEvent.jsx';
 import CreateEventPage from '../pages/Event/CreateEvent/CreateEventPage.jsx';
 import BrowseEvent from '@/pages/Event/BrowseEvent.jsx';
 import EventDetailPage from '@/pages/Event/EventDetails.jsx';
-import SidebarLayout from '@/components/Layout/SidebarLayout.jsx';
-import eventItems from '@/components/SidebarItems/Event.js';
-import settingItems from '@/components/SidebarItems/Setting.js';
+import SidebarLayout from '@/components/Layout/SidebarLayout/SidebarLayout.jsx';
+import eventItems from '@/components/Layout/SidebarLayout/SidebarItems/Event.js';
+import settingItems from '@/components/Layout/SidebarLayout/SidebarItems/Setting.js';
 import DiscussionPage from '@/pages/Discussion/DiscussionPage.jsx';
 import MyJoinedEvent from '@/pages/Event/MyJoinedEvents/MyJoinedEvent.jsx';
-import userItems from '@/components/SidebarItems/User.js';
-import DiscussionThreadList from '@/pages/Discussion/DiscussionPost/DiscussionThreadList.jsx';
+import userItems from '@/components/Layout/SidebarLayout/SidebarItems/User.js';
 import NotificationsPage from '@/pages/Notification/NotificationPage.jsx';
 import UpdatePasswordPage from '@/pages/ProfilePage/UpdatePasswordPage.jsx';
 import UpdateEmailPage from '@/pages/ProfilePage/UpdateEmailPage.jsx';
 import ProfilePage from '@/pages/ProfilePage/ProfilePage.jsx';
 import AdminDashboard from '@/pages/Dashboard/Admin/AdminDashBoard.jsx';
 import UserManagement from '@/pages/Admin/UserManagement/UserManagement.jsx';
-import adminManagementItems from '@/components/SidebarItems/AdminManagement.js';
+import adminManagementItems from '@/components/Layout/SidebarLayout/SidebarItems/AdminManagement.js';
 import EventManagement from '@/pages/Admin/EventManagement/EventManagement.jsx';
 import AboutPage from '@/pages/AboutUs/AboutUs.jsx';
 import MyInvitations from '@/pages/Event/MyEmailInvitations.jsx';
 import FeedbackPage from "@/pages/Feedback/Feedback.jsx";
-import contactItems from '@/components/SidebarItems/Contact.js';
+import contactItems from '@/components/Layout/SidebarLayout/SidebarItems/Contact.js';
 
 const ProtectedRoute = ({ allowedRoles, restrictedPaths = [] }) => {
   const { isAuthenticated, role } = useSelector((state) => state.user);
@@ -69,7 +65,7 @@ const routes = [
     path: '/',
     children: [
       {
-        element: <UserLayout />,
+        element: <DefaultLayout />,
         children: [{ path: '', element: <LandingPage /> }],
       },
     ],
@@ -163,12 +159,6 @@ const routes = [
           // { path: '/discussions/:eventId', element: <DiscussionPage /> },
           { path: '/notifications', element: <NotificationsPage /> },
         ],
-      },
-      // Home page with user layout
-      {
-        path: 'home',
-        element: <UserLayout />,
-        children: [{ path: '', element: <Home /> }],
       },
     ],
   },
