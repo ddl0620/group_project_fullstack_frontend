@@ -29,7 +29,7 @@ function NavBar() {
   // Track scroll position to add background blur
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+      // setScrolled(window.scrollY > 10);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -102,9 +102,9 @@ function NavBar() {
   return (
     <nav
       className={`fixed top-0 right-0 left-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-white/80 backdrop-blur-lg dark:bg-gray-900/80'
-          : 'bg-white dark:bg-gray-900'
+          scrolled
+              ? 'bg-white/80 backdrop-blur-lg dark:bg-gray-900/80'
+              : 'bg-white dark:bg-gray-900'
       } border-b border-gray-200 dark:border-gray-800`}
     >
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-2 sm:h-16 sm:px-4 lg:px-8">
