@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
@@ -47,7 +49,7 @@ function SignUpForm() {
   const handleYearChange = (e) => {
     const value = e.target.value;
     setYearInput(value);
-    const year = parseInt(value, 10);
+    const year = Number.parseInt(value, 10);
     if (!isNaN(year) && year >= 1900 && year <= 2007) {
       setCurrentYear(year);
       setYearError('');
@@ -61,7 +63,7 @@ function SignUpForm() {
   const handleYearEnter = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault(); // Prevent form submission
-      const year = parseInt(yearInput, 10);
+      const year = Number.parseInt(yearInput, 10);
       if (!isNaN(year) && year >= 1900 && year <= 2007) {
         setCurrentYear(year);
         setYearError('');
@@ -189,33 +191,6 @@ function SignUpForm() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <div className="flex flex-col px-4 py-2">
-                  {/* Year Input */}
-                  <div className="mb-2 flex items-center gap-2">
-                    <label
-                      htmlFor="year-input"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      Year:
-                    </label>
-                    <input
-                      id="year-input"
-                      type="number"
-                      value={yearInput}
-                      onChange={handleYearChange}
-                      onKeyDown={handleYearEnter}
-                      min="1900"
-                      max="2007"
-                      className={cn(
-                        'focus:ring-primary-500 focus:border-primary-500 w-20 rounded border px-2 py-1 text-black',
-                        yearError && 'border-red-500'
-                      )}
-                    />
-                  </div>
-                  {yearError && (
-                    <p className="text-xs text-red-500">{yearError}</p>
-                  )}
-                </div>
                 <PureCalendar
                   key={calendarKey} // Force re-render when year changes
                   mode="single"
@@ -226,6 +201,9 @@ function SignUpForm() {
                     date < new Date('1900-01-01')
                   }
                   defaultMonth={new Date(currentYear, currentMonth)}
+                  showYearInput={true}
+                  minYear={1900}
+                  maxYear={2007}
                   onMonthChange={(date) => {
                     setCurrentYear(date.getFullYear());
                     setCurrentMonth(date.getMonth());

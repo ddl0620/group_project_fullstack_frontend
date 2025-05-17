@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import {
   Dialog,
   DialogContent,
@@ -48,7 +47,7 @@ export default function CreateUserModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="h-auto max-h-[98vh] min-h-[700px] overflow-y-auto p-4 sm:max-w-[600px] sm:p-6">
+      <DialogContent className="h-auto max-h-[98vh] min-h-[780px] overflow-y-auto p-4 sm:max-w-[600px] sm:p-6">
         <DialogHeader className="space-y-2">
           <DialogTitle>Create New User</DialogTitle>
           <DialogDescription>
@@ -147,13 +146,18 @@ export default function CreateUserModal({
                     }}
                   >
                     <PureCalendar
+                      defaultMonth={new Date(2007, 1)}
+                      showYearInput={true}
+                      minYear={1900}
+                      maxYear={2007}
+                      disabled={(date) =>
+                        date > new Date('2007-12-31') ||
+                        date < new Date('1900-01-01')
+                      }
                       mode="single"
                       selected={dateValue}
                       onSelect={handleDateSelect}
                       initialFocus={false}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date('1900-01-01')
-                      }
                     />
                   </div>
                 )}
