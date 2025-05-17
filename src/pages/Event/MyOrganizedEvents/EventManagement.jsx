@@ -1,10 +1,5 @@
-'use client';
-
 import React, { useState, useMemo, useEffect } from 'react';
 import {
-  MessageSquare,
-  ThumbsUp,
-  MessageCircle,
   Clock,
   Users,
   Calendar,
@@ -14,16 +9,12 @@ import {
   MapPin,
   Globe,
 } from 'lucide-react';
-import EventDetails from '@/pages/Event/EventDetails.jsx';
-import EventCard from '@/components/shared/EventCard.jsx';
-import ImageSlider from '@/components/shared/ImageSlider.jsx';
 import { CustomAvatar } from '@/components/shared/CustomAvatar.jsx';
-import Button from '@/components/shared/SubmitButton.jsx';
 import EventRequestManagement from '@/pages/Event/MyOrganizedEvents/EventRequestManagement.jsx';
 import EventInvitationManagement from '@/pages/Event/MyOrganizedEvents/EventInvitationManagement.jsx';
 import EventRSVP from '@/pages/Event/MyOrganizedEvents/EventRSVP.jsx';
 import { useInvitation } from '@/hooks/useInvitation.js';
-import ImageCarousel from "@/components/ImageCarousel.jsx";
+import ImageCarousel from '@/components/ImageCarousel.jsx';
 
 const EventManagement = ({ event }) => {
   const [activeTab, setActiveTab] = useState('eventDetail');

@@ -6,7 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel.js';
-import { DEFAULT_IMAGE } from '@/components/DefaultImage.js';
+import { DEFAULT_IMAGE } from '@/components/shared/DefaultImage.js';
 import { Dialog, DialogContent } from '@/components/ui/dialog.js';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';

@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect, useMemo } from 'react';
 import { Info, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,12 +15,8 @@ import { AlertDialogUtils } from '@/helpers/AlertDialogUtils.jsx';
 import { Toast } from '@/helpers/toastService.js';
 
 const UserManagement = () => {
-  const {
-    fetchUsers,
-    createUser,
-    updateUserInfo,
-    softDeleteUser,
-  } = useAdminManagement();
+  const { fetchUsers, createUser, updateUserInfo, softDeleteUser } =
+    useAdminManagement();
 
   // Get users directly from Redux store
   const users = useSelector((state) => state.adminManagement.users);

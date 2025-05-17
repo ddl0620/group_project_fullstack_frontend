@@ -1,4 +1,3 @@
-// src/hooks/useDiscussionPost.js
 import { useDispatch, useSelector } from 'react-redux';
 import { useCallback, useRef } from 'react';
 import {
@@ -41,16 +40,11 @@ export const useDiscussionPost = () => {
           throw new Error();
         }
 
-        console.log('Created post:', response);
         dispatch(addPost(response.content.post));
-        Toast.success('Post created successfully');
+        Toast.info('Posted', 'Post created successfully');
         return response.content.post;
       } catch (error) {
         dispatch(setError(error.response?.data?.message));
-        Toast.error(
-          'Failed to create post: ' +
-            (error.response?.data?.message)
-        );
         throw error;
       } finally {
         Toast.dismiss(toastId);
@@ -70,7 +64,6 @@ export const useDiscussionPost = () => {
         cache.current[cacheKey] &&
         cache.current[cacheKey] !== null
       ) {
-        console.log('Sử dụng dữ liệu từ cache:', cacheKey);
         dispatch(setPosts(cache.current[cacheKey]));
         return cache.current[cacheKey];
       }
@@ -82,7 +75,7 @@ export const useDiscussionPost = () => {
         const response = await getPostsAPI(eventId, { page, limit });
 
         if (!response.success) {
-          throw new Error('Không thể lấy danh sách bài viết');
+          throw new Error('Cant fetch posts');
         }
 
         // Xử lý response.content.posts: nếu là object thì chuyển thành mảng
@@ -104,15 +97,14 @@ export const useDiscussionPost = () => {
         // Chỉ lưu vào cache nếu fetch thành công
         cache.current[cacheKey] = result;
         dispatch(setPosts(result));
-        console.log('Dữ liệu bài viết vừa fetch:', result);
         return result;
       } catch (error) {
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
-          'Đã xảy ra lỗi khi lấy bài viết';
+          'Error fetching posts';
         dispatch(setError(errorMessage));
-        Toast.error('Không thể lấy bài viết: ' + errorMessage);
+        Toast.error('Cant not fetch posts: ', errorMessage);
         // Không lưu lỗi vào cache, giữ cache cũ nếu có
         throw error;
       } finally {
@@ -134,13 +126,12 @@ export const useDiscussionPost = () => {
           throw new Error('Failed to fetch post');
         }
 
-        console.log('Fetched post:', response.content.post);
         return response.content.post;
       } catch (error) {
         dispatch(setError(error.message));
         Toast.error(
-          'Failed to fetch post: ' +
-            (error.response?.content?.message || error.message)
+          'Failed to fetch post: ',
+          error.response?.content?.message || error.message
         );
         throw error;
       } finally {
@@ -164,13 +155,13 @@ export const useDiscussionPost = () => {
           throw new Error('Failed to update post');
         }
         dispatch(updatePostAction(response.content.post));
-        Toast.success('Post updated successfully');
+        Toast.info('Updated', 'Post updated successfully');
         return response.content.post;
       } catch (error) {
         dispatch(setError(error.response?.data?.message));
         Toast.error(
-          'Failed to update post: ' +
-            (error.response?.data?.message || error.message)
+          'Failed to update post: ',
+          error.response?.data?.message || error.message
         );
         throw error;
       } finally {
@@ -194,13 +185,13 @@ export const useDiscussionPost = () => {
         }
 
         dispatch(removePost({ postId }));
-        Toast.success('Post deleted successfully');
+        Toast.success('Deleted', 'Post deleted successfully.');
         return response.content;
       } catch (error) {
         dispatch(setError(error.message));
         Toast.error(
-          'Failed to delete post: ' +
-            (error.response?.content?.message || error.message)
+          'Failed to delete post: ',
+          error.response?.content?.message || error.message
         );
         throw error;
       } finally {

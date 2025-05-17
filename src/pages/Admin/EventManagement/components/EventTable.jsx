@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import {
   Edit,
@@ -126,14 +124,18 @@ export default function EventTable({
                   alt={event.title}
                   className="h-10 w-10 rounded-full object-cover"
                 />
+              ) : (
                 // <CustomAvatar
                 //   _classname={'h-10 w-10 rounded-full object-cover'}
                 //   src={event.images[0]}
                 //   fallbackText={getInitials(event.title)}
                 // />
-              ) : (
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-                  <img src="/rmit.png" alt="Eventify Logo" className="h-8 w-8" />
+                  <img
+                    src="/rmit.png"
+                    alt="Eventify Logo"
+                    className="h-8 w-8"
+                  />
                 </div>
               )}
             </div>

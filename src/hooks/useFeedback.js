@@ -1,4 +1,3 @@
-'use client';
 import { useCallback, useRef } from 'react';
 import { checkToken } from '@/helpers/checkToken.js';
 import { Toast } from '@/helpers/toastService.js';
@@ -16,7 +15,7 @@ export const useFeedback = () => {
       checkToken();
       const response = await submitFeedbackAPI(userData);
       if (!response.success) {
-         new Error(response.message || 'Failed to create feedback');
+        new Error(response.message || 'Failed to create feedback');
       }
       Toast.success(
         'Feedback sent!',
@@ -41,7 +40,7 @@ export const useFeedback = () => {
       checkToken();
       const response = await getAllFeedbackAPI();
       if (!response.success) {
-         new Error(response.message || 'Failed to fetch users');
+        new Error(response.message || 'Failed to fetch users');
       }
 
       const result = response.content.feedbacks;

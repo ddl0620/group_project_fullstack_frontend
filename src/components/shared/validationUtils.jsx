@@ -1,5 +1,3 @@
-// utils/validationUtils.js
-
 /**
  * Validates form data and returns errors
  * @param {Object} formData - The form data to validate

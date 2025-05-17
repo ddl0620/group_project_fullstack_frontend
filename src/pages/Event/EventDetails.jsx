@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEvent } from '@/hooks/useEvent';
@@ -69,7 +67,7 @@ export default function EventDetailPage() {
         setError(err.response?.data?.message || 'Failed to load organizer');
         // toast.error(err.response?.data?.message || 'Failed to load organizer');
       }
-    }
+    };
 
     const fetchEvent = async () => {
       try {
@@ -551,7 +549,9 @@ export default function EventDetailPage() {
                   />
                   <div>
                     <p className="text-sm text-gray-500">Hosted by</p>
-                    <p className="font-medium">{organizer.name || "Event Organizer"}</p>
+                    <p className="font-medium">
+                      {organizer.name || 'Event Organizer'}
+                    </p>
                   </div>
                 </div>
 
@@ -561,9 +561,6 @@ export default function EventDetailPage() {
                     <p className="font-medium">{event.notifyWhen}</p>
                   </div>
                 </div>
-
-
-
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   {/* Date and Time */}
@@ -590,7 +587,7 @@ export default function EventDetailPage() {
                         <div>
                           <p className="text-sm text-gray-500">
                             {new Date(event.endDate) -
-                            new Date(event.startDate) >
+                              new Date(event.startDate) >
                             86400000
                               ? `${Math.ceil((new Date(event.endDate) - new Date(event.startDate)) / (1000 * 60 * 60 * 24))} days`
                               : `${Math.ceil((new Date(event.endDate) - new Date(event.startDate)) / (1000 * 60 * 60))} hours`}

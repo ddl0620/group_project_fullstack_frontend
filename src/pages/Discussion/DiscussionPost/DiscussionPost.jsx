@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { MessageCircle, Pencil } from 'lucide-react';
@@ -46,7 +44,7 @@ export function DiscussionPost({ postData }) {
 
   useEffect(() => {
     const fetchUserData = async (userId) => {
-      const response = await getUserById(userId);
+      const response = await getUserById(userId || me._id);
       const user = response.content;
       setCreator(user);
     };

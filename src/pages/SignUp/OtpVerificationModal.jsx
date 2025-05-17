@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -78,11 +76,11 @@ const OtpVerificationModal = ({
     try {
       const response = await onSendCode();
       console.log(response);
-      if (!response){
+      if (!response) {
         setIsInvalidSignup(true);
         return;
       }
-      if (!response.success){
+      if (!response.success) {
         setIsInvalidSignup(true);
         return;
       }
@@ -102,11 +100,11 @@ const OtpVerificationModal = ({
     setIsSending(true);
     try {
       const response = await onSendCode();
-      if (!response){
+      if (!response) {
         setIsInvalidSignup(true);
         return;
       }
-      if (!response.success){
+      if (!response.success) {
         setIsInvalidSignup(true);
         return;
       }
@@ -240,7 +238,9 @@ const OtpVerificationModal = ({
                   disabled={isSending || isInvalidSignup}
                   className="mt-4 w-full bg-black text-white hover:bg-gray-800"
                 >
-                  {isSending && !isInvalidSignup ? 'Sending...' : 'Send Verification Code'}
+                  {isSending && !isInvalidSignup
+                    ? 'Sending...'
+                    : 'Send Verification Code'}
                 </Button>
               )}
             </>

@@ -1,5 +1,3 @@
-'use client';
-
 import { useRef, useState } from 'react';
 import { Label } from '@/components/ui/label.js';
 import { FileIcon, X } from 'lucide-react';

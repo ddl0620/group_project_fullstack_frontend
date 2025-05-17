@@ -10,7 +10,6 @@ export default function Pagination({
   showItemCount = true,
   itemName = 'items',
 }) {
-  // Calculate the range of items being displayed
   const indexOfFirstItem = (currentPage - 1) * itemsPerPage + 1;
   const indexOfLastItem = Math.min(currentPage * itemsPerPage, totalItems);
 

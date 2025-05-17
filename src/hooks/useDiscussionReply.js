@@ -13,8 +13,10 @@ import {
   updateReply as updateReplyAction,
 } from '@/store/slices/DiscussionReplySlice.js';
 import {
-  createNewReplyAPI, deleteReplyAPI,
-  getAllRepliesAPI, updateReplyAPI
+  createNewReplyAPI,
+  deleteReplyAPI,
+  getAllRepliesAPI,
+  updateReplyAPI,
 } from '@/services/DiscussionReplyService.js';
 export const useDiscussionReply = () => {
   const dispatch = useDispatch();
@@ -29,29 +31,28 @@ export const useDiscussionReply = () => {
 
   const createNewReply = useCallback(
     async (postId, formData) => {
-      const toastId = Toast.loading("Creating reply...");
+      const toastId = Toast.loading('Posting...');
       try {
         dispatch(setError(null));
         dispatch(setLoading(true));
         checkToken();
-        console.log(formData.getAll("parent_reply_id"));
+        console.log(formData.getAll('parent_reply_id'));
         const response = await createNewReplyAPI(postId, formData);
         if (!response.success) {
           throw new Error('Failed to create post');
         }
         dispatch(addReply({ postId, reply: response.content.reply }));
-        Toast.success('Reply created successfully');
+        // Toast.info('Posted', 'Reply created successfully');
         return response.content.reply;
       } catch (error) {
         dispatch(setError(error.message));
         Toast.error(
-          'Failed to create reply: ' +
-            (error.response?.data?.message || error.message)
+          'Failed to create reply: ',
+          error.response?.data?.message || error.message
         );
         throw error;
-      }
-      finally {
-        Toast.dismiss(toastId)
+      } finally {
+        Toast.dismiss(toastId);
       }
     },
     [dispatch]
@@ -65,7 +66,6 @@ export const useDiscussionReply = () => {
         cache.current[cacheKey] &&
         cache.current[cacheKey] !== null
       ) {
-        console.log('Sử dụng dữ liệu từ cache:', cacheKey);
         dispatch(setReplies({ postId, ...cache.current[cacheKey] }));
         return cache.current[cacheKey];
       }
@@ -97,7 +97,6 @@ export const useDiscussionReply = () => {
           },
         };
 
-        console.log('Dữ liệu replies vừa fetch:', result.replies);
         cache.current[cacheKey] = result;
         dispatch(setReplies(result));
         return result;
@@ -105,9 +104,9 @@ export const useDiscussionReply = () => {
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
-          'Đã xảy ra lỗi khi lấy replies';
+          'Error fetching replies';
         dispatch(setError(errorMessage));
-        Toast.error('Không thể lấy replies: ' + errorMessage);
+        Toast.error('Cant get replies', errorMessage);
         throw error;
       } finally {
         dispatch(setLoading(false));
@@ -118,7 +117,7 @@ export const useDiscussionReply = () => {
 
   const updateReply = useCallback(
     async (replyId, content) => {
-      const toastId = Toast.loading("Updating reply...");
+      const toastId = Toast.loading('Updating reply...');
       try {
         dispatch(setError(null));
         dispatch(setLoading(true));
@@ -134,13 +133,13 @@ export const useDiscussionReply = () => {
             updatedReply: response.content.reply,
           })
         );
-        Toast.success('Reply updated successfully');
+        Toast.info('Updated', 'Reply updated successfully');
         return response.content.reply;
       } catch (error) {
         dispatch(setError(error.message));
         Toast.error(
-          'Failed to update post: ' +
-            (error.response?.content?.message || error.message)
+          'Failed to update post: ',
+          error.response?.content?.message || error.message
         );
         throw error;
       } finally {
@@ -164,13 +163,13 @@ export const useDiscussionReply = () => {
         }
 
         dispatch(removeReply({ postId, replyId }));
-        Toast.success('Reply deleted successfully');
+        Toast.success('Deleted', 'Reply deleted successfully.');
         return response.content;
       } catch (error) {
         dispatch(setError(error.message));
         Toast.error(
-          'Failed to delete post: ' +
-            (error.response?.content?.message || error.message)
+          'Failed to delete post: ',
+          error.response?.content?.message || error.message
         );
         throw error;
       } finally {
