@@ -17,18 +17,14 @@ import { useSelector } from 'react-redux';
 
 export default function UserDashboard() {
   const {
-    engagementStats,
     invitationsOverTime,
     rsvpDistribution,
-    recipients,
-    loadingRecipients,
     loadingEngagementStats,
     loadingInvitations,
     loadingRsvpDistribution,
     errorEngagementStats,
     errorInvitations,
     errorRsvpDistribution,
-    errorRecipients,
     fetchEngagementStats,
     fetchInvitationsOverTime,
     fetchRsvpDistribution,
@@ -40,40 +36,6 @@ export default function UserDashboard() {
     from: subDays(new Date(), 30),
     to: new Date(),
   });
-
-  const [interval] = useState('daily');
-
-  // Render counter for debugging
-  const renderCount = useRef(0);
-  useEffect(() => {
-    renderCount.current += 1;
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`UserDashboard Render Count: ${renderCount.current}`);
-    }
-  }, []);
-
-  // Log state changes for debugging (development only)
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('State Updated:', {
-        engagementStats,
-        invitationsOverTime,
-        rsvpDistribution,
-        recipients,
-      });
-    }
-  }, [engagementStats, invitationsOverTime, rsvpDistribution, recipients]);
-
-  // Debug resize events
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      const handleResize = () => {
-        console.log('Window resized, render count:', renderCount.current);
-      };
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, []);
 
   // Fetch all data
   useEffect(() => {
@@ -120,17 +82,11 @@ export default function UserDashboard() {
           const declinedCount = findRsvpValue('Denied');
           const pendingCount = findRsvpValue('Pending');
 
-          // Calculate response rate
-          const responseRate =
-            totalResponses > 0
-              ? `${Math.round((acceptedCount / totalResponses) * 100)}%`
-              : '0%';
-
           return [
             {
               title: 'Total Responses',
               value: totalResponses,
-              percentage: 0, // We don't have previous data for comparison
+              percentage: 0,
               icon: <Mail className="text-muted-foreground h-4 w-4" />,
             },
             {
@@ -165,9 +121,9 @@ export default function UserDashboard() {
       : [];
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-gray-50 p-2 pt-6 font-semibold sm:p-4 md:p-8">
       <div className="flex-1 space-y-4 p-4 pt-6 sm:p-6 md:p-8">
-        <div className={'text-md font-bold sm:text-lg md:text-2xl lg:text-4xl'}>
+        <div className={'text-lg font-bold sm:text-lg md:text-2xl lg:text-4xl'}>
           Welcome, {user?.name || 'User'}
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
@@ -379,118 +335,9 @@ export default function UserDashboard() {
                 </div>
               )}
             </div>
-
-            <Card className="transition-shadow duration-500 hover:shadow-xl">
-              <CardHeader>
-                <CardTitle>Invitation Summary</CardTitle>
-                <CardDescription>
-                  Overview of all invitation activity
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div className="rounded-lg border p-4">
-                      <h4 className="text-muted-foreground text-sm font-medium">
-                        Total Sent
-                      </h4>
-                      <p className="text-2xl font-bold">
-                        {engagementStats?.totalInvitations || 0}
-                      </p>
-                      <p className="text-muted-foreground mt-1 text-xs">
-                        Across all events
-                      </p>
-                    </div>
-                    <div className="rounded-lg border p-4">
-                      <h4 className="text-muted-foreground text-sm font-medium">
-                        Response Rate
-                      </h4>
-                      <p className="text-2xl font-bold">
-                        {calculateResponseRate(
-                          (engagementStats?.acceptedRSVPs || 0) +
-                            (engagementStats?.deniedRSVPs || 0),
-                          engagementStats?.totalInvitations || 0
-                        )}
-                      </p>
-                      <p className="text-muted-foreground mt-1 text-xs">
-                        Of all invitations
-                      </p>
-                    </div>
-                    <div className="rounded-lg border p-4">
-                      <h4 className="text-muted-foreground text-sm font-medium">
-                        Acceptance Rate
-                      </h4>
-                      <p className="text-2xl font-bold">
-                        {calculateResponseRate(
-                          engagementStats?.acceptedRSVPs || 0,
-                          (engagementStats?.acceptedRSVPs || 0) +
-                            (engagementStats?.deniedRSVPs || 0)
-                        )}
-                      </p>
-                      <p className="text-muted-foreground mt-1 text-xs">
-                        Of all responses
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg border p-4">
-                    <h4 className="mb-3 text-sm font-medium">
-                      Invitation Timeline
-                    </h4>
-                    <div className="relative pt-1">
-                      <div className="mb-2 flex items-center justify-between">
-                        <div>
-                          <span className="inline-block rounded-full bg-blue-200 px-2 py-1 text-xs font-semibold text-blue-800 uppercase">
-                            Progress
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span className="inline-block text-xs font-semibold text-blue-800">
-                            {calculateResponseRate(
-                              (engagementStats?.acceptedRSVPs || 0) +
-                                (engagementStats?.deniedRSVPs || 0),
-                              engagementStats?.totalInvitations || 0
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mb-4 flex h-2 overflow-hidden rounded bg-blue-200 text-xs">
-                        <div
-                          style={{
-                            width:
-                              calculateResponseRateNumeric(
-                                (engagementStats?.acceptedRSVPs || 0) +
-                                  (engagementStats?.deniedRSVPs || 0),
-                                engagementStats?.totalInvitations || 0
-                              ) + '%',
-                          }}
-                          className="flex flex-col justify-center bg-blue-500 text-center whitespace-nowrap text-white shadow-none"
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
         </Tabs>
       </div>
     </div>
   );
-}
-
-// Helper functions
-function calculatePercentageChange(current, previous) {
-  if (previous === 0) return current > 0 ? 100 : 0;
-  return (((current - previous) / previous) * 100).toFixed(1);
-}
-
-function calculateResponseRate(accepted, total) {
-  if (total === 0) return '0%';
-  return `${((accepted / total) * 100).toFixed(1)}%`;
-}
-
-function calculateResponseRateNumeric(accepted, total) {
-  if (total === 0) return 0;
-  return ((accepted / total) * 100).toFixed(1);
 }
